@@ -1,296 +1,327 @@
 import { Link } from 'react-router-dom';
-import ProductCard from '../components/ProductCard';
-import products from '../data/products';
+import FadeUp from '../components/FadeUp';
 
-// ── 1. Hero Section ───────────────────────────────────────────
-function Hero() {
+const WA = 'https://wa.me/919343777686';
+
+// ── Reusable pill button components ─────────────────────────────
+function PillBlack({ href, to, children, className = '' }) {
+  const cls = `inline-flex items-center justify-center text-[17px] font-medium text-white bg-apple-black px-6 py-3 rounded-pill hover:scale-[1.02] transition-transform duration-200 ${className}`;
+  if (href) return <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>{children}</a>;
+  return <Link to={to} className={cls}>{children}</Link>;
+}
+
+function PillOutline({ href, to, children, className = '' }) {
+  const cls = `inline-flex items-center justify-center text-[17px] font-medium text-apple-black bg-white border border-apple-black px-6 py-3 rounded-pill hover:scale-[1.02] transition-transform duration-200 ${className}`;
+  if (href) return <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>{children}</a>;
+  return <Link to={to} className={cls}>{children}</Link>;
+}
+
+// ── Section container ────────────────────────────────────────────
+function Section({ bg = 'bg-white', children, className = '' }) {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden bg-white">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#f9f5ec_0%,_#ffffff_70%)] pointer-events-none" />
-
-      {/* Gold decorative lines */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold to-transparent opacity-60" />
-
-      <div className="relative z-10 max-w-4xl mx-auto">
-        {/* Tagline pill */}
-        <span className="inline-block px-4 py-1.5 mb-6 rounded-full border border-gold/40 bg-gold/5 text-gold text-xs font-semibold tracking-widest uppercase">
-          Trusted Since 1996 · Jail Road, Indore
-        </span>
-
-        {/* Main headline */}
-        <h1 className="font-display font-bold text-5xl sm:text-6xl lg:text-7xl text-black leading-tight tracking-tight mb-6">
-          Indore&apos;s Most Trusted<br />
-          <span className="relative inline-block">
-            Electronics Store
-            {/* Gold underline */}
-            <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 400 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 9C60 4 130 2 200 2C270 2 340 4 398 9" stroke="#C9A84C" strokeWidth="4" strokeLinecap="round"/>
-            </svg>
-          </span>
-          <br />Since 1996
-        </h1>
-
-        <p className="text-gray-500 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-          Premium mobiles, tablets, laptops, and accessories — backed by 30 years of expert advice and honest service.
-        </p>
-
-        {/* CTA buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            to="/products"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-white font-semibold text-base rounded-full hover:bg-gold-dark active:scale-95 transition-all duration-200 shadow-lg shadow-gold/30"
-          >
-            Explore Products
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </Link>
-          <a
-            href="https://wa.me/919826000000?text=Hi+Apex!+I+would+like+to+know+more."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-8 py-4 border-2 border-black text-black font-semibold text-base rounded-full hover:bg-black hover:text-white active:scale-95 transition-all duration-200"
-          >
-            <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-            </svg>
-            WhatsApp Us
-          </a>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+    <section className={`${bg} py-[80px] md:py-[120px] px-6 ${className}`}>
+      <div className="max-w-[1200px] mx-auto">
+        {children}
       </div>
     </section>
   );
 }
 
-// ── 2. Categories Section ─────────────────────────────────────
-const CATEGORIES = [
-  { emoji: '📱', label: 'Mobiles',     desc: 'Latest smartphones from all top brands' },
-  { emoji: '📟', label: 'Tablets',     desc: 'iPads, Galaxy Tabs & more' },
-  { emoji: '💻', label: 'Laptops',     desc: 'MacBooks, Ultrabooks & gaming laptops' },
-  { emoji: '🎧', label: 'Accessories', desc: 'Earbuds, chargers, cases & cables' },
-];
-
-function Categories() {
+// ── Placeholder image box ────────────────────────────────────────
+function Placeholder({ label, emoji = '📱', aspect = 'aspect-[3/4]', className = '' }) {
   return (
-    <section className="py-24 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section header */}
-        <div className="text-center mb-14">
-          <p className="text-gold text-xs font-semibold tracking-widest uppercase mb-3">Browse by Category</p>
-          <h2 className="font-display font-bold text-4xl sm:text-5xl text-black">What We Carry</h2>
-        </div>
-
-        {/* Category cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {CATEGORIES.map(({ emoji, label, desc }) => (
-            <Link
-              key={label}
-              to={`/products?category=${label}`}
-              className="group flex flex-col items-center text-center p-8 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-gold/40 transition-all duration-300"
-            >
-              <span className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-200">{emoji}</span>
-              <h3 className="font-display font-semibold text-lg text-black mb-2">{label}</h3>
-              <p className="text-gray-500 text-sm leading-snug">{desc}</p>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ── 3. Featured Products (first 6 from products.js) ───────────
-function FeaturedProducts() {
-  const featured = products.slice(0, 6);
-
-  return (
-    <section className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
-          <div>
-            <p className="text-gold text-xs font-semibold tracking-widest uppercase mb-3">Hand-Picked</p>
-            <h2 className="font-display font-bold text-4xl sm:text-5xl text-black">Featured Products</h2>
-          </div>
-          <Link
-            to="/products"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-black border-b-2 border-gold pb-0.5 hover:text-gold transition-colors duration-200 self-start sm:self-auto"
-          >
-            View all products
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </Link>
-        </div>
-
-        {/* Product grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featured.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ── 4. Trust Bar ──────────────────────────────────────────────
-const STATS = [
-  { value: '30+',        label: 'Years in Business' },
-  { value: '1 Lakh+',   label: 'Happy Customers' },
-  { value: 'Expert',    label: 'Advice Always Free' },
-  { value: 'Best',      label: 'Prices Guaranteed' },
-];
-
-function TrustBar() {
-  return (
-    <section className="py-20 bg-black text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 text-center">
-          {STATS.map(({ value, label }) => (
-            <div key={label}>
-              <p className="font-display font-bold text-4xl sm:text-5xl text-gold mb-2">{value}</p>
-              <p className="text-gray-400 text-sm tracking-wide">{label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ── 5. Testimonials ───────────────────────────────────────────
-const TESTIMONIALS = [
-  {
-    name: 'Priya Sharma',
-    location: 'Indore',
-    text: "I've been buying from Apex since 2010. The staff knows their products inside out and never pushes unnecessary upsells. Got the perfect phone for my budget!",
-    rating: 5,
-  },
-  {
-    name: 'Rahul Malhotra',
-    location: 'Indore',
-    text: "Bought a MacBook Pro here last month. The price was actually better than online, and they helped me set it up too. Will always come back to Apex.",
-    rating: 5,
-  },
-  {
-    name: 'Anjali Verma',
-    location: 'Indore',
-    text: "Apex has been my family's go-to electronics store for two decades. Honest advice, genuine products, and after-sales support you simply can't find elsewhere.",
-    rating: 5,
-  },
-];
-
-function StarRating({ count }) {
-  return (
-    <div className="flex gap-0.5">
-      {Array.from({ length: count }).map((_, i) => (
-        <svg key={i} className="w-4 h-4 text-gold fill-current" viewBox="0 0 20 20">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      ))}
+    <div className={`bg-apple-light rounded-[24px] ${aspect} flex flex-col items-center justify-center text-center p-10 ${className}`}>
+      <div className="text-8xl mb-4">{emoji}</div>
+      <p className="text-[13px] font-medium text-apple-gray tracking-wide uppercase">{label}</p>
     </div>
   );
 }
 
-function Testimonials() {
+// ──────────────────────────────────────────────────────────────────
+export default function Home() {
   return (
-    <section className="py-24 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14">
-          <p className="text-gold text-xs font-semibold tracking-widest uppercase mb-3">What Customers Say</p>
-          <h2 className="font-display font-bold text-4xl sm:text-5xl text-black">Trusted by Generations</h2>
-        </div>
+    <div className="bg-white">
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {TESTIMONIALS.map(({ name, location, text, rating }) => (
-            <div
-              key={name}
-              className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300"
-            >
-              {/* Opening quote mark */}
-              <svg className="w-8 h-8 text-gold/30 mb-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-              </svg>
-              <p className="text-gray-600 text-sm leading-relaxed mb-6">{text}</p>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-black text-sm">{name}</p>
-                  <p className="text-gray-400 text-xs">{location}</p>
-                </div>
-                <StarRating count={rating} />
-              </div>
-            </div>
+      {/* ── 1. HERO ─────────────────────────────────────────────── */}
+      <section className="bg-white min-h-screen flex flex-col items-center justify-center text-center px-6 py-20">
+        <FadeUp>
+          <p className="text-[14px] font-medium text-apple-gray tracking-[0.1em] uppercase mb-6">
+            Trusted Since 1996
+          </p>
+          <h1 className="font-sans font-bold text-[48px] md:text-[80px] text-apple-black leading-[1.05] tracking-[-0.02em] mb-6">
+            The Best Phones.<br />
+            Indore&apos;s Best Price.
+          </h1>
+          <p className="text-[19px] md:text-[21px] text-apple-gray max-w-[560px] mx-auto mb-10 leading-relaxed">
+            Apple. Samsung. OnePlus. Sony. All in one place.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <PillBlack to="/products">Shop Now</PillBlack>
+            <PillOutline href={WA}>Chat on WhatsApp</PillOutline>
+          </div>
+        </FadeUp>
+
+        {/* Hero image placeholder */}
+        <FadeUp delay={150} className="w-full max-w-[700px] mt-16">
+          <div className="bg-apple-light rounded-[32px] aspect-[16/9] flex flex-col items-center justify-center">
+            <div className="text-9xl mb-4">📱</div>
+            <p className="text-[13px] font-medium text-apple-gray tracking-wider uppercase">Your Hero Image Here</p>
+            <p className="text-[12px] text-apple-gray/60 mt-1">Recommended 1400 × 788px</p>
+          </div>
+        </FadeUp>
+      </section>
+
+      {/* ── 2. BRANDS BAR ───────────────────────────────────────── */}
+      <div className="border-t border-b border-apple-border py-4 overflow-x-auto no-scrollbar">
+        <div className="flex items-center justify-center min-w-max gap-0 px-6">
+          {['Apple', 'Samsung', 'OnePlus', 'Sony', 'Xiaomi', 'boAt', 'Lenovo', 'HP', 'Nothing'].map((brand, i, arr) => (
+            <span key={brand} className="flex items-center">
+              <Link
+                to={`/products`}
+                className="text-[18px] font-medium text-apple-black px-5 hover:underline underline-offset-4 transition-all duration-150"
+              >
+                {brand}
+              </Link>
+              {i < arr.length - 1 && <span className="text-apple-border text-lg select-none">·</span>}
+            </span>
           ))}
         </div>
       </div>
-    </section>
-  );
-}
 
-// ── 6. Visit Us / CTA Section ─────────────────────────────────
-function VisitUs() {
-  return (
-    <section className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl mx-auto text-center">
-          <p className="text-gold text-xs font-semibold tracking-widest uppercase mb-3">Find Us</p>
-          <h2 className="font-display font-bold text-4xl sm:text-5xl text-black mb-6">Visit Our Store</h2>
-          <p className="text-gray-500 text-lg mb-8">
-            Come in, look around, and let our team help you find the perfect device. No pressure — just honest, expert guidance.
-          </p>
-
-          {/* Address card */}
-          <div className="inline-flex flex-col items-center gap-4 p-8 rounded-2xl border-2 border-gold/30 bg-gold/5 mb-8">
-            <svg className="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <div className="text-center">
-              <p className="font-display font-semibold text-xl text-black">Jail Road, Indore</p>
-              <p className="text-gray-500 text-sm mt-1">Madhya Pradesh — 452 001</p>
-              <p className="text-gray-500 text-sm mt-0.5">Open Mon–Sat · 10 AM to 8 PM</p>
+      {/* ── 3. PRODUCT SECTION 1 — iPhone 16 Pro (image LEFT) ───── */}
+      <Section bg="bg-white">
+        <FadeUp>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Image */}
+            <Placeholder label="iPhone 16 Pro" emoji="🍎" aspect="aspect-square" />
+            {/* Details */}
+            <div>
+              <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Mobiles</p>
+              <h2 className="font-sans font-bold text-[40px] md:text-[56px] text-apple-black leading-[1.07] tracking-[-0.02em] mb-5">
+                iPhone 16 Pro.
+              </h2>
+              <p className="text-[19px] md:text-[21px] text-apple-gray leading-relaxed mb-6 max-w-[400px]">
+                Powered by A18 Pro. The most advanced iPhone ever made, now at Apex.
+              </p>
+              <p className="text-[28px] font-semibold text-apple-black mb-8">From ₹1,19,900</p>
+              <PillBlack href={`${WA}?text=Hi%20Apex!%20I%20am%20interested%20in%20iPhone%2016%20Pro`}>
+                Enquire on WhatsApp
+              </PillBlack>
             </div>
           </div>
+        </FadeUp>
+      </Section>
 
-          {/* WhatsApp CTA */}
-          <div>
-            <a
-              href="https://wa.me/919826000000?text=Hi+Apex!+I+would+like+to+know+more."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-[#25D366] text-white font-semibold text-base rounded-full hover:opacity-90 active:scale-95 transition-all duration-200 shadow-lg shadow-green-200"
-            >
-              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-              </svg>
-              Chat with Us on WhatsApp
-            </a>
+      {/* ── 4. PRODUCT SECTION 2 — Samsung S25 Ultra (image RIGHT) ─ */}
+      <Section bg="bg-apple-light">
+        <FadeUp>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Details (LEFT on desktop) */}
+            <div>
+              <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Android</p>
+              <h2 className="font-sans font-bold text-[40px] md:text-[56px] text-apple-black leading-[1.07] tracking-[-0.02em] mb-5">
+                Galaxy S25 Ultra.
+              </h2>
+              <p className="text-[19px] md:text-[21px] text-apple-gray leading-relaxed mb-6 max-w-[400px]">
+                Galaxy AI is here. The most powerful Galaxy S series phone, ever.
+              </p>
+              <p className="text-[28px] font-semibold text-apple-black mb-8">From ₹1,29,999</p>
+              <PillBlack href={`${WA}?text=Hi%20Apex!%20I%20am%20interested%20in%20Samsung%20Galaxy%20S25%20Ultra`}>
+                Enquire on WhatsApp
+              </PillBlack>
+            </div>
+            {/* Image (RIGHT on desktop) */}
+            <Placeholder label="Galaxy S25 Ultra" emoji="📱" aspect="aspect-square" />
           </div>
-        </div>
-      </div>
-    </section>
-  );
-}
+        </FadeUp>
+      </Section>
 
-// ── Main Home export ──────────────────────────────────────────
-export default function Home() {
-  return (
-    <>
-      <Hero />
-      <Categories />
-      <FeaturedProducts />
-      <TrustBar />
-      <Testimonials />
-      <VisitUs />
-    </>
+      {/* ── 5. PRODUCT SECTION 3 — MacBook Air M3 (CENTERED) ─────── */}
+      <Section bg="bg-white">
+        <FadeUp>
+          <div className="text-center mb-12">
+            <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Laptops</p>
+            <h2 className="font-sans font-bold text-[40px] md:text-[56px] text-apple-black leading-[1.07] tracking-[-0.02em] mb-5">
+              MacBook Air M3.
+            </h2>
+            <p className="text-[19px] md:text-[21px] text-apple-gray leading-relaxed mb-6 max-w-[540px] mx-auto">
+              Strikingly thin. Incredibly fast. Up to 18 hours of battery life.
+            </p>
+            <p className="text-[28px] font-semibold text-apple-black mb-8">From ₹1,14,900</p>
+            <PillBlack href={`${WA}?text=Hi%20Apex!%20I%20am%20interested%20in%20MacBook%20Air%20M3`}>
+              Enquire on WhatsApp
+            </PillBlack>
+          </div>
+          <Placeholder label="MacBook Air M3" emoji="💻" aspect="aspect-[16/9]" className="max-w-[860px] mx-auto" />
+        </FadeUp>
+      </Section>
+
+      {/* ── 6. CATEGORY GRID ────────────────────────────────────── */}
+      <Section bg="bg-apple-light">
+        <FadeUp>
+          <div className="text-center mb-14">
+            <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Browse</p>
+            <h2 className="font-sans font-bold text-[40px] md:text-[56px] text-apple-black leading-[1.07] tracking-[-0.02em]">
+              Shop by Category.
+            </h2>
+          </div>
+        </FadeUp>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {[
+            { label: 'iPhones & iPads',    emoji: '🍎', filter: 'Mobiles',     sub: 'Latest Apple lineup' },
+            { label: 'Samsung & Android',  emoji: '📱', filter: 'Mobiles',     sub: 'Galaxy S series & more' },
+            { label: 'MacBooks & Laptops', emoji: '💻', filter: 'Laptops',     sub: 'Power your work' },
+            { label: 'Accessories',        emoji: '🎧', filter: 'Accessories', sub: 'Complete your setup' },
+          ].map((cat, i) => (
+            <FadeUp key={cat.label} delay={i * 80}>
+              <Link
+                to={`/products?category=${cat.filter}`}
+                className="group block bg-white rounded-[24px] overflow-hidden transition-all duration-300 hover:-translate-y-1"
+                style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}
+                onMouseEnter={e => e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.12)'}
+                onMouseLeave={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)'}
+              >
+                {/* Image placeholder */}
+                <div className="bg-apple-light h-52 flex items-center justify-center">
+                  <span className="text-7xl transition-transform duration-300 group-hover:scale-110">{cat.emoji}</span>
+                </div>
+                {/* Card footer */}
+                <div className="px-7 py-5 flex items-center justify-between">
+                  <div>
+                    <p className="text-[18px] font-semibold text-apple-black">{cat.label}</p>
+                    <p className="text-[14px] text-apple-gray mt-0.5">{cat.sub}</p>
+                  </div>
+                  <span className="text-[22px] text-apple-gray group-hover:translate-x-1 transition-transform duration-200">→</span>
+                </div>
+              </Link>
+            </FadeUp>
+          ))}
+        </div>
+      </Section>
+
+      {/* ── 7. TRUST STATS ──────────────────────────────────────── */}
+      <Section bg="bg-white">
+        <FadeUp>
+          <div className="text-center mb-16">
+            <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Our Track Record</p>
+            <h2 className="font-sans font-bold text-[40px] md:text-[56px] text-apple-black leading-[1.07] tracking-[-0.02em]">
+              Why Indore Trusts Apex.
+            </h2>
+          </div>
+        </FadeUp>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          {[
+            { num: '30+',  label: 'Years of trust' },
+            { num: '1L+',  label: 'Happy customers' },
+            { num: '15+',  label: 'Brands available' },
+            { num: '4.9★', label: 'Customer rating' },
+          ].map((s, i) => (
+            <FadeUp key={s.label} delay={i * 100}>
+              <div className="text-center">
+                <p className="font-display font-bold text-[56px] md:text-[72px] text-apple-black leading-none tracking-tight mb-3">
+                  {s.num}
+                </p>
+                <p className="text-[16px] text-apple-gray">{s.label}</p>
+              </div>
+            </FadeUp>
+          ))}
+        </div>
+      </Section>
+
+      {/* ── 8. TESTIMONIALS ─────────────────────────────────────── */}
+      <Section bg="bg-apple-light">
+        <FadeUp>
+          <div className="text-center mb-14">
+            <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Reviews</p>
+            <h2 className="font-sans font-bold text-[40px] md:text-[56px] text-apple-black leading-[1.07] tracking-[-0.02em]">
+              Loved in Indore.
+            </h2>
+          </div>
+        </FadeUp>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              quote: "I've been buying from Apex since 2010. The staff knows their products inside out and never pushes unnecessary upsells. Best electronics store in Indore, period.",
+              name: 'Priya Sharma',
+            },
+            {
+              quote: "Bought a MacBook Pro here last month. The price was actually better than online, and they helped me set it up too. Will always come back to Apex.",
+              name: 'Rahul Malhotra',
+            },
+            {
+              quote: "Apex has been my family's go-to electronics store for two decades. Honest advice, genuine products, and after-sales support you simply can't find elsewhere.",
+              name: 'Anjali Verma',
+            },
+          ].map((t, i) => (
+            <FadeUp key={t.name} delay={i * 100}>
+              <div
+                className="bg-white rounded-[20px] p-8"
+                style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}
+              >
+                <p className="font-display text-[64px] leading-none text-apple-border mb-2 select-none">&ldquo;</p>
+                <p className="font-display italic text-[19px] text-apple-black leading-relaxed mb-6">
+                  {t.quote}
+                </p>
+                <p className="text-[15px] font-medium text-apple-black">{t.name}</p>
+                <p className="text-[13px] text-apple-gray mt-0.5">Indore</p>
+              </div>
+            </FadeUp>
+          ))}
+        </div>
+      </Section>
+
+      {/* ── 9. STORE SECTION ────────────────────────────────────── */}
+      <Section bg="bg-white">
+        <FadeUp>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Photo placeholder */}
+            <Placeholder label="Your Store Photo" emoji="🏪" aspect="aspect-[4/3]" />
+
+            {/* Details */}
+            <div>
+              <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Visit Us</p>
+              <h2 className="font-sans font-bold text-[40px] md:text-[48px] text-apple-black leading-[1.1] tracking-[-0.02em] mb-5">
+                Apex The Mobile Shoppe.
+              </h2>
+              <p className="text-[21px] text-apple-gray mb-2">Jail Road, Indore</p>
+              <p className="text-[17px] text-apple-gray mb-10">Open daily 10AM – 8PM</p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <PillBlack href="https://maps.google.com/?q=Jail+Road+Indore">Get Directions</PillBlack>
+                <PillBlack href={WA}>WhatsApp Us</PillBlack>
+              </div>
+            </div>
+          </div>
+        </FadeUp>
+      </Section>
+
+      {/* ── 10. INSTAGRAM ───────────────────────────────────────── */}
+      <Section bg="bg-white">
+        <FadeUp>
+          <div className="text-center mb-12">
+            <h2 className="font-sans font-bold text-[40px] md:text-[56px] text-apple-black leading-[1.07] tracking-[-0.02em] mb-3">
+              Follow Along.
+            </h2>
+            <p className="text-[19px] text-apple-gray">@apexmobileindia</p>
+          </div>
+
+          {/* 6-square grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-10">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-apple-light aspect-square rounded-[12px] flex flex-col items-center justify-center gap-2 hover:opacity-75 transition-opacity duration-200 cursor-pointer">
+                <svg className="w-6 h-6 text-apple-gray fill-current" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                </svg>
+                <span className="text-[11px] text-apple-gray">Post {i + 1}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <PillBlack href="https://instagram.com/apexmobileindia">Follow on Instagram</PillBlack>
+          </div>
+        </FadeUp>
+      </Section>
+
+    </div>
   );
 }
