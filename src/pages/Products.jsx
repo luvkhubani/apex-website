@@ -1,31 +1,49 @@
 import { useState, useMemo } from 'react';
-import ProductCard from '../components/ProductCard';
-import FadeUp from '../components/FadeUp';
-import products from '../data/products';
+import ProductCard  from '../components/ProductCard';
+import ProductModal from '../components/ProductModal';
+import FadeUp       from '../components/FadeUp';
+import products     from '../data/products';
 
+// ── Filter config ────────────────────────────────────────────
 const BRANDS = [
   'All','Apple','Samsung','OnePlus','Nothing','Motorola',
   'Xiaomi','Realme','Vivo','OPPO','Poco','Infinix','Tecno',
   'AI Plus','Jio','Nokia',
 ];
-
-const CATEGORIES = ['All', 'Mobiles', 'Laptops', 'Tablets', 'Earphones'];
-
+const CATEGORIES = ['All','Mobiles','Laptops','Tablets','Earphones'];
 const PRICE_RANGES = [
-  { label: 'All Prices',          min: 0,     max: Infinity },
-  { label: 'Under ₹15,000',       min: 0,     max: 15000 },
-  { label: '₹15,000 – ₹30,000',   min: 15000, max: 30000 },
-  { label: '₹30,000 – ₹60,000',   min: 30000, max: 60000 },
-  { label: 'Above ₹60,000',       min: 60000, max: Infinity },
+  { label:'All Prices',         min:0,     max:Infinity },
+  { label:'Under ₹15,000',      min:0,     max:15000 },
+  { label:'₹15,000 – ₹30,000',  min:15000, max:30000 },
+  { label:'₹30,000 – ₹60,000',  min:30000, max:60000 },
+  { label:'Above ₹60,000',      min:60000, max:Infinity },
 ];
-
 const SORT_OPTIONS = [
-  { label: 'Newest First',       value: 'newest' },
-  { label: 'Price: Low to High', value: 'price_asc' },
-  { label: 'Price: High to Low', value: 'price_desc' },
+  { label:'Newest First',        value:'newest' },
+  { label:'Price: Low to High',  value:'price_asc' },
+  { label:'Price: High to Low',  value:'price_desc' },
 ];
 
-// Pill button used in filter bars
+// ── Group variants into models ───────────────────────────────
+function groupProducts(list) {
+  const map = new Map();
+  list.forEach(p => {
+    const key = `${p.brand}__${p.name}`;
+    if (!map.has(key)) {
+      map.set(key, {
+        key,
+        name:     p.name,
+        brand:    p.brand,
+        category: p.category,
+        badge:    p.badge,
+        variants: [],
+      });
+    }
+    map.get(key).variants.push(p);
+  });
+  return [...map.values()];
+}
+
 function Pill({ active, onClick, children }) {
   return (
     <button
@@ -47,18 +65,20 @@ export default function Products() {
   const [category,   setCategory]   = useState('All');
   const [priceRange, setPriceRange] = useState('All Prices');
   const [sort,       setSort]       = useState('newest');
+  const [openGroup,  setOpenGroup]  = useState(null);   // modal state
 
-  const filtered = useMemo(() => {
+  // ── Filtered + grouped ───────────────────────────────────
+  const groups = useMemo(() => {
     let list = [...products];
 
     // Search
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(p =>
-        p.name.toLowerCase().includes(q)  ||
-        p.brand.toLowerCase().includes(q) ||
-        (p.color && p.color.toLowerCase().includes(q)) ||
-        (p.ram   && p.ram.toLowerCase().includes(q))   ||
+        p.name.toLowerCase().includes(q)    ||
+        p.brand.toLowerCase().includes(q)   ||
+        (p.color   && p.color.toLowerCase().includes(q))   ||
+        (p.ram     && p.ram.toLowerCase().includes(q))     ||
         (p.storage && p.storage.toLowerCase().includes(q))
       );
     }
@@ -69,26 +89,41 @@ export default function Products() {
     // Category
     if (category !== 'All') list = list.filter(p => p.category === category);
 
-    // Price range — skip "Call for Price" items (price === 0) from range filter
+    // Price — keeps variant if ANY price in the range; filter per-variant here
     const range = PRICE_RANGES.find(r => r.label === priceRange);
     if (range && priceRange !== 'All Prices') {
       list = list.filter(p => p.price > 0 && p.price >= range.min && p.price < range.max);
     }
 
-    // Sort
-    if (sort === 'price_asc')  list.sort((a, b) => (a.price || 0) - (b.price || 0));
-    if (sort === 'price_desc') list.sort((a, b) => (b.price || 0) - (a.price || 0));
-    // 'newest' keeps insertion order (id ascending)
+    // Group
+    let g = groupProducts(list);
 
-    return list;
+    // Sort groups by representative price
+    if (sort === 'price_asc') {
+      g.sort((a, b) => {
+        const pa = Math.min(...a.variants.map(v => v.price || 0));
+        const pb = Math.min(...b.variants.map(v => v.price || 0));
+        return pa - pb;
+      });
+    } else if (sort === 'price_desc') {
+      g.sort((a, b) => {
+        const pa = Math.max(...a.variants.map(v => v.price || 0));
+        const pb = Math.max(...b.variants.map(v => v.price || 0));
+        return pb - pa;
+      });
+    }
+    // 'newest' keeps insertion order
+
+    return g;
   }, [search, brand, category, priceRange, sort]);
 
-  const total = products.length;
+  const totalModels   = groupProducts(products).length;
+  const totalVariants = products.length;
 
   return (
     <main className="min-h-screen bg-white">
 
-      {/* ── WhatsApp banner ───────────────────────────────────── */}
+      {/* ── WhatsApp banner ───────────────────────────────── */}
       <div className="bg-[#25D366] text-white text-center py-2.5 px-4">
         <a
           href="https://wa.me/919343777686?text=Hi%20Apex!%20Please%20share%20your%20complete%20price%20list."
@@ -100,32 +135,33 @@ export default function Products() {
         </a>
       </div>
 
-      {/* ── Page header ───────────────────────────────────────── */}
+      {/* ── Page header ───────────────────────────────────── */}
       <section className="bg-white pt-12 pb-8 px-6 border-b border-apple-border">
         <div className="max-w-[1200px] mx-auto">
           <FadeUp>
             <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-3">
               Our Collection
             </p>
-            <h1 className="font-sans font-bold text-[36px] md:text-[52px] text-apple-black leading-[1.07] tracking-[-0.02em] mb-3">
-              Our Complete Price List — {total}+ Models
+            <h1 className="font-sans font-bold text-[34px] md:text-[50px] text-apple-black leading-[1.07] tracking-[-0.02em] mb-3">
+              Our Complete Price List — {totalVariants}+ Models
             </h1>
             <p className="text-[15px] text-apple-gray">
-              Store hours: <strong className="text-apple-black">10 AM – 10 PM</strong>, Monday to Sunday &nbsp;·&nbsp; Jail Road, Indore
+              Store hours: <strong className="text-apple-black">10 AM – 10 PM</strong>, Monday to Sunday
+              &nbsp;·&nbsp; Jail Road, Indore
             </p>
           </FadeUp>
         </div>
       </section>
 
-      {/* ── Sticky filters ────────────────────────────────────── */}
+      {/* ── Sticky filters ────────────────────────────────── */}
       <div className="sticky top-12 z-40 bg-white/95 backdrop-blur-xl border-b border-apple-border shadow-sm">
         <div className="max-w-[1200px] mx-auto px-6 py-3 space-y-2.5">
 
-          {/* Search + Sort row */}
+          {/* Search + Sort */}
           <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
-              placeholder="Search by name, brand, RAM, storage…"
+              placeholder="Search by name, brand, RAM, storage, colour…"
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="flex-1 text-[14px] px-4 py-2 rounded-pill border border-apple-border bg-apple-light text-apple-black placeholder-apple-gray focus:outline-none focus:ring-2 focus:ring-apple-black/20"
@@ -142,18 +178,18 @@ export default function Products() {
           </div>
 
           {/* Brand pills */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar">
             {BRANDS.map(b => (
               <Pill key={b} active={brand === b} onClick={() => setBrand(b)}>{b}</Pill>
             ))}
           </div>
 
           {/* Category + Price pills */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar">
             {CATEGORIES.map(c => (
               <Pill key={c} active={category === c} onClick={() => setCategory(c)}>{c}</Pill>
             ))}
-            <span className="text-apple-border mx-1">|</span>
+            <span className="text-apple-border self-center mx-1 text-lg">|</span>
             {PRICE_RANGES.map(r => (
               <Pill key={r.label} active={priceRange === r.label} onClick={() => setPriceRange(r.label)}>
                 {r.label}
@@ -163,22 +199,23 @@ export default function Products() {
         </div>
       </div>
 
-      {/* ── Product count ─────────────────────────────────────── */}
-      <div className="max-w-[1200px] mx-auto px-6 pt-6 pb-2">
+      {/* ── Count ─────────────────────────────────────────── */}
+      <div className="max-w-[1200px] mx-auto px-6 pt-5 pb-2">
         <p className="text-[13px] text-apple-gray">
-          Showing <strong className="text-apple-black">{filtered.length}</strong> of{' '}
-          <strong className="text-apple-black">{total}</strong> products
+          Showing{' '}
+          <strong className="text-apple-black">{groups.length}</strong> of{' '}
+          <strong className="text-apple-black">{totalModels}</strong> models
         </p>
       </div>
 
-      {/* ── Grid ──────────────────────────────────────────────── */}
-      <section className="py-6 px-6 pb-16">
+      {/* ── Grid ──────────────────────────────────────────── */}
+      <section className="py-4 px-6 pb-16">
         <div className="max-w-[1200px] mx-auto">
-          {filtered.length > 0 ? (
+          {groups.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {filtered.map((product, i) => (
-                <FadeUp key={product.id} delay={Math.min(i * 30, 300)}>
-                  <ProductCard product={product} />
+              {groups.map((group, i) => (
+                <FadeUp key={group.key} delay={Math.min(i * 30, 300)}>
+                  <ProductCard group={group} onClick={() => setOpenGroup(group)} />
                 </FadeUp>
               ))}
             </div>
@@ -198,7 +235,7 @@ export default function Products() {
         </div>
       </section>
 
-      {/* ── Bottom CTA ────────────────────────────────────────── */}
+      {/* ── Bottom CTA ────────────────────────────────────── */}
       <section className="bg-apple-light border-t border-apple-border py-20 px-6 text-center">
         <FadeUp>
           <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Custom Order</p>
@@ -221,6 +258,14 @@ export default function Products() {
           </a>
         </FadeUp>
       </section>
+
+      {/* ── Detail modal ──────────────────────────────────── */}
+      {openGroup && (
+        <ProductModal
+          group={openGroup}
+          onClose={() => setOpenGroup(null)}
+        />
+      )}
     </main>
   );
 }
