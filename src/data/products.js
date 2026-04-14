@@ -25,10 +25,10 @@ const products = [
   // ── APPLE ────────────────────────────────────────────────────
 
   // iPhone 15
-  { id: 1,  name: "iPhone 15", brand: "Apple", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "Black",  price: 58000,  badge: "5G",  inStock: true },
+  { id: 1,  name: "iPhone 15", brand: "Apple", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "Black",  price: 58000,  badge: "5G",  inStock: true, image: "apple/iphone-15/IPHONE 15 BLACK.webp" },
   { id: 2,  name: "iPhone 15", brand: "Apple", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "Green",  price: 58000,  badge: "5G",  inStock: true },
-  { id: 3,  name: "iPhone 15", brand: "Apple", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "Blue",   price: 58000,  badge: "5G",  inStock: true },
-  { id: 4,  name: "iPhone 15", brand: "Apple", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "Pink",   price: 58000,  badge: "5G",  inStock: true },
+  { id: 3,  name: "iPhone 15", brand: "Apple", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "Blue",   price: 58000,  badge: "5G",  inStock: true, image: "apple/iphone-15/IPHONE 15 BLUE.webp" },
+  { id: 4,  name: "iPhone 15", brand: "Apple", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "Pink",   price: 58000,  badge: "5G",  inStock: true, image: "apple/iphone-15/IPHONE 15 PINK.webp" },
 
   // iPhone 16
   { id: 5,  name: "iPhone 16", brand: "Apple", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Black",  price: 67500,  badge: "5G",  inStock: true },

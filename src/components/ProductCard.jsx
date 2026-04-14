@@ -1,3 +1,5 @@
+import { getProductImage } from '../utils/productImages';
+
 const brandEmoji = {
   Apple: '🍎', Samsung: '📱', OnePlus: '📲', Nothing: '⚪',
   Motorola: '📡', Xiaomi: '🔵', Realme: '🟡', Vivo: '🟣',
@@ -21,9 +23,10 @@ function formatINR(price) {
 }
 
 export default function ProductCard({ product }) {
-  const { name, brand, ram, storage, color, price, badge, inStock } = product;
+  const { name, brand, ram, storage, color, price, badge, inStock, image } = product;
 
-  const specs = [ram, storage].filter(Boolean).join('/');
+  const imgSrc = getProductImage(image);
+  const specs  = [ram, storage].filter(Boolean).join('/');
   const waText = `Hi Apex! I am interested in ${name}${specs ? ' ' + specs : ''}${color ? ' ' + color : ''}. Please share availability and best price.`;
   const waUrl  = `https://wa.me/919343777686?text=${encodeURIComponent(waText)}`;
   const emoji  = brandEmoji[brand] || '📦';
@@ -37,9 +40,10 @@ export default function ProductCard({ product }) {
       onMouseLeave={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'}
     >
       {/* Image area */}
-      <div className="relative bg-apple-light aspect-square flex flex-col items-center justify-center text-center p-8">
+      <div className="relative bg-apple-light aspect-square flex flex-col items-center justify-center text-center overflow-hidden">
+
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+        <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
           {badge && badgeStyle && (
             <span className={`text-[10px] font-bold tracking-wide px-2 py-0.5 rounded-full ${badgeStyle}`}>
               {badge}
@@ -52,8 +56,19 @@ export default function ProductCard({ product }) {
           )}
         </div>
 
-        <div className="text-6xl mb-3 transition-transform duration-300 group-hover:scale-105">{emoji}</div>
-        <p className="text-xs text-apple-gray font-medium leading-snug px-2">{name}</p>
+        {/* Real photo or emoji fallback */}
+        {imgSrc ? (
+          <img
+            src={imgSrc}
+            alt={`${name} ${color}`}
+            className="w-full h-full object-contain p-6 transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center p-8">
+            <div className="text-6xl mb-3 transition-transform duration-300 group-hover:scale-105">{emoji}</div>
+            <p className="text-xs text-apple-gray font-medium leading-snug px-2">{name}</p>
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -61,7 +76,6 @@ export default function ProductCard({ product }) {
         <p className="text-[10px] font-semibold tracking-[0.12em] text-apple-gray uppercase mb-0.5">{brand}</p>
         <h3 className="text-[15px] font-semibold text-apple-black leading-snug mb-1">{name}</h3>
 
-        {/* Specs row */}
         {(specs || color) && (
           <p className="text-[12px] text-apple-gray mb-1">
             {specs}{specs && color ? ' · ' : ''}{color}
