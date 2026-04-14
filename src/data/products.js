@@ -3,158 +3,260 @@
  *  APEX — The Mobile Shoppe · Product Catalog
  * ============================================================
  *
- *  HOW TO ADD A NEW PRODUCT:
- *  --------------------------
- *  1. Copy the template below and paste it at the end of the array (before the final "]")
- *  2. Increment the `id` by 1 (last id + 1)
- *  3. Fill in the fields — see field guide below
- *  4. Save the file — the Products page updates automatically
+ *  HOW TO UPDATE YOUR WEBSITE:
+ *  ----------------------------
+ *  1. TO CHANGE A PRICE: Find the product, change the price number,
+ *     save the file, then run in terminal:
+ *       git add . && git commit -m "price update" && git push
  *
- *  FIELD GUIDE:
- *  ------------
- *  id          : Unique number. Keep incrementing (13, 14, 15 …)
- *  name        : Full product name shown on the card  e.g. "iPhone 15 Pro"
- *  brand       : Brand name shown as a tag            e.g. "Apple"
- *  category    : Must be one of:
- *                  "Mobiles" | "Tablets" | "Laptops" | "Accessories"
- *  price       : Formatted price string               e.g. "₹1,29,900"
- *  image       : URL to product image. Use a direct image link or leave as
- *                the placeholder below. Free placeholder images:
- *                  https://placehold.co/400x300?text=ProductName
- *  whatsappMsg : URL-encoded message sent via WhatsApp. Keep the format:
- *                  "Hi+Apex!+I+am+interested+in+[Product+Name]"
+ *  2. TO ADD A PRODUCT: Copy any existing product object, change
+ *     the details, give it a new id (last id + 1), paste it in
+ *     the correct brand section, save the file.
  *
- *  TEMPLATE (copy from here):
- *  --------------------------
- *  {
- *    id: 13,
- *    name: "Your Product Name",
- *    brand: "Brand Name",
- *    category: "Mobiles",          // Mobiles | Tablets | Laptops | Accessories
- *    price: "₹0,000",
- *    image: "https://placehold.co/400x300?text=Product+Name",
- *    whatsappMsg: "Hi+Apex!+I+am+interested+in+Your+Product+Name",
- *  },
+ *  3. TO REMOVE A PRODUCT: Delete that product object entirely.
+ *
+ *  4. TO MARK OUT OF STOCK: Change  inStock: true  →  inStock: false
+ *
  *  ============================================================
  */
 
 const products = [
 
-  // ── MOBILES ────────────────────────────────────────────────
-  {
-    id: 1,
-    name: "iPhone 15 Pro Max",
-    brand: "Apple",
-    category: "Mobiles",
-    price: "₹1,59,900",
-    image: "https://placehold.co/400x300/1a1a1a/C9A84C?text=iPhone+15+Pro+Max",
-    whatsappMsg: "Hi+Apex!+I+am+interested+in+iPhone+15+Pro+Max",
-  },
-  {
-    id: 2,
-    name: "Samsung Galaxy S24 Ultra",
-    brand: "Samsung",
-    category: "Mobiles",
-    price: "₹1,34,999",
-    image: "https://placehold.co/400x300/1a1a1a/C9A84C?text=Galaxy+S24+Ultra",
-    whatsappMsg: "Hi+Apex!+I+am+interested+in+Samsung+Galaxy+S24+Ultra",
-  },
-  {
-    id: 3,
-    name: "OnePlus 12R",
-    brand: "OnePlus",
-    category: "Mobiles",
-    price: "₹39,999",
-    image: "https://placehold.co/400x300/1a1a1a/C9A84C?text=OnePlus+12R",
-    whatsappMsg: "Hi+Apex!+I+am+interested+in+OnePlus+12R",
-  },
+  // ── APPLE ────────────────────────────────────────────────────
 
-  // ── TABLETS ────────────────────────────────────────────────
-  {
-    id: 4,
-    name: "iPad Pro 12.9\" M4",
-    brand: "Apple",
-    category: "Tablets",
-    price: "₹1,09,900",
-    image: "https://placehold.co/400x300/1a1a1a/C9A84C?text=iPad+Pro+M4",
-    whatsappMsg: "Hi+Apex!+I+am+interested+in+iPad+Pro+12.9+M4",
-  },
-  {
-    id: 5,
-    name: "Samsung Galaxy Tab S9 FE",
-    brand: "Samsung",
-    category: "Tablets",
-    price: "₹49,999",
-    image: "https://placehold.co/400x300/1a1a1a/C9A84C?text=Galaxy+Tab+S9+FE",
-    whatsappMsg: "Hi+Apex!+I+am+interested+in+Samsung+Galaxy+Tab+S9+FE",
-  },
-  {
-    id: 6,
-    name: "Xiaomi Pad 6",
-    brand: "Xiaomi",
-    category: "Tablets",
-    price: "₹26,999",
-    image: "https://placehold.co/400x300/1a1a1a/C9A84C?text=Xiaomi+Pad+6",
-    whatsappMsg: "Hi+Apex!+I+am+interested+in+Xiaomi+Pad+6",
-  },
+  // iPhone 15
+  { id: 1,  name: "iPhone 15", brand: "Apple", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "Black",  price: 58000,  badge: "5G",  inStock: true },
+  { id: 2,  name: "iPhone 15", brand: "Apple", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "Green",  price: 58000,  badge: "5G",  inStock: true },
+  { id: 3,  name: "iPhone 15", brand: "Apple", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "Blue",   price: 58000,  badge: "5G",  inStock: true },
+  { id: 4,  name: "iPhone 15", brand: "Apple", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "Pink",   price: 58000,  badge: "5G",  inStock: true },
 
-  // ── LAPTOPS ────────────────────────────────────────────────
-  {
-    id: 7,
-    name: "MacBook Air M3 13\"",
-    brand: "Apple",
-    category: "Laptops",
-    price: "₹1,14,900",
-    image: "https://placehold.co/400x300/1a1a1a/C9A84C?text=MacBook+Air+M3",
-    whatsappMsg: "Hi+Apex!+I+am+interested+in+MacBook+Air+M3+13+inch",
-  },
-  {
-    id: 8,
-    name: "Dell XPS 15 OLED",
-    brand: "Dell",
-    category: "Laptops",
-    price: "₹1,99,990",
-    image: "https://placehold.co/400x300/1a1a1a/C9A84C?text=Dell+XPS+15",
-    whatsappMsg: "Hi+Apex!+I+am+interested+in+Dell+XPS+15+OLED",
-  },
-  {
-    id: 9,
-    name: "HP Pavilion 15",
-    brand: "HP",
-    category: "Laptops",
-    price: "₹62,990",
-    image: "https://placehold.co/400x300/1a1a1a/C9A84C?text=HP+Pavilion+15",
-    whatsappMsg: "Hi+Apex!+I+am+interested+in+HP+Pavilion+15",
-  },
+  // iPhone 16
+  { id: 5,  name: "iPhone 16", brand: "Apple", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Black",  price: 67500,  badge: "5G",  inStock: true },
+  { id: 6,  name: "iPhone 16", brand: "Apple", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Blue",   price: 67500,  badge: "5G",  inStock: true },
+  { id: 7,  name: "iPhone 16", brand: "Apple", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Pink",   price: 67500,  badge: "5G",  inStock: true },
+  { id: 8,  name: "iPhone 16", brand: "Apple", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Green",  price: 67500,  badge: "5G",  inStock: true },
+  { id: 9,  name: "iPhone 16", brand: "Apple", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "White",  price: 67500,  badge: "5G",  inStock: true },
 
-  // ── ACCESSORIES ────────────────────────────────────────────
-  {
-    id: 10,
-    name: "AirPods Pro (2nd Gen)",
-    brand: "Apple",
-    category: "Accessories",
-    price: "₹24,900",
-    image: "https://placehold.co/400x300/1a1a1a/C9A84C?text=AirPods+Pro+2",
-    whatsappMsg: "Hi+Apex!+I+am+interested+in+AirPods+Pro+2nd+Gen",
-  },
-  {
-    id: 11,
-    name: "Samsung 45W USB-C Charger",
-    brand: "Samsung",
-    category: "Accessories",
-    price: "₹2,999",
-    image: "https://placehold.co/400x300/1a1a1a/C9A84C?text=Samsung+45W+Charger",
-    whatsappMsg: "Hi+Apex!+I+am+interested+in+Samsung+45W+USB-C+Charger",
-  },
-  {
-    id: 12,
-    name: "Anker MagSafe Power Bank",
-    brand: "Anker",
-    category: "Accessories",
-    price: "₹6,499",
-    image: "https://placehold.co/400x300/1a1a1a/C9A84C?text=Anker+MagSafe+Bank",
-    whatsappMsg: "Hi+Apex!+I+am+interested+in+Anker+MagSafe+Power+Bank",
-  },
+  // iPhone 17
+  { id: 10, name: "iPhone 17", brand: "Apple", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "Black",  price: 83500,  badge: "New", inStock: true },
+  { id: 11, name: "iPhone 17", brand: "Apple", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "White",  price: 83500,  badge: "New", inStock: true },
+  { id: 12, name: "iPhone 17", brand: "Apple", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "Blue",   price: 83500,  badge: "New", inStock: true },
+  { id: 13, name: "iPhone 17", brand: "Apple", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "Pink",   price: 83500,  badge: "New", inStock: true },
+  { id: 14, name: "iPhone 17", brand: "Apple", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "Desert", price: 83500,  badge: "New", inStock: true },
+
+  // iPhone 17 Pro
+  { id: 15, name: "iPhone 17 Pro", brand: "Apple", category: "Mobiles", ram: "8GB", storage: "256GB", color: "Orange", price: 130400, badge: "New", inStock: true },
+  { id: 16, name: "iPhone 17 Pro", brand: "Apple", category: "Mobiles", ram: "8GB", storage: "256GB", color: "Silver", price: 133000, badge: "New", inStock: true },
+
+  // iPhone 17 Pro Max
+  { id: 17, name: "iPhone 17 Pro Max", brand: "Apple", category: "Mobiles", ram: "8GB", storage: "256GB", color: "Orange", price: 144499, badge: "New", inStock: true },
+  { id: 18, name: "iPhone 17 Pro Max", brand: "Apple", category: "Mobiles", ram: "8GB", storage: "256GB", color: "Silver", price: 145400, badge: "New", inStock: true },
+  { id: 19, name: "iPhone 17 Pro Max", brand: "Apple", category: "Mobiles", ram: "8GB", storage: "512GB", color: "Orange", price: 165000, badge: "New", inStock: true },
+
+  // iPad
+  { id: 20, name: "iPad A16",     brand: "Apple", category: "Tablets", ram: "8GB", storage: "128GB", color: "Blue",   price: 32000, badge: "WiFi", inStock: true },
+  { id: 21, name: "iPad A16",     brand: "Apple", category: "Tablets", ram: "8GB", storage: "128GB", color: "Silver", price: 31700, badge: "WiFi", inStock: true },
+  { id: 22, name: "iPad 11th Gen",brand: "Apple", category: "Tablets", ram: "8GB", storage: "128GB", color: "Blue",   price: 31500, badge: "WiFi", inStock: true },
+  { id: 23, name: "iPad 11th Gen",brand: "Apple", category: "Tablets", ram: "8GB", storage: "128GB", color: "White",  price: 32000, badge: "WiFi", inStock: true },
+
+  // MacBook Neo
+  { id: 24, name: "MacBook Neo", brand: "Apple", category: "Laptops", ram: "16GB", storage: "256GB", color: "Indigo", price: 0, badge: "New", inStock: true },
+  { id: 25, name: "MacBook Neo", brand: "Apple", category: "Laptops", ram: "16GB", storage: "512GB", color: "Silver", price: 0, badge: "New", inStock: true },
+  { id: 26, name: "MacBook Neo", brand: "Apple", category: "Laptops", ram: "16GB", storage: "512GB", color: "Blush",  price: 0, badge: "New", inStock: true },
+  { id: 27, name: "MacBook Neo", brand: "Apple", category: "Laptops", ram: "16GB", storage: "512GB", color: "Indigo", price: 0, badge: "New", inStock: true },
+
+  // AirPods
+  { id: 28, name: "AirPods 3 Pro",  brand: "Apple", category: "Earphones", ram: "", storage: "", color: "White", price: 21000, badge: "",            inStock: true },
+  { id: 29, name: "AirPods 4 ANC",  brand: "Apple", category: "Earphones", ram: "", storage: "", color: "White", price: 0,     badge: "New",          inStock: true },
+  { id: 30, name: "AirPods 4",      brand: "Apple", category: "Earphones", ram: "", storage: "", color: "White", price: 10900, badge: "",             inStock: true },
+  { id: 31, name: "AirPods Pro 2",  brand: "Apple", category: "Earphones", ram: "", storage: "", color: "White", price: 0,     badge: "Best Seller",  inStock: true },
+
+  // ── SAMSUNG ──────────────────────────────────────────────────
+
+  { id: 32, name: "Galaxy M17e",      brand: "Samsung", category: "Mobiles", ram: "4GB",  storage: "128GB", color: "",              price: 13450,  badge: "",           inStock: true },
+  { id: 33, name: "Galaxy M36",       brand: "Samsung", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "",              price: 16500,  badge: "",           inStock: true },
+  { id: 34, name: "Galaxy S24 FE",    brand: "Samsung", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "",              price: 37500,  badge: "Best Seller",inStock: true },
+  { id: 35, name: "Galaxy S24",       brand: "Samsung", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Black",         price: 41900,  badge: "5G",         inStock: true },
+  { id: 36, name: "Galaxy S25 FE",    brand: "Samsung", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Black",         price: 48350,  badge: "New",        inStock: true },
+  { id: 37, name: "Galaxy S25 FE",    brand: "Samsung", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "White",         price: 48500,  badge: "New",        inStock: true },
+  { id: 38, name: "Galaxy S26",       brand: "Samsung", category: "Mobiles", ram: "12GB", storage: "256GB", color: "Active",        price: 68000,  badge: "New",        inStock: true },
+  { id: 39, name: "Galaxy S26 Ultra", brand: "Samsung", category: "Mobiles", ram: "12GB", storage: "256GB", color: "Black Active",  price: 110500, badge: "New",        inStock: true },
+  { id: 40, name: "Galaxy S26 Ultra", brand: "Samsung", category: "Mobiles", ram: "12GB", storage: "256GB", color: "Violet Active", price: 110500, badge: "New",        inStock: true },
+  { id: 41, name: "Galaxy S26 Ultra", brand: "Samsung", category: "Mobiles", ram: "12GB", storage: "256GB", color: "Fresh",         price: 113500, badge: "New",        inStock: true },
+  { id: 42, name: "Galaxy S26 Ultra", brand: "Samsung", category: "Mobiles", ram: "12GB", storage: "512GB", color: "Violet",        price: 120000, badge: "New",        inStock: true },
+  { id: 43, name: "Galaxy S26 Ultra", brand: "Samsung", category: "Mobiles", ram: "12GB", storage: "512GB", color: "Black",         price: 120000, badge: "New",        inStock: true },
+  { id: 44, name: "Galaxy S26 Ultra", brand: "Samsung", category: "Mobiles", ram: "12GB", storage: "512GB", color: "Blue",          price: 120000, badge: "New",        inStock: true },
+  { id: 45, name: "Galaxy S26 Ultra", brand: "Samsung", category: "Mobiles", ram: "12GB", storage: "512GB", color: "Silver",        price: 120000, badge: "New",        inStock: true },
+  { id: 46, name: "Galaxy S26 Ultra", brand: "Samsung", category: "Mobiles", ram: "12GB", storage: "512GB", color: "White Fresh",   price: 124500, badge: "New",        inStock: true },
+  { id: 47, name: "Galaxy Fold 7",    brand: "Samsung", category: "Mobiles", ram: "12GB", storage: "256GB", color: "Blue Active",   price: 140000, badge: "New",        inStock: true },
+  { id: 48, name: "Galaxy Fold 7",    brand: "Samsung", category: "Mobiles", ram: "12GB", storage: "256GB", color: "Silver Active", price: 142400, badge: "New",        inStock: true },
+  { id: 49, name: "Galaxy Fold 7",    brand: "Samsung", category: "Mobiles", ram: "12GB", storage: "512GB", color: "Black Fresh",   price: 158000, badge: "New",        inStock: true },
+
+  // ── ONEPLUS ──────────────────────────────────────────────────
+
+  { id: 50, name: "OnePlus Nord CE5", brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Black",   price: 25400, badge: "5G", inStock: true },
+  { id: 51, name: "OnePlus Nord CE5", brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Marble",  price: 25400, badge: "5G", inStock: true },
+  { id: 52, name: "OnePlus Nord CE5", brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Blue",    price: 25400, badge: "5G", inStock: true },
+  { id: 53, name: "OnePlus Nord CE5", brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "Blue",    price: 28500, badge: "5G", inStock: true },
+  { id: 54, name: "OnePlus Nord CE5", brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "Marble",  price: 28500, badge: "5G", inStock: true },
+  { id: 55, name: "OnePlus Nord CE5", brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "Black",   price: 28500, badge: "5G", inStock: true },
+  { id: 56, name: "OnePlus Nord 5",   brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "Grey",    price: 33300, badge: "5G", inStock: true },
+  { id: 57, name: "OnePlus Nord 5",   brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "Ice",     price: 33300, badge: "5G", inStock: true },
+  { id: 58, name: "OnePlus Nord 5",   brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "Marble",  price: 33300, badge: "5G", inStock: true },
+  { id: 59, name: "OnePlus Nord 6",   brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "",        price: 37900, badge: "New",inStock: true },
+  { id: 60, name: "OnePlus 13S",      brand: "OnePlus", category: "Mobiles", ram: "12GB", storage: "256GB", color: "",        price: 47800, badge: "5G", inStock: true },
+  { id: 61, name: "OnePlus 13S",      brand: "OnePlus", category: "Mobiles", ram: "12GB", storage: "512GB", color: "",        price: 54400, badge: "5G", inStock: true },
+  { id: 62, name: "OnePlus 15",       brand: "OnePlus", category: "Mobiles", ram: "12GB", storage: "256GB", color: "",        price: 68500, badge: "New",inStock: true },
+  { id: 63, name: "OnePlus 15",       brand: "OnePlus", category: "Mobiles", ram: "12GB", storage: "512GB", color: "",        price: 77500, badge: "New",inStock: true },
+  { id: 64, name: "OnePlus 15R",      brand: "OnePlus", category: "Mobiles", ram: "12GB", storage: "256GB", color: "Mint",    price: 46250, badge: "5G", inStock: true },
+  { id: 65, name: "OnePlus 15R",      brand: "OnePlus", category: "Mobiles", ram: "12GB", storage: "256GB", color: "Black",   price: 46250, badge: "5G", inStock: true },
+  { id: 66, name: "OnePlus 15R",      brand: "OnePlus", category: "Mobiles", ram: "12GB", storage: "256GB", color: "Violet",  price: 46250, badge: "5G", inStock: true },
+  { id: 67, name: "OnePlus 15R",      brand: "OnePlus", category: "Mobiles", ram: "12GB", storage: "512GB", color: "Black",   price: 52499, badge: "5G", inStock: true },
+  { id: 68, name: "OnePlus 9A",       brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Black",   price: 38100, badge: "5G", inStock: true },
+  { id: 69, name: "OnePlus 9A",       brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "White",   price: 38500, badge: "5G", inStock: true },
+  { id: 70, name: "OnePlus 10A",      brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Black",   price: 45100, badge: "5G", inStock: true },
+  { id: 71, name: "OnePlus 10A",      brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Fog",     price: 45500, badge: "5G", inStock: true },
+  { id: 72, name: "OnePlus 10A",      brand: "OnePlus", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Lavender",price: 45300, badge: "5G", inStock: true },
+
+  // ── NOTHING ──────────────────────────────────────────────────
+
+  { id: 73, name: "Nothing Phone 3A Lite", brand: "Nothing", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "",       price: 20400, badge: "5G", inStock: true },
+  { id: 74, name: "Nothing Phone 3A Lite", brand: "Nothing", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "",       price: 22800, badge: "5G", inStock: true },
+  { id: 75, name: "Nothing Phone 3A Pro",  brand: "Nothing", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "Grey",   price: 30500, badge: "5G", inStock: true },
+  { id: 76, name: "Nothing Phone 3A Pro",  brand: "Nothing", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "Black",  price: 31500, badge: "5G", inStock: true },
+  { id: 77, name: "Nothing Phone 4A",      brand: "Nothing", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "Black",  price: 32500, badge: "New",inStock: true },
+  { id: 78, name: "Nothing Phone 4A",      brand: "Nothing", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "Blue",   price: 32500, badge: "New",inStock: true },
+  { id: 79, name: "Nothing Phone 4A",      brand: "Nothing", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "White",  price: 32500, badge: "New",inStock: true },
+  { id: 80, name: "Nothing Phone 4A",      brand: "Nothing", category: "Mobiles", ram: "12GB", storage: "256GB", color: "",       price: 34500, badge: "New",inStock: true },
+
+  // ── MOTOROLA ─────────────────────────────────────────────────
+
+  { id: 81, name: "Motorola G57 Power",      brand: "Motorola", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "", price: 15300, badge: "",    inStock: true },
+  { id: 82, name: "Motorola G67 Power",      brand: "Motorola", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "", price: 16350, badge: "",    inStock: true },
+  { id: 83, name: "Motorola G96",            brand: "Motorola", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "", price: 18650, badge: "",    inStock: true },
+  { id: 84, name: "Motorola Edge 60 Fusion", brand: "Motorola", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "", price: 22200, badge: "5G", inStock: true },
+  { id: 85, name: "Motorola Edge 60 Fusion", brand: "Motorola", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "", price: 24000, badge: "5G", inStock: true },
+  { id: 86, name: "Motorola Edge 60 Fusion", brand: "Motorola", category: "Mobiles", ram: "12GB", storage: "256GB", color: "", price: 25300, badge: "5G", inStock: true },
+
+  // ── XIAOMI ───────────────────────────────────────────────────
+
+  { id: 87,  name: "Xiaomi A5",    brand: "Xiaomi", category: "Mobiles", ram: "3GB", storage: "64GB",  color: "", price: 9000,  badge: "",    inStock: true },
+  { id: 88,  name: "Xiaomi A4",    brand: "Xiaomi", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 11600, badge: "",    inStock: true },
+  { id: 89,  name: "Xiaomi A4",    brand: "Xiaomi", category: "Mobiles", ram: "4GB", storage: "128GB", color: "", price: 12350, badge: "",    inStock: true },
+  { id: 90,  name: "Xiaomi A4",    brand: "Xiaomi", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 13500, badge: "",    inStock: true },
+  { id: 91,  name: "Xiaomi 14C",   brand: "Xiaomi", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 14000, badge: "",    inStock: true },
+  { id: 92,  name: "Xiaomi 15A",   brand: "Xiaomi", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 12300, badge: "5G", inStock: true },
+  { id: 93,  name: "Xiaomi 15C",   brand: "Xiaomi", category: "Mobiles", ram: "4GB", storage: "128GB", color: "", price: 14000, badge: "5G", inStock: true },
+  { id: 94,  name: "Xiaomi 15C",   brand: "Xiaomi", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 15750, badge: "5G", inStock: true },
+  { id: 95,  name: "Xiaomi Mi 15", brand: "Xiaomi", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 16300, badge: "5G", inStock: true },
+  { id: 96,  name: "Xiaomi Mi 15", brand: "Xiaomi", category: "Mobiles", ram: "8GB", storage: "128GB", color: "", price: 17400, badge: "5G", inStock: true },
+  { id: 97,  name: "Xiaomi Mi 15", brand: "Xiaomi", category: "Mobiles", ram: "8GB", storage: "256GB", color: "", price: 19000, badge: "5G", inStock: true },
+
+  // ── REALME ───────────────────────────────────────────────────
+
+  { id: 98,  name: "Realme C71",          brand: "Realme", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 9950,  badge: "",           inStock: true },
+  { id: 99,  name: "Realme P4 Lite",      brand: "Realme", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 9625,  badge: "4G",         inStock: true },
+  { id: 100, name: "Realme C83",          brand: "Realme", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 13200, badge: "Best Seller", inStock: true },
+  { id: 101, name: "Realme C83",          brand: "Realme", category: "Mobiles", ram: "4GB", storage: "128GB", color: "", price: 14100, badge: "Best Seller", inStock: true },
+  { id: 102, name: "Realme C83",          brand: "Realme", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 15700, badge: "Best Seller", inStock: true },
+  { id: 103, name: "Realme C85",          brand: "Realme", category: "Mobiles", ram: "4GB", storage: "128GB", color: "", price: 14800, badge: "",            inStock: true },
+  { id: 104, name: "Realme P3 Lite",      brand: "Realme", category: "Mobiles", ram: "4GB", storage: "128GB", color: "", price: 13100, badge: "5G",          inStock: true },
+  { id: 105, name: "Realme P3 Lite",      brand: "Realme", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 14500, badge: "5G",          inStock: true },
+  { id: 106, name: "Realme P4 Lite",      brand: "Realme", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 12850, badge: "5G",          inStock: true },
+  { id: 107, name: "Realme P4 Lite",      brand: "Realme", category: "Mobiles", ram: "4GB", storage: "128GB", color: "", price: 13900, badge: "5G",          inStock: true },
+  { id: 108, name: "Realme P4 Lite",      brand: "Realme", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 15500, badge: "5G",          inStock: true },
+  { id: 109, name: "Realme P4X",          brand: "Realme", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 16850, badge: "5G",          inStock: true },
+  { id: 110, name: "Realme P4X",          brand: "Realme", category: "Mobiles", ram: "8GB", storage: "128GB", color: "", price: 17800, badge: "5G",          inStock: true },
+  { id: 111, name: "Realme P4",           brand: "Realme", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 19800, badge: "5G",          inStock: true },
+  { id: 112, name: "Realme R15X",         brand: "Realme", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 16750, badge: "",            inStock: true },
+  { id: 113, name: "Realme R15X",         brand: "Realme", category: "Mobiles", ram: "8GB", storage: "128GB", color: "", price: 17600, badge: "",            inStock: true },
+  { id: 114, name: "Realme P4 Power",     brand: "Realme", category: "Mobiles", ram: "8GB", storage: "128GB", color: "", price: 24250, badge: "5G",          inStock: true },
+  { id: 115, name: "Realme P4 Power",     brand: "Realme", category: "Mobiles", ram: "8GB", storage: "256GB", color: "", price: 26350, badge: "5G",          inStock: true },
+  { id: 116, name: "Realme Narzo 80 Lite",brand: "Realme", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 9500,  badge: "",            inStock: true },
+  { id: 117, name: "Realme Narzo 80 Lite",brand: "Realme", category: "Mobiles", ram: "4GB", storage: "128GB", color: "", price: 13250, badge: "",            inStock: true },
+  { id: 118, name: "Realme Narzo 80 Lite",brand: "Realme", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 14700, badge: "",            inStock: true },
+  { id: 119, name: "Realme Narzo 90X",    brand: "Realme", category: "Mobiles", ram: "4GB", storage: "128GB", color: "", price: 14150, badge: "5G",          inStock: true },
+  { id: 120, name: "Realme Narzo 90X",    brand: "Realme", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 15950, badge: "5G",          inStock: true },
+  { id: 121, name: "Realme Narzo 90X",    brand: "Realme", category: "Mobiles", ram: "8GB", storage: "128GB", color: "", price: 16650, badge: "5G",          inStock: true },
+
+  // ── VIVO ─────────────────────────────────────────────────────
+
+  { id: 122, name: "Vivo Y19e",   brand: "Vivo", category: "Mobiles", ram: "4GB",  storage: "64GB",  color: "", price: 11000, badge: "",    inStock: true },
+  { id: 123, name: "Vivo Y19S",   brand: "Vivo", category: "Mobiles", ram: "4GB",  storage: "64GB",  color: "", price: 14100, badge: "",    inStock: true },
+  { id: 124, name: "Vivo Y19S",   brand: "Vivo", category: "Mobiles", ram: "4GB",  storage: "128GB", color: "", price: 14800, badge: "",    inStock: true },
+  { id: 125, name: "Vivo Y19S",   brand: "Vivo", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "", price: 15950, badge: "",    inStock: true },
+  { id: 126, name: "Vivo T4 Lite",brand: "Vivo", category: "Mobiles", ram: "4GB",  storage: "64GB",  color: "", price: 13200, badge: "",    inStock: true },
+  { id: 127, name: "Vivo T4 Lite",brand: "Vivo", category: "Mobiles", ram: "4GB",  storage: "128GB", color: "", price: 14500, badge: "",    inStock: true },
+  { id: 128, name: "Vivo T4 Lite",brand: "Vivo", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "", price: 15150, badge: "",    inStock: true },
+  { id: 129, name: "Vivo T4 Lite",brand: "Vivo", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "", price: 17150, badge: "",    inStock: true },
+  { id: 130, name: "Vivo Y31",    brand: "Vivo", category: "Mobiles", ram: "4GB",  storage: "128GB", color: "", price: 16900, badge: "",    inStock: true },
+  { id: 131, name: "Vivo Y31",    brand: "Vivo", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "", price: 18200, badge: "",    inStock: true },
+  { id: 132, name: "Vivo T4X",    brand: "Vivo", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "", price: 17300, badge: "5G", inStock: true },
+  { id: 133, name: "Vivo T4X",    brand: "Vivo", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "", price: 18600, badge: "5G", inStock: true },
+  { id: 134, name: "Vivo T4X",    brand: "Vivo", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "", price: 20700, badge: "5G", inStock: true },
+  { id: 135, name: "Vivo T5X",    brand: "Vivo", category: "Mobiles", ram: "6GB",  storage: "128GB", color: "", price: 18600, badge: "5G", inStock: true },
+  { id: 136, name: "Vivo T5X",    brand: "Vivo", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "", price: 20000, badge: "5G", inStock: true },
+  { id: 137, name: "Vivo T5X",    brand: "Vivo", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "", price: 22550, badge: "5G", inStock: true },
+  { id: 138, name: "Vivo T4R",    brand: "Vivo", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "", price: 21600, badge: "5G", inStock: true },
+  { id: 139, name: "Vivo T4R",    brand: "Vivo", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "", price: 23700, badge: "5G", inStock: true },
+  { id: 140, name: "Vivo T4R",    brand: "Vivo", category: "Mobiles", ram: "12GB", storage: "256GB", color: "", price: 25800, badge: "5G", inStock: true },
+  { id: 141, name: "Vivo Y51 Pro",brand: "Vivo", category: "Mobiles", ram: "8GB",  storage: "128GB", color: "", price: 21300, badge: "5G", inStock: true },
+  { id: 142, name: "Vivo V70",    brand: "Vivo", category: "Mobiles", ram: "8GB",  storage: "256GB", color: "", price: 37000, badge: "5G", inStock: true },
+
+  // ── OPPO ─────────────────────────────────────────────────────
+
+  { id: 143, name: "OPPO A6X",    brand: "OPPO", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 11350, badge: "4G", inStock: true },
+  { id: 144, name: "OPPO A6X",    brand: "OPPO", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 14300, badge: "5G", inStock: true },
+  { id: 145, name: "OPPO A6X",    brand: "OPPO", category: "Mobiles", ram: "4GB", storage: "128GB", color: "", price: 15300, badge: "5G", inStock: true },
+  { id: 146, name: "OPPO A6X",    brand: "OPPO", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 17000, badge: "5G", inStock: true },
+  { id: 147, name: "OPPO A6 Pro", brand: "OPPO", category: "Mobiles", ram: "8GB", storage: "128GB", color: "", price: 19900, badge: "",   inStock: true },
+  { id: 148, name: "OPPO K13X",   brand: "OPPO", category: "Mobiles", ram: "4GB", storage: "128GB", color: "", price: 14500, badge: "5G", inStock: true },
+  { id: 149, name: "OPPO K13X",   brand: "OPPO", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 15500, badge: "5G", inStock: true },
+  { id: 150, name: "OPPO K13X",   brand: "OPPO", category: "Mobiles", ram: "8GB", storage: "128GB", color: "", price: 16000, badge: "5G", inStock: true },
+  { id: 151, name: "OPPO K14X",   brand: "OPPO", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 13800, badge: "5G", inStock: true },
+  { id: 152, name: "OPPO K14X",   brand: "OPPO", category: "Mobiles", ram: "4GB", storage: "128GB", color: "", price: 14500, badge: "5G", inStock: true },
+  { id: 153, name: "OPPO K14X",   brand: "OPPO", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 16600, badge: "5G", inStock: true },
+  { id: 154, name: "OPPO K13",    brand: "OPPO", category: "Mobiles", ram: "8GB", storage: "128GB", color: "", price: 18200, badge: "5G", inStock: true },
+  { id: 155, name: "OPPO K13",    brand: "OPPO", category: "Mobiles", ram: "8GB", storage: "256GB", color: "", price: 20250, badge: "5G", inStock: true },
+  { id: 156, name: "OPPO K14",    brand: "OPPO", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 17950, badge: "5G", inStock: true },
+  { id: 157, name: "OPPO K14",    brand: "OPPO", category: "Mobiles", ram: "6GB", storage: "256GB", color: "", price: 20000, badge: "5G", inStock: true },
+
+  // ── POCO ─────────────────────────────────────────────────────
+
+  { id: 158, name: "Poco C71",  brand: "Poco", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 9000,  badge: "",    inStock: true },
+  { id: 159, name: "Poco C75",  brand: "Poco", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 11350, badge: "",    inStock: true },
+  { id: 160, name: "Poco C75",  brand: "Poco", category: "Mobiles", ram: "4GB", storage: "128GB", color: "", price: 11950, badge: "",    inStock: true },
+  { id: 161, name: "Poco M7",   brand: "Poco", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 12500, badge: "5G", inStock: true },
+  { id: 162, name: "Poco C85X", brand: "Poco", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 11500, badge: "",    inStock: true },
+
+  // ── INFINIX ──────────────────────────────────────────────────
+
+  { id: 163, name: "Infinix Smart 10", brand: "Infinix", category: "Mobiles", ram: "4GB", storage: "64GB", color: "", price: 9475, badge: "", inStock: true },
+
+  // ── TECNO ────────────────────────────────────────────────────
+
+  { id: 164, name: "Tecno Go2", brand: "Tecno", category: "Mobiles", ram: "4GB", storage: "64GB", color: "", price: 9300, badge: "", inStock: true },
+  { id: 165, name: "Tecno Go3", brand: "Tecno", category: "Mobiles", ram: "4GB", storage: "64GB", color: "", price: 9450, badge: "", inStock: true },
+
+  // ── AI PLUS ──────────────────────────────────────────────────
+
+  { id: 166, name: "AI Plus Pulse",   brand: "AI Plus", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 8100,  badge: "", inStock: true },
+  { id: 167, name: "AI Plus Pulse",   brand: "AI Plus", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 9100,  badge: "", inStock: true },
+  { id: 168, name: "AI Plus Pulse 2", brand: "AI Plus", category: "Mobiles", ram: "4GB", storage: "64GB",  color: "", price: 9200,  badge: "", inStock: true },
+  { id: 169, name: "AI Plus Nova",    brand: "AI Plus", category: "Mobiles", ram: "6GB", storage: "128GB", color: "", price: 11000, badge: "", inStock: true },
+  { id: 170, name: "AI Plus Nova",    brand: "AI Plus", category: "Mobiles", ram: "8GB", storage: "128GB", color: "", price: 12200, badge: "", inStock: true },
+
+  // ── JIO ──────────────────────────────────────────────────────
+
+  { id: 171, name: "Jio V4",      brand: "Jio", category: "Mobiles", ram: "", storage: "", color: "", price: 1050, badge: "", inStock: true },
+  { id: 172, name: "Jio K1",      brand: "Jio", category: "Mobiles", ram: "", storage: "", color: "", price: 1170, badge: "", inStock: true },
+  { id: 173, name: "Jio J1",      brand: "Jio", category: "Mobiles", ram: "", storage: "", color: "", price: 1975, badge: "", inStock: true },
+  { id: 174, name: "Jio B1",      brand: "Jio", category: "Mobiles", ram: "", storage: "", color: "", price: 1870, badge: "", inStock: true },
+  { id: 175, name: "Jio Prima 2", brand: "Jio", category: "Mobiles", ram: "", storage: "", color: "", price: 3050, badge: "", inStock: true },
+
+  // ── NOKIA ────────────────────────────────────────────────────
+
+  { id: 176, name: "Nokia 105 Classic", brand: "Nokia", category: "Mobiles", ram: "", storage: "", color: "", price: 1520, badge: "", inStock: true },
 
 ];
 

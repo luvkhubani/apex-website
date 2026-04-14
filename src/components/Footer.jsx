@@ -80,7 +80,7 @@ export default function Footer() {
                   WhatsApp
                 </a>
               </li>
-              <li className="pt-1">Mon–Sun: 10AM – 8PM</li>
+              <li className="pt-1">Mon–Sun: 10AM – 10PM</li>
             </ul>
           </div>
         </div>
