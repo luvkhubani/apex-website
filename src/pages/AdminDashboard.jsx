@@ -133,7 +133,16 @@ export default function AdminDashboard() {
   useEffect(() => { saveHeroConfig(heroConfig); }, [heroConfig]);
 
   const showToast = (msg, type="ok") => { setToast({ msg, type }); setTimeout(() => setToast(null), 3500); };
-  const persist   = (p) => { setProducts(p); saveProducts(p); };
+  const persist   = (p) => {
+    setProducts(p);
+    saveProducts(p);
+    // Sync full catalog to GitHub so all browsers see the changes after redeploy
+    fetch("/api/sync-products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ products: p }),
+    }).catch(() => {});
+  };
   const F         = (k) => (v) => setForm(f => ({ ...f, [k]: v }));
 
   // ── Filter & group ────────────────────────────────────
