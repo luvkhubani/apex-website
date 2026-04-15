@@ -101,7 +101,9 @@ const Toggle = ({ value, onChange, label, desc }) => (
 
 export default function AdminDashboard() {
   const navigate    = useNavigate();
-  const csvInputRef = useRef(null);
+  const csvInputRef    = useRef(null);
+  const productImgRef  = useRef(null);
+  const bannerImgRef   = useRef(null);
 
   const [products,      setProducts]      = useState(loadProducts);
   const [search,        setSearch]        = useState("");
@@ -252,6 +254,45 @@ export default function AdminDashboard() {
     setDs(next);
     saveDisplaySettings(next);
     showToast("Setting saved!");
+  };
+
+  // ── Upload from device ───────────────────────────────
+  const uploadFile = async (file, imagePath, onSuccess) => {
+    if (!file) return;
+    // Show local preview immediately
+    const localUrl = URL.createObjectURL(file);
+    onSuccess(localUrl, true); // true = isPreviewOnly
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      // Strip the data:image/...;base64, prefix
+      const base64 = e.target.result.split(",")[1];
+      try {
+        const res  = await fetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ base64, imagePath }) });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Upload failed");
+        onSuccess(imagePath, false); // false = committed path
+        showToast("Image uploaded to repo! Redeploy in ~60s.");
+      } catch (err) {
+        showToast("Upload failed: " + err.message, "warn");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleProductFileUpload = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const ext  = file.name.split(".").pop() || "webp";
+    const path = autoPath(form.brand, form.name, form.color).replace(".webp", `.${ext}`);
+    uploadFile(file, path, (result) => setForm(f => ({ ...f, image: result })));
+    e.target.value = "";
+  };
+
+  const handleBannerFileUpload = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const ext  = file.name.split(".").pop() || "webp";
+    uploadFile(file, `hero/banner.${ext}`, (result) => setBanner(b => ({ ...b, image: result })));
+    e.target.value = "";
   };
 
   // ── Banner config ──────────────────────────────────────
@@ -494,12 +535,20 @@ export default function AdminDashboard() {
                 {/* Image */}
                 <div style={{ gridColumn:"1 / -1" }}>
                   <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Image</label>
-                  <div style={{ display:"flex", gap:"8px", marginBottom: form.image?"10px":"14px" }}>
-                    <input type="text" value={form.image} onChange={e=>F("image")(e.target.value)} placeholder="Paste image URL or local path…" style={{ ...iStyle, flex:1 }} />
+                  <div style={{ display:"flex", gap:"8px", marginBottom:"8px" }}>
+                    <input type="text" value={form.image} onChange={e=>F("image")(e.target.value)} placeholder="Paste URL, or upload from device →" style={{ ...iStyle, flex:1 }} />
                     <Btn small color="#007aff" disabled={importing||!form.image?.startsWith("http")} onClick={handleImportImage} style={{ flexShrink:0 }}>
-                      {importing?"Saving…":"📥 Save to Repo"}
+                      {importing?"Saving…":"📥 URL → Repo"}
                     </Btn>
                   </div>
+                  {/* Upload from device */}
+                  <button
+                    onClick={() => productImgRef.current?.click()}
+                    style={{ width:"100%", padding:"10px", background:"#1a1a1a", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"13px", marginBottom: form.image?"10px":"14px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}
+                  >
+                    📁 Upload from Device
+                  </button>
+                  <input ref={productImgRef} type="file" accept="image/*" style={{ display:"none" }} onChange={handleProductFileUpload} />
                   {form.image && (
                     <div style={{ marginBottom:"14px", display:"flex", alignItems:"center", gap:"10px" }}>
                       <img src={resolveImg(form.image)} alt="preview" style={{ width:"52px", height:"52px", objectFit:"contain", background:"#1a1a1a", borderRadius:"8px", border:"1px solid #2a2a2a" }} onError={e=>{e.target.style.display="none";}} />
@@ -681,7 +730,19 @@ export default function AdminDashboard() {
                 {/* Image */}
                 <div style={{ gridColumn:"1 / -1" }}>
                   <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Product Image</label>
-                  <input value={banner.image} onChange={e => Fb("image")(e.target.value)} placeholder="Paste image URL or local path…" style={{ ...iStyle, marginBottom:"10px" }} />
+                  <div style={{ display:"flex", gap:"8px", marginBottom:"8px" }}>
+                    <input value={banner.image} onChange={e => Fb("image")(e.target.value)} placeholder="Paste URL, or upload from device →" style={{ ...iStyle, flex:1 }} />
+                    <Btn small color="#007aff" disabled={bannerImporting||!banner.image?.startsWith("http")} onClick={handleImportBanner} style={{ flexShrink:0 }}>
+                      {bannerImporting?"Saving…":"📥 URL → Repo"}
+                    </Btn>
+                  </div>
+                  <button
+                    onClick={() => bannerImgRef.current?.click()}
+                    style={{ width:"100%", padding:"10px", background:"#1a1a1a", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"13px", marginBottom:"10px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}
+                  >
+                    📁 Upload from Device
+                  </button>
+                  <input ref={bannerImgRef} type="file" accept="image/*" style={{ display:"none" }} onChange={handleBannerFileUpload} />
                 </div>
               </div>
 
