@@ -171,10 +171,11 @@ export default function Home() {
             style={{ background: 'radial-gradient(ellipse 60% 55% at 50% 85%, rgba(0,113,227,0.05) 0%, transparent 70%)' }}
           />
 
-          {/* Text block */}
-          <div className="relative z-10 pt-24 pb-4 px-6 flex flex-col items-center">
+          {/* Text + Image — single continuous block, no gap */}
+          <div className="relative z-10 w-full flex flex-col items-center pt-24 px-6">
+
             {/* Eyebrow badge */}
-            <div className="flex items-center gap-2 mb-5">
+            <div className="flex items-center gap-2 mb-4">
               <span className="w-1.5 h-1.5 rounded-full bg-[#0071e3] animate-pulse" />
               <span className="text-[11px] font-semibold tracking-[0.2em] text-[#0071e3] uppercase">
                 {banner.label || 'Highlight of the Day'}
@@ -183,8 +184,8 @@ export default function Home() {
 
             {/* Product name */}
             <h1
-              className="font-sans font-bold text-apple-black leading-[1.04] tracking-[-0.03em] mb-4"
-              style={{ fontSize: 'clamp(44px, 8vw, 96px)' }}
+              className="font-sans font-bold text-apple-black leading-[1.04] tracking-[-0.03em] mb-3"
+              style={{ fontSize: 'clamp(40px, 8vw, 96px)' }}
             >
               {banner.title}
             </h1>
@@ -192,8 +193,8 @@ export default function Home() {
             {/* Tagline */}
             {banner.subtitle && (
               <p
-                className="text-apple-gray leading-relaxed mb-5 max-w-[520px]"
-                style={{ fontSize: 'clamp(17px, 2.2vw, 21px)' }}
+                className="text-apple-gray leading-relaxed mb-4 max-w-[520px]"
+                style={{ fontSize: 'clamp(16px, 2.2vw, 20px)' }}
               >
                 {banner.subtitle}
               </p>
@@ -201,7 +202,7 @@ export default function Home() {
 
             {/* Price */}
             {banner.price && (
-              <p className="text-[19px] font-semibold text-apple-black mb-7">
+              <p className="text-[18px] font-semibold text-apple-black mb-5">
                 {isNaN(Number(banner.price))
                   ? banner.price
                   : `From ${new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(Number(banner.price))}`
@@ -210,7 +211,7 @@ export default function Home() {
             )}
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 mb-2">
+            <div className="flex flex-col sm:flex-row items-center gap-3 mb-0">
               <a
                 href={banner.ctaLink || `${WA}?text=${encodeURIComponent('Hi Apex! I am interested in ' + banner.title + '. Please share availability and best price.')}`}
                 target="_blank"
@@ -226,25 +227,26 @@ export default function Home() {
                 View all products <span className="text-[18px] leading-none">›</span>
               </Link>
             </div>
-          </div>
 
-          {/* Product image — large, centered */}
-          <div className="relative z-10 w-full max-w-[700px] px-4 flex items-end justify-center">
-            {banner.image ? (
-              <img
-                src={banner.image}
-                alt={banner.title}
-                className="w-full object-contain select-none"
-                style={{
-                  maxHeight: '68vh',
-                  filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.14))',
-                  maskImage: 'linear-gradient(to bottom, black 75%, transparent 100%)',
-                  WebkitMaskImage: 'linear-gradient(to bottom, black 75%, transparent 100%)',
-                }}
-              />
-            ) : (
-              <div className="text-[140px] pb-8" style={{ filter:'drop-shadow(0 16px 32px rgba(0,0,0,0.1))' }}>📱</div>
-            )}
+            {/* Product image — flows directly below CTAs */}
+            <div className="w-full max-w-[640px] -mt-4">
+              {banner.image ? (
+                <img
+                  src={banner.image}
+                  alt={banner.title}
+                  className="w-full object-contain select-none"
+                  style={{
+                    maxHeight: '72vh',
+                    filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.12))',
+                    maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                  }}
+                />
+              ) : (
+                <div className="text-[140px] text-center" style={{ filter:'drop-shadow(0 16px 32px rgba(0,0,0,0.08))' }}>📱</div>
+              )}
+            </div>
+
           </div>
 
           {/* Bottom gradient fade to next section */}
