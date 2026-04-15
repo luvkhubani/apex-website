@@ -35,7 +35,7 @@ function PillOutline({ href, to, children, className = '' }) {
 
 function Section({ bg = 'bg-white', children, className = '' }) {
   return (
-    <section className={`${bg} py-[80px] md:py-[120px] px-6 ${className}`}>
+    <section className={`${bg} py-10 sm:py-[80px] md:py-[120px] px-4 sm:px-6 ${className}`}>
       <div className="max-w-[1200px] mx-auto">{children}</div>
     </section>
   );
@@ -58,7 +58,7 @@ function HeroProductSection({ item, products, index }) {
   const ImageBox = () => (
     <div className="bg-apple-light rounded-[32px] aspect-square overflow-hidden flex items-center justify-center">
       {imgSrc
-        ? <img src={imgSrc} alt={item.name} className="w-full h-full object-contain p-10" fetchpriority={index === 0 ? 'high' : 'auto'} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
+        ? <img src={imgSrc} alt={item.name} className="w-full h-full object-contain p-4 sm:p-8 lg:p-10" fetchpriority={index === 0 ? 'high' : 'auto'} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
         : <span className="text-9xl">{BRAND_EMOJI[item.brand] || '📱'}</span>
       }
     </div>
@@ -102,9 +102,9 @@ function HeroProductSection({ item, products, index }) {
             {priceStr && <p className="text-[28px] font-semibold text-apple-black mb-8">From {priceStr}</p>}
             <PillBlack href={`${WA}?text=${encodeURIComponent(waMsg)}`}>Enquire on WhatsApp</PillBlack>
           </div>
-          <div className="bg-apple-light rounded-[32px] aspect-[16/9] max-w-[860px] mx-auto overflow-hidden flex items-center justify-center">
+          <div className="bg-apple-light rounded-[32px] aspect-square sm:aspect-[4/3] md:aspect-[16/9] max-w-[860px] mx-auto overflow-hidden flex items-center justify-center">
             {imgSrc
-              ? <img src={imgSrc} alt={item.name} className="w-full h-full object-contain p-12" fetchpriority={index === 0 ? 'high' : 'auto'} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
+              ? <img src={imgSrc} alt={item.name} className="w-full h-full object-contain p-4 sm:p-8 md:p-12" fetchpriority={index === 0 ? 'high' : 'auto'} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
               : <span className="text-9xl">{BRAND_EMOJI[item.brand] || '📱'}</span>
             }
           </div>
@@ -116,11 +116,21 @@ function HeroProductSection({ item, products, index }) {
   return (
     <Section bg={bg}>
       <FadeUp>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 lg:gap-20 items-center">
           {layout === 'right' ? (
-            <><TextBlock /><ImageBox /></>
+            <>
+              {/* On mobile always show image on top for visual impact */}
+              <div className="lg:hidden"><ImageBox /></div>
+              <TextBlock />
+              <div className="hidden lg:block"><ImageBox /></div>
+            </>
           ) : (
-            <><ImageBox /><TextBlock /></>
+            <>
+              {/* On mobile always show image on top */}
+              <div className="lg:hidden"><ImageBox /></div>
+              <div className="hidden lg:block"><ImageBox /></div>
+              <TextBlock />
+            </>
           )}
         </div>
       </FadeUp>
