@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import ProductCard  from '../components/ProductCard';
 import ProductModal from '../components/ProductModal';
 import FadeUp       from '../components/FadeUp';
-import products     from '../data/products';
+import { useProducts } from '../hooks/useProducts';
 
 // ── Filter config ────────────────────────────────────────────
 const BRANDS = [
@@ -60,6 +60,7 @@ function Pill({ active, onClick, children }) {
 }
 
 export default function Products() {
+  const products = useProducts();
   const [search,     setSearch]     = useState('');
   const [brand,      setBrand]      = useState('All');
   const [category,   setCategory]   = useState('All');
@@ -115,9 +116,9 @@ export default function Products() {
     // 'newest' keeps insertion order
 
     return g;
-  }, [search, brand, category, priceRange, sort]);
+  }, [products, search, brand, category, priceRange, sort]);
 
-  const totalModels   = groupProducts(products).length;
+  const totalModels   = useMemo(() => groupProducts(products).length, [products]);
   const totalVariants = products.length;
 
   return (

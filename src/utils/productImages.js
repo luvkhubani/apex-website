@@ -12,6 +12,8 @@ const allImages = import.meta.glob(
 
 export function getProductImage(imagePath) {
   if (!imagePath) return null;
+  // Support external URLs directly
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
   const key = `/src/assets/products/${imagePath}`;
   return allImages[key]?.default ?? null;
 }

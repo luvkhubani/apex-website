@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { products as defaultProducts } from "../data/products";
+import defaultProducts from "../data/products";
 
 const STORAGE_KEY = "apex_products_override";
 
