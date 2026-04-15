@@ -58,7 +58,7 @@ function HeroProductSection({ item, products, index }) {
   const ImageBox = () => (
     <div className="bg-apple-light rounded-[32px] aspect-square overflow-hidden flex items-center justify-center">
       {imgSrc
-        ? <img src={imgSrc} alt={item.name} className="w-full h-full object-contain p-10" />
+        ? <img src={imgSrc} alt={item.name} className="w-full h-full object-contain p-10" fetchpriority={index === 0 ? 'high' : 'auto'} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
         : <span className="text-9xl">{BRAND_EMOJI[item.brand] || '📱'}</span>
       }
     </div>
@@ -104,7 +104,7 @@ function HeroProductSection({ item, products, index }) {
           </div>
           <div className="bg-apple-light rounded-[32px] aspect-[16/9] max-w-[860px] mx-auto overflow-hidden flex items-center justify-center">
             {imgSrc
-              ? <img src={imgSrc} alt={item.name} className="w-full h-full object-contain p-12" />
+              ? <img src={imgSrc} alt={item.name} className="w-full h-full object-contain p-12" fetchpriority={index === 0 ? 'high' : 'auto'} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
               : <span className="text-9xl">{BRAND_EMOJI[item.brand] || '📱'}</span>
             }
           </div>
@@ -251,9 +251,12 @@ export default function Home() {
             <div className="w-full max-w-[640px] -mt-4">
               {banner.image ? (
                 <img
-                  src={banner.image}
+                  src={getProductImage(banner.image) || banner.image}
                   alt={banner.title}
                   className="w-full object-contain select-none"
+                  fetchpriority="high"
+                  loading="eager"
+                  decoding="async"
                   style={{
                     maxHeight: '72vh',
                   }}

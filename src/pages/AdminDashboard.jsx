@@ -4,6 +4,7 @@ import defaultProducts from "../data/products";
 import { DS_DEFAULTS, saveDisplaySettings } from "../hooks/useDisplaySettings";
 import { saveHeroConfig } from "../hooks/useHeroConfig";
 import { saveBannerConfig, BANNER_EMPTY } from "../hooks/useBannerImage";
+import { getProductImage } from "../utils/productImages";
 
 const STORAGE_KEY  = "apex_products_override";
 const AUTH_KEY     = "apex_admin_auth";
@@ -129,8 +130,37 @@ export default function AdminDashboard() {
 
   useEffect(() => { if (!localStorage.getItem(AUTH_KEY)) navigate("/admin-apex-secret"); }, []);
 
-  // Auto-save hero config whenever it changes
-  useEffect(() => { saveHeroConfig(heroConfig); }, [heroConfig]);
+  // On first load: push everything from localStorage to GitHub so all browsers stay in sync
+  useEffect(() => {
+    const currentProducts = loadProducts();
+    // Sync products
+    fetch("/api/sync-products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ products: currentProducts }),
+    }).catch(() => {});
+    // Sync hero + banner
+    const currentHero   = loadHero();
+    const currentBanner = (() => {
+      try { const s = localStorage.getItem("apex_banner_config"); if (s) return JSON.parse(s); } catch (_) {}
+      return BANNER_EMPTY;
+    })();
+    fetch("/api/sync-hero", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ heroConfig: currentHero, bannerConfig: currentBanner }),
+    }).catch(() => {});
+  }, []); // runs once on mount
+
+  // Auto-save hero config whenever it changes and sync to GitHub
+  useEffect(() => {
+    saveHeroConfig(heroConfig);
+    fetch("/api/sync-hero", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ heroConfig, bannerConfig: banner }),
+    }).catch(() => {});
+  }, [heroConfig]);
 
   const showToast = (msg, type="ok") => { setToast({ msg, type }); setTimeout(() => setToast(null), 3500); };
   const persist   = (p) => {
@@ -352,7 +382,16 @@ export default function AdminDashboard() {
   };
 
   // ── Banner config ──────────────────────────────────────
-  const handleSaveBanner = () => { saveBannerConfig(banner); showToast("Highlight of the Day saved!"); };
+  const handleSaveBanner = () => {
+    saveBannerConfig(banner);
+    // Sync to GitHub so all browsers see the updated banner
+    fetch("/api/sync-hero", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ heroConfig, bannerConfig: banner }),
+    }).catch(() => {});
+    showToast("Highlight of the Day saved!");
+  };
 
   const handleImportBanner = async () => {
     if (!banner.image?.startsWith("http")) { showToast("Paste a full https:// URL in the image field.", "warn"); return; }
@@ -807,7 +846,7 @@ export default function AdminDashboard() {
                 <div style={{ background:"#0d0d0d", borderRadius:"12px", overflow:"hidden", display:"grid", gridTemplateColumns:"1fr 1fr", marginBottom:"16px", minHeight:"180px" }}>
                   <div style={{ background:"#1a1a1a", display:"flex", alignItems:"center", justifyContent:"center", padding:"20px" }}>
                     {banner.image
-                      ? <img src={banner.image.startsWith("http") ? banner.image : "/src/assets/products/"+banner.image} alt="preview" style={{ maxHeight:"140px", objectFit:"contain" }} onError={e=>{e.target.style.display="none";}} />
+                      ? <img src={getProductImage(banner.image) || banner.image} alt="preview" style={{ maxHeight:"140px", objectFit:"contain" }} onError={e=>{e.target.style.display="none";}} />
                       : <span style={{ fontSize:"48px" }}>📱</span>
                     }
                   </div>
