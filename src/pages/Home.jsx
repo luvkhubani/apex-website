@@ -159,90 +159,126 @@ export default function Home() {
     <div className="bg-white">
 
       {/* ── 1. HERO ─────────────────────────────────────────── */}
-      <section className="bg-white min-h-screen flex flex-col items-center justify-center text-center px-6 py-20">
-        <FadeUp>
-          <p className="text-[14px] font-medium text-apple-gray tracking-[0.1em] uppercase mb-6">
-            Trusted Since 1996
-          </p>
-          <h1 className="font-sans font-bold text-[48px] md:text-[80px] text-apple-black leading-[1.05] tracking-[-0.02em] mb-6">
-            The Best Phones.<br />
-            Indore&apos;s Best Price.
-          </h1>
-          <p className="text-[19px] md:text-[21px] text-apple-gray max-w-[560px] mx-auto mb-10 leading-relaxed">
-            {activeBrands.slice(0, 4).join('. ')}. All in one place.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <PillBlack to="/products">Shop Now</PillBlack>
-            <PillOutline href={WA}>Chat on WhatsApp</PillOutline>
-          </div>
-        </FadeUp>
+      {banner.title || banner.image ? (
+        /* ── CINEMATIC PRODUCT HERO (when banner is set) ── */
+        <section
+          className="relative min-h-screen flex flex-col items-center justify-start text-center overflow-hidden"
+          style={{ background: 'linear-gradient(180deg,#000 0%,#1a1a1a 60%,#111 100%)' }}
+        >
+          {/* Subtle radial glow behind product */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse 70% 50% at 50% 80%, rgba(255,255,255,0.06) 0%, transparent 70%)' }}
+          />
 
-        {/* ── Highlight of the Day card ── */}
-        <FadeUp delay={150} className="w-full max-w-[900px] mt-16">
-          {banner.title || banner.image ? (
-            <div
-              className="w-full rounded-[32px] overflow-hidden grid grid-cols-1 sm:grid-cols-2"
-              style={{ boxShadow:'0 24px 80px rgba(0,0,0,0.10)', minHeight:'340px' }}
-            >
-              {/* Image half */}
-              <div className="bg-apple-light flex items-center justify-center p-10 min-h-[240px]">
-                {banner.image
-                  ? <img src={banner.image} alt={banner.title} className="w-full h-full object-contain max-h-[300px] transition-transform duration-500 hover:scale-105" />
-                  : <span className="text-[100px]">📱</span>
-                }
-              </div>
-
-              {/* Text half */}
-              <div className="bg-white flex flex-col justify-center px-8 py-10 text-left">
-                {/* Badge */}
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold tracking-[0.12em] uppercase text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-3 py-1 w-fit mb-5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                  {banner.label || 'Highlight of the Day'}
-                </span>
-
-                {/* Title */}
-                <h2 className="font-sans font-bold text-[28px] md:text-[36px] text-apple-black leading-[1.1] tracking-[-0.02em] mb-3">
-                  {banner.title}
-                </h2>
-
-                {/* Description */}
-                {banner.subtitle && (
-                  <p className="text-[15px] text-apple-gray leading-relaxed mb-4 max-w-[320px]">
-                    {banner.subtitle}
-                  </p>
-                )}
-
-                {/* Price */}
-                {banner.price && (
-                  <p className="text-[32px] font-bold text-apple-black tracking-tight mb-6">
-                    {isNaN(Number(banner.price))
-                      ? banner.price
-                      : new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(Number(banner.price))
-                    }
-                  </p>
-                )}
-
-                {/* CTA */}
-                <a
-                  href={banner.ctaLink || `${WA}?text=${encodeURIComponent('Hi Apex! I saw your highlight — ' + banner.title + '. Please share more details.')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 text-[14px] font-semibold text-white bg-apple-black px-6 py-3 rounded-pill hover:opacity-80 transition-opacity w-fit"
-                >
-                  {banner.ctaText || 'Enquire on WhatsApp'} →
-                </a>
-              </div>
+          {/* Text block */}
+          <div className="relative z-10 pt-24 pb-6 px-6 flex flex-col items-center">
+            {/* Eyebrow badge */}
+            <div className="flex items-center gap-2 mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              <span className="text-[12px] font-semibold tracking-[0.18em] text-amber-400 uppercase">
+                {banner.label || 'Highlight of the Day'}
+              </span>
             </div>
-          ) : (
-            /* Empty placeholder */
+
+            {/* Product name */}
+            <h1
+              className="font-sans font-bold text-white leading-[1.04] tracking-[-0.03em] mb-4"
+              style={{ fontSize: 'clamp(44px, 8vw, 96px)' }}
+            >
+              {banner.title}
+            </h1>
+
+            {/* Tagline */}
+            {banner.subtitle && (
+              <p
+                className="text-[#86868b] leading-relaxed mb-6 max-w-[520px]"
+                style={{ fontSize: 'clamp(17px, 2.2vw, 22px)' }}
+              >
+                {banner.subtitle}
+              </p>
+            )}
+
+            {/* Price */}
+            {banner.price && (
+              <p className="text-[19px] text-[#f5f5f7] mb-8">
+                {isNaN(Number(banner.price))
+                  ? banner.price
+                  : `From ${new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(Number(banner.price))}`
+                }
+              </p>
+            )}
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-center gap-3 mb-10">
+              <a
+                href={banner.ctaLink || `${WA}?text=${encodeURIComponent('Hi Apex! I am interested in ' + banner.title + '. Please share availability and best price.')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 text-[17px] font-medium text-white bg-[#0071e3] px-7 py-3 rounded-full hover:bg-[#0077ed] active:scale-[0.98] transition-all"
+              >
+                {banner.ctaText || 'Enquire on WhatsApp'}
+              </a>
+              <Link
+                to="/products"
+                className="inline-flex items-center gap-1 text-[17px] font-medium text-[#0071e3] hover:underline underline-offset-2 transition-all"
+              >
+                View all products <span className="text-[20px] leading-none">›</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Product image — large, centered, fades into background */}
+          <div className="relative z-10 w-full max-w-[560px] px-6 flex-1 flex items-end justify-center pb-0">
+            {banner.image ? (
+              <img
+                src={banner.image}
+                alt={banner.title}
+                className="w-full object-contain object-bottom select-none"
+                style={{
+                  maxHeight: '55vh',
+                  filter: 'drop-shadow(0 40px 80px rgba(0,0,0,0.8))',
+                  maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                  WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
+                }}
+              />
+            ) : (
+              <div className="text-[120px] pb-8" style={{ filter:'drop-shadow(0 20px 40px rgba(0,0,0,0.6))' }}>📱</div>
+            )}
+          </div>
+
+          {/* Bottom gradient fade to next section */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
+            style={{ background:'linear-gradient(to bottom, transparent, #fff)' }} />
+        </section>
+      ) : (
+        /* ── DEFAULT STORE HERO (when no banner set) ── */
+        <section className="bg-white min-h-screen flex flex-col items-center justify-center text-center px-6 py-20">
+          <FadeUp>
+            <p className="text-[14px] font-medium text-apple-gray tracking-[0.1em] uppercase mb-6">
+              Trusted Since 1996
+            </p>
+            <h1 className="font-sans font-bold text-[48px] md:text-[80px] text-apple-black leading-[1.05] tracking-[-0.02em] mb-6">
+              The Best Phones.<br />
+              Indore&apos;s Best Price.
+            </h1>
+            <p className="text-[19px] md:text-[21px] text-apple-gray max-w-[560px] mx-auto mb-10 leading-relaxed">
+              {activeBrands.slice(0, 4).join('. ')}. All in one place.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <PillBlack to="/products">Shop Now</PillBlack>
+              <PillOutline href={WA}>Chat on WhatsApp</PillOutline>
+            </div>
+          </FadeUp>
+          <FadeUp delay={150} className="w-full max-w-[700px] mt-16">
             <div className="w-full bg-apple-light rounded-[32px] aspect-[16/9] flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-apple-border">
               <div className="text-7xl mb-4">🌟</div>
               <p className="text-[14px] font-semibold text-apple-black mb-1">Highlight of the Day</p>
-              <p className="text-[13px] text-apple-gray">Set it in Admin → 🌟 Hero → Main Hero Banner</p>
+              <p className="text-[13px] text-apple-gray">Set it in Admin → 🌟 Hero → Highlight of the Day</p>
             </div>
-          )}
-        </FadeUp>
-      </section>
+          </FadeUp>
+        </section>
+      )}
 
       {/* ── 2. BRANDS BAR (dynamic) ─────────────────────────── */}
       <div className="border-t border-b border-apple-border py-4 overflow-x-auto no-scrollbar">
