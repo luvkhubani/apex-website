@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import defaultProducts from "../data/products";
 import { DS_DEFAULTS, saveDisplaySettings } from "../hooks/useDisplaySettings";
 import { saveHeroConfig } from "../hooks/useHeroConfig";
-import { saveBannerImage } from "../hooks/useBannerImage";
+import { saveBannerConfig, BANNER_EMPTY } from "../hooks/useBannerImage";
 
 const STORAGE_KEY  = "apex_products_override";
 const AUTH_KEY     = "apex_admin_auth";
@@ -118,8 +118,12 @@ export default function AdminDashboard() {
   const [ds,            setDs]            = useState(loadDS);   // display settings
   const [heroConfig,    setHeroConfig]    = useState(loadHero); // hero products
   const [heroSearch,    setHeroSearch]    = useState("");
-  const [bannerUrl,     setBannerUrl]     = useState(() => localStorage.getItem("apex_banner_image") || "");
+  const [banner, setBanner] = useState(() => {
+    try { const s = localStorage.getItem("apex_banner_config"); if (s) return { ...BANNER_EMPTY, ...JSON.parse(s) }; } catch (_) {}
+    return { ...BANNER_EMPTY };
+  });
   const [bannerImporting, setBannerImporting] = useState(false);
+  const Fb = k => v => setBanner(b => ({ ...b, [k]: v }));
 
   useEffect(() => { if (!localStorage.getItem(AUTH_KEY)) navigate("/admin-apex-secret"); }, []);
 
@@ -250,23 +254,18 @@ export default function AdminDashboard() {
     showToast("Setting saved!");
   };
 
-  // ── Banner image ──────────────────────────────────────
-  const handleSaveBanner = () => {
-    saveBannerImage(bannerUrl.trim());
-    showToast("Banner image updated!");
-  };
+  // ── Banner config ──────────────────────────────────────
+  const handleSaveBanner = () => { saveBannerConfig(banner); showToast("Highlight of the Day saved!"); };
 
   const handleImportBanner = async () => {
-    if (!bannerUrl?.startsWith("http")) { showToast("Paste a full https:// URL first.", "warn"); return; }
+    if (!banner.image?.startsWith("http")) { showToast("Paste a full https:// URL in the image field.", "warn"); return; }
     setBannerImporting(true);
     try {
-      const res  = await fetch("/api/import-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:bannerUrl, imagePath:"hero/banner.webp" }) });
+      const res  = await fetch("/api/import-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:banner.image, imagePath:"hero/banner.webp" }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Unknown error");
-      const localPath = "/src/assets/products/hero/banner.webp";
-      setBannerUrl(localPath);
-      saveBannerImage(localPath);
-      showToast("Banner saved to repo! Redeploy in ~60s.");
+      setBanner(b => ({ ...b, image:"hero/banner.webp" }));
+      showToast("Banner image saved to repo! Redeploy in ~60s.");
     } catch (err) {
       showToast("Import failed: " + err.message, "warn");
     } finally {
@@ -629,47 +628,90 @@ export default function AdminDashboard() {
               <p style={{ color:"#444", fontSize:"13px", marginTop:"16px", textAlign:"center" }}>No featured products yet. Search and add up to 3 above.</p>
             )}
 
-            {/* ── Main Hero Banner ── */}
-            <div style={{ marginTop:"32px", background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"20px" }}>
-              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🖼️ Main Hero Banner</h3>
-              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 16px" }}>The large image on the home page hero section. Recommended 1400 × 788px.</p>
+            {/* ── Highlight of the Day ── */}
+            <div style={{ marginTop:"32px", background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px" }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"4px" }}>
+                <h3 style={{ margin:0, fontSize:"15px", fontWeight:700 }}>🌟 Highlight of the Day</h3>
+                <div style={{ display:"flex", gap:"8px" }}>
+                  <Btn small color="#007aff" disabled={bannerImporting || !banner.image?.startsWith("http")} onClick={handleImportBanner}>
+                    {bannerImporting ? "Saving…" : "📥 Save Image to Repo"}
+                  </Btn>
+                  <Btn small onClick={handleSaveBanner}>Publish</Btn>
+                </div>
+              </div>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Shown as a featured card on the home page below the main headline.</p>
 
-              <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Image URL or path</label>
-              <div style={{ display:"flex", gap:"8px", marginBottom:"12px" }}>
-                <input
-                  type="text"
-                  value={bannerUrl}
-                  onChange={e => setBannerUrl(e.target.value)}
-                  placeholder="Paste image URL…"
-                  style={{ ...iStyle, flex:1 }}
-                />
-                <Btn small color="#007aff" disabled={bannerImporting || !bannerUrl?.startsWith("http")} onClick={handleImportBanner} style={{ flexShrink:0 }}>
-                  {bannerImporting ? "Saving…" : "📥 Save to Repo"}
-                </Btn>
-                <Btn small onClick={handleSaveBanner} disabled={!bannerUrl} style={{ flexShrink:0 }}>
-                  Set Banner
-                </Btn>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0 16px" }}>
+                {/* Badge label */}
+                <div style={{ gridColumn:"1 / -1" }}>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Badge Label</label>
+                  <input value={banner.label} onChange={e => Fb("label")(e.target.value)} placeholder="e.g. Highlight of the Day / Deal of the Week" style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+
+                {/* Title */}
+                <div style={{ gridColumn:"1 / -1" }}>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Product / Title *</label>
+                  <input value={banner.title} onChange={e => Fb("title")(e.target.value)} placeholder="e.g. iPhone 16 Pro Max" style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+
+                {/* Description */}
+                <div style={{ gridColumn:"1 / -1" }}>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Description</label>
+                  <textarea value={banner.subtitle} onChange={e => Fb("subtitle")(e.target.value)} placeholder="e.g. Powered by A18 Pro chip. 5× Optical zoom. Available now at Apex." rows={2} style={{ ...iStyle, resize:"vertical", lineHeight:"1.6", marginBottom:"14px" }} />
+                </div>
+
+                {/* Price */}
+                <div>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Price</label>
+                  <input value={banner.price} onChange={e => Fb("price")(e.target.value)} placeholder="e.g. 134900 or From ₹99,900" style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+
+                {/* CTA Text */}
+                <div>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Button Text</label>
+                  <input value={banner.ctaText} onChange={e => Fb("ctaText")(e.target.value)} placeholder="e.g. Enquire on WhatsApp" style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+
+                {/* CTA Link */}
+                <div style={{ gridColumn:"1 / -1" }}>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Button Link <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(leave blank to auto-generate WhatsApp link)</span></label>
+                  <input value={banner.ctaLink} onChange={e => Fb("ctaLink")(e.target.value)} placeholder="https://wa.me/91..." style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+
+                {/* Image */}
+                <div style={{ gridColumn:"1 / -1" }}>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Product Image</label>
+                  <input value={banner.image} onChange={e => Fb("image")(e.target.value)} placeholder="Paste image URL or local path…" style={{ ...iStyle, marginBottom:"10px" }} />
+                </div>
               </div>
 
-              {bannerUrl && (
-                <div style={{ borderRadius:"12px", overflow:"hidden", background:"#1a1a1a", aspectRatio:"16/9", maxHeight:"220px", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                  <img
-                    src={bannerUrl}
-                    alt="Banner preview"
-                    style={{ width:"100%", height:"100%", objectFit:"cover" }}
-                    onError={e => { e.target.style.display="none"; }}
-                  />
+              {/* Live preview */}
+              {(banner.title || banner.image) && (
+                <div style={{ background:"#0d0d0d", borderRadius:"12px", overflow:"hidden", display:"grid", gridTemplateColumns:"1fr 1fr", marginBottom:"16px", minHeight:"180px" }}>
+                  <div style={{ background:"#1a1a1a", display:"flex", alignItems:"center", justifyContent:"center", padding:"20px" }}>
+                    {banner.image
+                      ? <img src={banner.image.startsWith("http") ? banner.image : "/src/assets/products/"+banner.image} alt="preview" style={{ maxHeight:"140px", objectFit:"contain" }} onError={e=>{e.target.style.display="none";}} />
+                      : <span style={{ fontSize:"48px" }}>📱</span>
+                    }
+                  </div>
+                  <div style={{ padding:"20px", display:"flex", flexDirection:"column", justifyContent:"center" }}>
+                    <span style={{ background:"#fffbe6", color:"#b45309", border:"1px solid #fde68a", borderRadius:"20px", padding:"2px 10px", fontSize:"10px", fontWeight:700, letterSpacing:"0.08em", textTransform:"uppercase", width:"fit-content", marginBottom:"8px" }}>
+                      {banner.label || "Highlight of the Day"}
+                    </span>
+                    <div style={{ color:"#fff", fontWeight:700, fontSize:"16px", marginBottom:"4px" }}>{banner.title || "Product Name"}</div>
+                    {banner.subtitle && <div style={{ color:"#888", fontSize:"11px", marginBottom:"6px", lineHeight:1.4 }}>{banner.subtitle}</div>}
+                    {banner.price && <div style={{ color:"#fff", fontWeight:700, fontSize:"18px", marginBottom:"8px" }}>{isNaN(Number(banner.price)) ? banner.price : `₹${Number(banner.price).toLocaleString("en-IN")}`}</div>}
+                    <div style={{ background:"#222", color:"#aaa", borderRadius:"20px", padding:"5px 14px", fontSize:"11px", width:"fit-content" }}>{banner.ctaText || "Enquire on WhatsApp"} →</div>
+                  </div>
                 </div>
               )}
 
-              {bannerUrl && (
-                <button
-                  onClick={() => { setBannerUrl(""); saveBannerImage(""); showToast("Banner removed.", "warn"); }}
-                  style={{ marginTop:"10px", background:"none", border:"none", color:"#ff4444", fontSize:"12px", cursor:"pointer", padding:0 }}
-                >
-                  Remove banner
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                <button onClick={() => { setBanner({...BANNER_EMPTY}); saveBannerConfig({...BANNER_EMPTY}); showToast("Highlight cleared.", "warn"); }} style={{ background:"none", border:"none", color:"#ff4444", fontSize:"12px", cursor:"pointer", padding:0 }}>
+                  Clear highlight
                 </button>
-              )}
+                <Btn onClick={handleSaveBanner}>Publish to Home Page</Btn>
+              </div>
             </div>
           </div>
         )}

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import FadeUp from '../components/FadeUp';
 import { useProducts } from '../hooks/useProducts';
 import { useHeroConfig } from '../hooks/useHeroConfig';
-import { useBannerImage } from '../hooks/useBannerImage';
+import { useBannerConfig } from '../hooks/useBannerImage';
 import { getProductImage } from '../utils/productImages';
 
 const WA = 'https://wa.me/919343777686';
@@ -150,7 +150,7 @@ function StaticHeroSections() {
 export default function Home() {
   const products    = useProducts();
   const heroConfig  = useHeroConfig();
-  const bannerImage = useBannerImage();
+  const banner      = useBannerConfig();
 
   // Dynamic brands — only show brands present in our product list, in preferred order
   const activeBrands = BRAND_ORDER.filter(b => products.some(p => p.brand === b));
@@ -177,19 +177,70 @@ export default function Home() {
           </div>
         </FadeUp>
 
-        <FadeUp delay={150} className="w-full max-w-[700px] mt-16">
-          <div className="bg-apple-light rounded-[32px] aspect-[16/9] overflow-hidden flex items-center justify-center">
-            {bannerImage
-              ? <img src={bannerImage} alt="Hero banner" className="w-full h-full object-cover" />
-              : (
-                <div className="flex flex-col items-center justify-center text-center p-8">
-                  <div className="text-9xl mb-4">📱</div>
-                  <p className="text-[13px] font-medium text-apple-gray tracking-wider uppercase">Your Hero Image Here</p>
-                  <p className="text-[12px] text-apple-gray/60 mt-1">Set it in Admin → 🌟 Hero</p>
-                </div>
-              )
-            }
-          </div>
+        {/* ── Highlight of the Day card ── */}
+        <FadeUp delay={150} className="w-full max-w-[900px] mt-16">
+          {banner.title || banner.image ? (
+            <div
+              className="w-full rounded-[32px] overflow-hidden grid grid-cols-1 sm:grid-cols-2"
+              style={{ boxShadow:'0 24px 80px rgba(0,0,0,0.10)', minHeight:'340px' }}
+            >
+              {/* Image half */}
+              <div className="bg-apple-light flex items-center justify-center p-10 min-h-[240px]">
+                {banner.image
+                  ? <img src={banner.image} alt={banner.title} className="w-full h-full object-contain max-h-[300px] transition-transform duration-500 hover:scale-105" />
+                  : <span className="text-[100px]">📱</span>
+                }
+              </div>
+
+              {/* Text half */}
+              <div className="bg-white flex flex-col justify-center px-8 py-10 text-left">
+                {/* Badge */}
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold tracking-[0.12em] uppercase text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-3 py-1 w-fit mb-5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                  {banner.label || 'Highlight of the Day'}
+                </span>
+
+                {/* Title */}
+                <h2 className="font-sans font-bold text-[28px] md:text-[36px] text-apple-black leading-[1.1] tracking-[-0.02em] mb-3">
+                  {banner.title}
+                </h2>
+
+                {/* Description */}
+                {banner.subtitle && (
+                  <p className="text-[15px] text-apple-gray leading-relaxed mb-4 max-w-[320px]">
+                    {banner.subtitle}
+                  </p>
+                )}
+
+                {/* Price */}
+                {banner.price && (
+                  <p className="text-[32px] font-bold text-apple-black tracking-tight mb-6">
+                    {isNaN(Number(banner.price))
+                      ? banner.price
+                      : new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(Number(banner.price))
+                    }
+                  </p>
+                )}
+
+                {/* CTA */}
+                <a
+                  href={banner.ctaLink || `${WA}?text=${encodeURIComponent('Hi Apex! I saw your highlight — ' + banner.title + '. Please share more details.')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 text-[14px] font-semibold text-white bg-apple-black px-6 py-3 rounded-pill hover:opacity-80 transition-opacity w-fit"
+                >
+                  {banner.ctaText || 'Enquire on WhatsApp'} →
+                </a>
+              </div>
+            </div>
+          ) : (
+            /* Empty placeholder */
+            <div className="w-full bg-apple-light rounded-[32px] aspect-[16/9] flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-apple-border">
+              <div className="text-7xl mb-4">🌟</div>
+              <p className="text-[14px] font-semibold text-apple-black mb-1">Highlight of the Day</p>
+              <p className="text-[13px] text-apple-gray">Set it in Admin → 🌟 Hero → Main Hero Banner</p>
+            </div>
+          )}
         </FadeUp>
       </section>
 
