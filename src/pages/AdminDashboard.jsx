@@ -151,30 +151,59 @@ export default function AdminDashboard() {
   }, {});
 
   // ── Product CRUD ──────────────────────────────────────
-  const handleSave = () => {
+  const handleSave = async () => {
     setSaving(true);
-    setTimeout(() => {
+    try {
       const priceNum = Number(form.price) || 0;
       const origNum  = Number(form.originalPrice) || priceNum;
+
+      // Auto-import URL image before saving so it lands in the repo
+      let imagePath = form.image;
+      if (imagePath?.startsWith("http")) {
+        const path = autoPath(form.brand, form.name, form.color);
+        try {
+          const res  = await fetch("/api/import-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:imagePath, imagePath:path }) });
+          const data = await res.json();
+          if (res.ok) { imagePath = path; showToast("Image auto-saved to repo!"); }
+          else showToast("Image import failed: " + data.error, "warn");
+        } catch (err) {
+          showToast("Image import error: " + err.message, "warn");
+        }
+      }
+
+      const finalForm = { ...form, image: imagePath };
       let updated;
+      let savedId;
       if (editId) {
+        savedId = editId;
         updated = products.map(p => {
-          if (p.id === editId) return { ...form, id:editId, price:priceNum, originalPrice:origNum };
-          // Propagate description to all variants of same model
-          if (form.description && p.brand === form.brand && p.name === form.name) return { ...p, description: form.description };
+          if (p.id === editId) return { ...finalForm, id:editId, price:priceNum, originalPrice:origNum };
+          if (finalForm.description && p.brand === finalForm.brand && p.name === finalForm.name) return { ...p, description: finalForm.description };
           return p;
         });
       } else {
-        const newId = Math.max(0, ...products.map(p => p.id || 0)) + 1;
+        savedId = Math.max(0, ...products.map(p => p.id || 0)) + 1;
         updated = [
-          ...products.map(p => form.description && p.brand === form.brand && p.name === form.name ? { ...p, description: form.description } : p),
-          { ...form, id:newId, price:priceNum, originalPrice:origNum },
+          ...products.map(p => finalForm.description && p.brand === finalForm.brand && p.name === finalForm.name ? { ...p, description: finalForm.description } : p),
+          { ...finalForm, id:savedId, price:priceNum, originalPrice:origNum },
         ];
       }
       persist(updated);
+
+      // Persist image path to GitHub so all browsers see it after redeploy
+      if (imagePath && !imagePath.startsWith("http")) {
+        fetch("/api/update-product-images", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ updates: [{ id: savedId, imagePath }] }),
+        }).catch(() => {});
+      }
+
       showToast(editId ? "Variant updated!" : "Product added!");
-      setEditId(null); setForm(EMPTY); setTab("products"); setSaving(false);
-    }, 400);
+      setEditId(null); setForm(EMPTY); setTab("products");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete       = id         => { if (!window.confirm("Delete this variant?")) return; persist(products.filter(p => p.id !== id)); showToast("Deleted.", "warn"); };
@@ -194,7 +223,7 @@ export default function AdminDashboard() {
   const expandAll    = ()  => setExpanded(new Set(Object.keys(grouped)));
   const collapseAll  = ()  => setExpanded(new Set());
 
-  // ── Image import ──────────────────────────────────────
+  // ── Image import (manual button) ─────────────────────
   const handleImportImage = async () => {
     const url = form.image;
     if (!url?.startsWith("http")) { showToast("Paste a full https:// URL first.", "warn"); return; }
@@ -205,6 +234,14 @@ export default function AdminDashboard() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Unknown error");
       setForm(f => ({ ...f, image:path }));
+      // Persist path to GitHub so all browsers see it
+      if (editId) {
+        fetch("/api/update-product-images", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ updates: [{ id: editId, imagePath: path }] }),
+        }).catch(() => {});
+      }
       showToast("Image saved to repo! Redeploy in ~60s.");
     } catch (err) {
       showToast("Import failed: " + err.message, "warn");
@@ -284,7 +321,17 @@ export default function AdminDashboard() {
     const file = e.target.files[0]; if (!file) return;
     const ext  = file.name.split(".").pop() || "webp";
     const path = autoPath(form.brand, form.name, form.color).replace(".webp", `.${ext}`);
-    uploadFile(file, path, (result) => setForm(f => ({ ...f, image: result })));
+    uploadFile(file, path, (result, isPreview) => {
+      setForm(f => ({ ...f, image: result }));
+      // Once committed (not preview), persist path to GitHub for all browsers
+      if (!isPreview && editId) {
+        fetch("/api/update-product-images", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ updates: [{ id: editId, imagePath: result }] }),
+        }).catch(() => {});
+      }
+    });
     e.target.value = "";
   };
 
