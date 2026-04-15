@@ -66,13 +66,13 @@ export default function Footer() {
               <li>Jail Road, Indore</li>
               <li>Madhya Pradesh, India</li>
               <li className="pt-1">
-                <a href="tel:+919343777686" className="hover:text-apple-black transition-colors duration-200">
-                  +91 93437 77686
+                <a href="tel:+918349570000" className="hover:text-apple-black transition-colors duration-200">
+                  +91 83495 70000
                 </a>
               </li>
               <li>
                 <a
-                  href="https://wa.me/919343777686"
+                  href="https://wa.me/918349570000"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-apple-black transition-colors duration-200"

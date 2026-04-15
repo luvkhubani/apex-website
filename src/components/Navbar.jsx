@@ -45,7 +45,7 @@ export default function Navbar() {
 
         {/* Desktop right CTA */}
         <a
-          href="https://wa.me/919343777686"
+          href="https://wa.me/918349570000"
           target="_blank"
           rel="noopener noreferrer"
           className="hidden md:inline-flex items-center text-[14px] font-medium text-white bg-apple-black px-4 py-1.5 rounded-pill hover:scale-[1.02] transition-transform duration-200 shrink-0"
@@ -86,7 +86,7 @@ export default function Navbar() {
             </NavLink>
           ))}
           <a
-            href="https://wa.me/919343777686"
+            href="https://wa.me/918349570000"
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setOpen(false)}

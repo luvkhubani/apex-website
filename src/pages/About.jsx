@@ -104,7 +104,7 @@ export default function About() {
               Drop in at Jail Road or WhatsApp us anytime. No appointment needed.
             </p>
             <a
-              href="https://wa.me/919343777686?text=Hi%20Apex!%20I%20would%20like%20to%20visit%20your%20store."
+              href="https://wa.me/918349570000?text=Hi%20Apex!%20I%20would%20like%20to%20visit%20your%20store."
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center text-[17px] font-medium text-white bg-apple-black px-8 py-3.5 rounded-pill hover:scale-[1.02] transition-transform"

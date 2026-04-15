@@ -82,7 +82,7 @@ export default function ProductModal({ group, onClose }) {
   const specs   = specLabel(activeVariant ?? {});
   const color   = activeVariant?.color ?? '';
   const waText  = `Hi Apex! I am interested in ${name}${specs ? ' ' + specs : ''}${color ? ' ' + color : ''}. Please share availability and best price.`;
-  const waUrl   = `https://wa.me/919343777686?text=${encodeURIComponent(waText)}`;
+  const waUrl   = `https://wa.me/918349570000?text=${encodeURIComponent(waText)}`;
 
   // ── Keyboard + scroll lock ─────────────────────────────
   useEffect(() => {
@@ -231,7 +231,13 @@ export default function ProductModal({ group, onClose }) {
               </div>
             )}
 
-            <p className="text-center text-[11px] text-apple-gray mt-4">
+            {/* COD delivery highlight */}
+            <div className="flex items-center justify-center gap-2 mt-4 py-2.5 px-4 rounded-xl bg-emerald-50 border border-emerald-100">
+              <span className="text-emerald-600 text-[15px]">⚡</span>
+              <p className="text-[12px] font-semibold text-emerald-700">2-Hour COD Delivery Available</p>
+            </div>
+
+            <p className="text-center text-[11px] text-apple-gray mt-3">
               Store open <strong className="text-apple-black">10 AM – 10 PM</strong> daily · Jail Road, Indore
             </p>
           </div>

@@ -12,7 +12,7 @@ export default function Contact() {
   function handleSubmit(e) {
     e.preventDefault();
     const text = encodeURIComponent(`Hi Apex! My name is ${form.name}. ${form.message} (Phone: ${form.phone})`);
-    window.open(`https://wa.me/919343777686?text=${text}`, '_blank', 'noopener,noreferrer');
+    window.open(`https://wa.me/918349570000?text=${text}`, '_blank', 'noopener,noreferrer');
     setSubmitted(true);
   }
 
@@ -61,7 +61,7 @@ export default function Contact() {
                       </svg>
                     ),
                     label: 'Phone',
-                    content: <a href="tel:+919343777686" className="text-apple-black text-[15px] hover:opacity-70 transition-opacity">+91 93437 77686</a>,
+                    content: <a href="tel:+918349570000" className="text-apple-black text-[15px] hover:opacity-70 transition-opacity">+91 83495 70000</a>,
                   },
                   {
                     icon: (
@@ -81,8 +81,8 @@ export default function Contact() {
                     label: 'WhatsApp',
                     content: (
                       <div>
-                        <a href="https://wa.me/919343777686" target="_blank" rel="noopener noreferrer" className="text-[#25D366] text-[15px] font-semibold hover:opacity-80 transition-opacity">
-                          +91 93437 77686
+                        <a href="https://wa.me/918349570000" target="_blank" rel="noopener noreferrer" className="text-[#25D366] text-[15px] font-semibold hover:opacity-80 transition-opacity">
+                          +91 83495 70000
                         </a>
                         <p className="text-apple-gray text-[13px] mt-0.5">Fastest way to reach us</p>
                       </div>

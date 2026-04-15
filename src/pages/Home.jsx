@@ -5,7 +5,7 @@ import { useHeroConfig } from '../hooks/useHeroConfig';
 import { useBannerConfig } from '../hooks/useBannerImage';
 import { getProductImage } from '../utils/productImages';
 
-const WA = 'https://wa.me/919343777686';
+const WA = 'https://wa.me/918349570000';
 
 const BRAND_EMOJI = {
   Apple:'🍎',Samsung:'📱',OnePlus:'📲',Nothing:'⚪',Motorola:'📡',
@@ -210,7 +210,7 @@ export default function Home() {
             )}
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 mb-6">
+            <div className="flex flex-col sm:flex-row items-center gap-3 mb-2">
               <a
                 href={banner.ctaLink || `${WA}?text=${encodeURIComponent('Hi Apex! I am interested in ' + banner.title + '. Please share availability and best price.')}`}
                 target="_blank"
