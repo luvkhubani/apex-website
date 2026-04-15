@@ -174,6 +174,17 @@ export default function Home() {
           {/* Text + Image — single continuous block, no gap */}
           <div className="relative z-10 w-full flex flex-col items-center pt-24 px-6">
 
+            {/* Store headline */}
+            <p className="text-[13px] font-medium text-apple-gray tracking-[0.1em] uppercase mb-4">
+              Trusted Since 1996 · Jail Road, Indore
+            </p>
+            <h2 className="font-sans font-bold text-[32px] md:text-[48px] text-apple-black leading-[1.07] tracking-[-0.02em] mb-8">
+              The Best Phones.<br />Indore&apos;s Best Price.
+            </h2>
+
+            {/* Divider */}
+            <div className="w-12 h-px bg-apple-border mb-8" />
+
             {/* Eyebrow badge */}
             <div className="flex items-center gap-2 mb-4">
               <span className="w-1.5 h-1.5 rounded-full bg-[#0071e3] animate-pulse" />
