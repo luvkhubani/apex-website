@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import FadeUp from '../components/FadeUp';
 import { useProducts } from '../hooks/useProducts';
 import { useHeroConfig } from '../hooks/useHeroConfig';
+import { useBannerImage } from '../hooks/useBannerImage';
 import { getProductImage } from '../utils/productImages';
 
 const WA = 'https://wa.me/919343777686';
@@ -147,8 +148,9 @@ function StaticHeroSections() {
 
 // ─────────────────────────────────────────────────────────
 export default function Home() {
-  const products   = useProducts();
-  const heroConfig = useHeroConfig();
+  const products    = useProducts();
+  const heroConfig  = useHeroConfig();
+  const bannerImage = useBannerImage();
 
   // Dynamic brands — only show brands present in our product list, in preferred order
   const activeBrands = BRAND_ORDER.filter(b => products.some(p => p.brand === b));
@@ -176,10 +178,17 @@ export default function Home() {
         </FadeUp>
 
         <FadeUp delay={150} className="w-full max-w-[700px] mt-16">
-          <div className="bg-apple-light rounded-[32px] aspect-[16/9] flex flex-col items-center justify-center">
-            <div className="text-9xl mb-4">📱</div>
-            <p className="text-[13px] font-medium text-apple-gray tracking-wider uppercase">Your Hero Image Here</p>
-            <p className="text-[12px] text-apple-gray/60 mt-1">Recommended 1400 × 788px</p>
+          <div className="bg-apple-light rounded-[32px] aspect-[16/9] overflow-hidden flex items-center justify-center">
+            {bannerImage
+              ? <img src={bannerImage} alt="Hero banner" className="w-full h-full object-cover" />
+              : (
+                <div className="flex flex-col items-center justify-center text-center p-8">
+                  <div className="text-9xl mb-4">📱</div>
+                  <p className="text-[13px] font-medium text-apple-gray tracking-wider uppercase">Your Hero Image Here</p>
+                  <p className="text-[12px] text-apple-gray/60 mt-1">Set it in Admin → 🌟 Hero</p>
+                </div>
+              )
+            }
           </div>
         </FadeUp>
       </section>

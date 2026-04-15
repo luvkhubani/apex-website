@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import defaultProducts from "../data/products";
 import { DS_DEFAULTS, saveDisplaySettings } from "../hooks/useDisplaySettings";
 import { saveHeroConfig } from "../hooks/useHeroConfig";
+import { saveBannerImage } from "../hooks/useBannerImage";
 
 const STORAGE_KEY  = "apex_products_override";
 const AUTH_KEY     = "apex_admin_auth";
@@ -117,6 +118,8 @@ export default function AdminDashboard() {
   const [ds,            setDs]            = useState(loadDS);   // display settings
   const [heroConfig,    setHeroConfig]    = useState(loadHero); // hero products
   const [heroSearch,    setHeroSearch]    = useState("");
+  const [bannerUrl,     setBannerUrl]     = useState(() => localStorage.getItem("apex_banner_image") || "");
+  const [bannerImporting, setBannerImporting] = useState(false);
 
   useEffect(() => { if (!localStorage.getItem(AUTH_KEY)) navigate("/admin-apex-secret"); }, []);
 
@@ -245,6 +248,30 @@ export default function AdminDashboard() {
     setDs(next);
     saveDisplaySettings(next);
     showToast("Setting saved!");
+  };
+
+  // ── Banner image ──────────────────────────────────────
+  const handleSaveBanner = () => {
+    saveBannerImage(bannerUrl.trim());
+    showToast("Banner image updated!");
+  };
+
+  const handleImportBanner = async () => {
+    if (!bannerUrl?.startsWith("http")) { showToast("Paste a full https:// URL first.", "warn"); return; }
+    setBannerImporting(true);
+    try {
+      const res  = await fetch("/api/import-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:bannerUrl, imagePath:"hero/banner.webp" }) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Unknown error");
+      const localPath = "/src/assets/products/hero/banner.webp";
+      setBannerUrl(localPath);
+      saveBannerImage(localPath);
+      showToast("Banner saved to repo! Redeploy in ~60s.");
+    } catch (err) {
+      showToast("Import failed: " + err.message, "warn");
+    } finally {
+      setBannerImporting(false);
+    }
   };
 
   // ── Hero config ───────────────────────────────────────
@@ -601,6 +628,49 @@ export default function AdminDashboard() {
             {heroConfig.length === 0 && (
               <p style={{ color:"#444", fontSize:"13px", marginTop:"16px", textAlign:"center" }}>No featured products yet. Search and add up to 3 above.</p>
             )}
+
+            {/* ── Main Hero Banner ── */}
+            <div style={{ marginTop:"32px", background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"20px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🖼️ Main Hero Banner</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 16px" }}>The large image on the home page hero section. Recommended 1400 × 788px.</p>
+
+              <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Image URL or path</label>
+              <div style={{ display:"flex", gap:"8px", marginBottom:"12px" }}>
+                <input
+                  type="text"
+                  value={bannerUrl}
+                  onChange={e => setBannerUrl(e.target.value)}
+                  placeholder="Paste image URL…"
+                  style={{ ...iStyle, flex:1 }}
+                />
+                <Btn small color="#007aff" disabled={bannerImporting || !bannerUrl?.startsWith("http")} onClick={handleImportBanner} style={{ flexShrink:0 }}>
+                  {bannerImporting ? "Saving…" : "📥 Save to Repo"}
+                </Btn>
+                <Btn small onClick={handleSaveBanner} disabled={!bannerUrl} style={{ flexShrink:0 }}>
+                  Set Banner
+                </Btn>
+              </div>
+
+              {bannerUrl && (
+                <div style={{ borderRadius:"12px", overflow:"hidden", background:"#1a1a1a", aspectRatio:"16/9", maxHeight:"220px", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <img
+                    src={bannerUrl}
+                    alt="Banner preview"
+                    style={{ width:"100%", height:"100%", objectFit:"cover" }}
+                    onError={e => { e.target.style.display="none"; }}
+                  />
+                </div>
+              )}
+
+              {bannerUrl && (
+                <button
+                  onClick={() => { setBannerUrl(""); saveBannerImage(""); showToast("Banner removed.", "warn"); }}
+                  style={{ marginTop:"10px", background:"none", border:"none", color:"#ff4444", fontSize:"12px", cursor:"pointer", padding:0 }}
+                >
+                  Remove banner
+                </button>
+              )}
+            </div>
           </div>
         )}
 
