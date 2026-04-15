@@ -36,6 +36,7 @@ function groupProducts(list) {
         brand:    p.brand,
         category: p.category,
         badge:    p.badge,
+        description: p.description || '',
         variants: [],
       });
     }

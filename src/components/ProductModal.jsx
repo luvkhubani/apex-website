@@ -140,7 +140,12 @@ export default function ProductModal({ group, onClose }) {
           <div className="flex-1 p-7 sm:p-8 overflow-y-auto flex flex-col">
 
             <p className="text-[11px] font-semibold tracking-[0.18em] text-apple-gray uppercase mb-1">{brand}</p>
-            <h2 className="text-[26px] sm:text-[30px] font-bold text-apple-black leading-tight mb-5">{name}</h2>
+            <h2 className="text-[26px] sm:text-[30px] font-bold text-apple-black leading-tight mb-3">{name}</h2>
+
+            {/* Description */}
+            {(() => { const desc = variants.find(v => v.description)?.description; return desc ? (
+              <p className="text-[14px] text-apple-gray leading-relaxed mb-4">{desc}</p>
+            ) : null; })()}
 
             {/* Storage / RAM selector */}
             {storageOptions.length > 1 && (

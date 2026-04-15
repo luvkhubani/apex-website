@@ -1,4 +1,5 @@
 import { getProductImage } from '../utils/productImages';
+import { useDisplaySettings } from '../hooks/useDisplaySettings';
 
 const COLOR_HEX = {
   'Black':'#1C1C1E','White':'#F5F5F0','Blue':'#4A90D9','Pink':'#FFB6C1',
@@ -32,68 +33,54 @@ const BADGE_STYLE = {
 function formatINR(price) {
   if (!price || price === 0) return 'Call for Price';
   return new Intl.NumberFormat('en-IN', {
-    style:'currency', currency:'INR', maximumFractionDigits:0,
+    style: 'currency', currency: 'INR', maximumFractionDigits: 0,
   }).format(price);
 }
 
-/**
- * group = { name, brand, category, badge, variants[] }
- * onClick = () => open modal
- */
 export default function ProductCard({ group, onClick }) {
   const { name, brand, badge, variants } = group;
+  const { showColours, showStorage, showRAM, showVariantCount } = useDisplaySettings();
 
-  // Representative image: first variant that has one
   const firstWithImg = variants.find(v => v.image);
-  const imgSrc = getProductImage(firstWithImg?.image);
+  const imgSrc       = getProductImage(firstWithImg?.image);
 
-  // Lowest price across variants
-  const prices  = variants.map(v => v.price).filter(Boolean);
+  const prices   = variants.map(v => v.price).filter(Boolean);
   const minPrice = prices.length ? Math.min(...prices) : 0;
   const showFrom = prices.length > 1 || minPrice === 0;
 
-  // Unique colours
-  const colors = [...new Set(variants.map(v => v.color).filter(Boolean))];
+  const colors   = [...new Set(variants.map(v => v.color).filter(Boolean))];
+  const storages = [...new Set(variants.map(v => v.storage).filter(Boolean))];
+  const rams     = [...new Set(variants.map(v => v.ram).filter(Boolean))];
 
-  // Badge from first variant that has one
   const activeBadge = badge || variants.find(v => v.badge)?.badge || '';
   const badgeStyle  = BADGE_STYLE[activeBadge] || 'bg-apple-black text-white';
-
-  // Any variant in stock?
-  const anyInStock = variants.some(v => v.inStock);
+  const anyInStock  = variants.some(v => v.inStock);
 
   return (
     <div
       onClick={onClick}
       className="group bg-white rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col cursor-pointer"
-      style={{ boxShadow:'0 4px 20px rgba(0,0,0,0.08)' }}
+      style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
       onMouseEnter={e => e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.16)'}
       onMouseLeave={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'}
     >
       {/* Image area */}
       <div className="relative bg-apple-light aspect-square flex items-center justify-center overflow-hidden">
-
-        {/* Badge */}
         {activeBadge && (
           <span className={`absolute top-3 left-3 z-10 text-[10px] font-bold tracking-wide px-2 py-0.5 rounded-full ${badgeStyle}`}>
             {activeBadge}
           </span>
         )}
-
-        {/* Out of stock */}
         {!anyInStock && (
           <span className="absolute top-3 right-3 z-10 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-300 text-gray-700">
             Out of Stock
           </span>
         )}
-
-        {/* Variant count badge */}
-        {variants.length > 1 && (
+        {showVariantCount && variants.length > 1 && (
           <span className="absolute bottom-3 right-3 z-10 text-[10px] font-semibold text-apple-gray bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded-full">
             {variants.length} variants
           </span>
         )}
-
         {imgSrc ? (
           <img
             src={imgSrc}
@@ -115,8 +102,33 @@ export default function ProductCard({ group, onClick }) {
         <p className="text-[10px] font-semibold tracking-[0.12em] text-apple-gray uppercase mb-0.5">{brand}</p>
         <h3 className="text-[15px] font-semibold text-apple-black leading-snug mb-2">{name}</h3>
 
+        {/* Storage chips */}
+        {showStorage && storages.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-2">
+            {storages.slice(0, 5).map(s => (
+              <span key={s} className="text-[10px] font-medium text-apple-gray bg-apple-light px-2 py-0.5 rounded-full border border-apple-border">
+                {s}
+              </span>
+            ))}
+            {storages.length > 5 && (
+              <span className="text-[10px] text-apple-gray self-center">+{storages.length - 5}</span>
+            )}
+          </div>
+        )}
+
+        {/* RAM chips */}
+        {showRAM && rams.length > 0 && storages.length === 0 && (
+          <div className="flex flex-wrap gap-1 mb-2">
+            {rams.slice(0, 4).map(r => (
+              <span key={r} className="text-[10px] font-medium text-apple-gray bg-apple-light px-2 py-0.5 rounded-full border border-apple-border">
+                {r}
+              </span>
+            ))}
+          </div>
+        )}
+
         {/* Colour swatches */}
-        {colors.length > 0 && (
+        {showColours && colors.length > 0 && (
           <div className="flex items-center gap-1.5 mb-3">
             {colors.slice(0, 8).map(c => (
               <span
