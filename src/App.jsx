@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -9,7 +10,35 @@ import Contact from './pages/Contact';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 
+// Silently push admin localStorage data to GitHub whenever the admin visits
+// any page — so other browsers stay in sync without admin having to open the panel.
+function useAdminAutoSync() {
+  useEffect(() => {
+    if (!localStorage.getItem('apex_admin_auth')) return;
+    try {
+      const heroConfig   = JSON.parse(localStorage.getItem('apex_hero_config')   || '[]');
+      const bannerConfig = JSON.parse(localStorage.getItem('apex_banner_config') || 'null') || {};
+      const products     = JSON.parse(localStorage.getItem('apex_products_override') || 'null');
+
+      fetch('/api/sync-hero', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ heroConfig, bannerConfig }),
+      }).catch(() => {});
+
+      if (Array.isArray(products) && products.length > 0) {
+        fetch('/api/sync-products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ products }),
+        }).catch(() => {});
+      }
+    } catch (_) {}
+  }, []);
+}
+
 export default function App() {
+  useAdminAutoSync();
   return (
     <BrowserRouter>
       <Routes>

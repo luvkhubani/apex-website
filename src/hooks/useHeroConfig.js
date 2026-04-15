@@ -11,22 +11,20 @@ export function useHeroConfig() {
   const [c, setC] = useState(load);
 
   useEffect(() => {
-    // Fetch live data from API (reads GitHub directly — no redeploy needed)
     fetch('/api/hero-config')
       .then(r => r.ok ? r.json() : null)
       .then(remote => {
-        if (!remote || !Array.isArray(remote.heroConfig)) return;
-        if (!remote._savedAt) return; // default empty file, ignore
+        // Only apply if admin has explicitly saved (has _savedAt timestamp)
+        if (!remote || !Array.isArray(remote.heroConfig) || !remote._savedAt) return;
         setC(remote.heroConfig);
         localStorage.setItem(KEY, JSON.stringify(remote.heroConfig));
       })
       .catch(() => {
-        // API unavailable (local dev) — fall back to static file
-        return fetch('/hero-config.json?v=' + Date.now())
+        // Fallback for local dev (API not running)
+        fetch('/hero-config.json?v=' + Date.now())
           .then(r => r.ok ? r.json() : null)
           .then(remote => {
-            if (!remote || !Array.isArray(remote.heroConfig)) return;
-            if (!remote._savedAt) return;
+            if (!remote || !Array.isArray(remote.heroConfig) || !remote._savedAt) return;
             setC(remote.heroConfig);
             localStorage.setItem(KEY, JSON.stringify(remote.heroConfig));
           })
