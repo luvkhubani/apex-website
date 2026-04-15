@@ -237,7 +237,7 @@ export default function Home() {
                   className="w-full object-contain select-none"
                   style={{
                     maxHeight: '72vh',
-                    filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.12))',
+                    filter: 'none',
                     maskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
                     WebkitMaskImage: 'linear-gradient(to bottom, black 70%, transparent 100%)',
                   }}
