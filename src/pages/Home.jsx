@@ -75,10 +75,13 @@ function HeroProductSection({ item, products, index }) {
           {item.description}
         </p>
       )}
-      {priceStr && <p className="text-[28px] font-semibold text-apple-black mb-8">From {priceStr}</p>}
+      {priceStr && <p className="text-[28px] font-semibold text-apple-black mb-6">From {priceStr}</p>}
       <PillBlack href={`${WA}?text=${encodeURIComponent(waMsg)}`}>
         Enquire on WhatsApp
       </PillBlack>
+      <p className="text-[12px] font-semibold text-emerald-600 mt-4">
+        ⚡ 2-Hour COD Delivery · All Indore
+      </p>
     </div>
   );
 
@@ -222,7 +225,7 @@ export default function Home() {
             )}
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 mb-0">
+            <div className="flex flex-col sm:flex-row items-center gap-3 mb-3">
               <a
                 href={banner.ctaLink || `${WA}?text=${encodeURIComponent('Hi Apex! I am interested in ' + banner.title + '. Please share availability and best price.')}`}
                 target="_blank"
@@ -238,6 +241,11 @@ export default function Home() {
                 View all products <span className="text-[18px] leading-none">›</span>
               </Link>
             </div>
+
+            {/* Delivery badge */}
+            <p className="text-[12px] font-semibold text-emerald-600 mb-0">
+              ⚡ 2-Hour COD Delivery · All Indore
+            </p>
 
             {/* Product image — flows directly below CTAs */}
             <div className="w-full max-w-[640px] -mt-4">
@@ -279,6 +287,9 @@ export default function Home() {
               <PillBlack to="/products">Shop Now</PillBlack>
               <PillOutline href={WA}>Chat on WhatsApp</PillOutline>
             </div>
+            <p className="text-[12px] font-semibold text-emerald-600 mt-6">
+              ⚡ 2-Hour COD Delivery · All Indore
+            </p>
           </FadeUp>
           <FadeUp delay={150} className="w-full max-w-[700px] mt-16">
             <div className="w-full bg-apple-light rounded-[32px] aspect-[16/9] flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-apple-border">
