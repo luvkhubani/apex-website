@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { useStoreConfig, waUrl } from '../hooks/useStoreConfig';
+import { useStoreConfig, waUrl, getStoreImage } from '../hooks/useStoreConfig';
 
 const navLinks = [
   { to: '/',         label: 'Home',     end: true },
@@ -12,9 +12,7 @@ const navLinks = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const storeCfg = useStoreConfig();
-  const logoSrc  = storeCfg.logoImage
-    ? (storeCfg.logoImage.startsWith('http') ? storeCfg.logoImage : '/src/assets/products/' + storeCfg.logoImage)
-    : null;
+  const logoSrc  = getStoreImage(storeCfg.logoImage);
 
   return (
     <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-xl border-b border-apple-border">

@@ -4,7 +4,7 @@ import { useProducts } from '../hooks/useProducts';
 import { useHeroConfig } from '../hooks/useHeroConfig';
 import { useBannerConfig } from '../hooks/useBannerImage';
 import { getProductImage } from '../utils/productImages';
-import { useStoreConfig, waUrl } from '../hooks/useStoreConfig';
+import { useStoreConfig, waUrl, getStoreImage } from '../hooks/useStoreConfig';
 
 const BRAND_EMOJI = {
   Apple:'🍎',Samsung:'📱',OnePlus:'📲',Nothing:'⚪',Motorola:'📡',
@@ -361,8 +361,11 @@ export default function Home() {
                 onMouseEnter={e => e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.12)'}
                 onMouseLeave={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)'}
               >
-                <div className="bg-apple-light h-52 flex items-center justify-center">
-                  <span className="text-7xl transition-transform duration-300 group-hover:scale-110">{cat.emoji}</span>
+                <div className="bg-apple-light h-52 flex items-center justify-center overflow-hidden relative">
+                  {cat.image
+                    ? <img src={getStoreImage(cat.image)} alt={cat.label} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                    : null}
+                  <span className={`text-7xl transition-transform duration-300 group-hover:scale-110 ${cat.image ? 'absolute hidden' : ''}`}>{cat.emoji}</span>
                 </div>
                 <div className="px-7 py-5 flex items-center justify-between">
                   <div>
@@ -435,7 +438,7 @@ export default function Home() {
             {storeCfg.storePhoto ? (
               <div className="rounded-[24px] overflow-hidden aspect-[4/3]">
                 <img
-                  src={storeCfg.storePhoto.startsWith('http') ? storeCfg.storePhoto : '/src/assets/products/' + storeCfg.storePhoto}
+                  src={getStoreImage(storeCfg.storePhoto)}
                   alt="Apex The Mobile Shoppe"
                   className="w-full h-full object-cover"
                   onError={e => { e.target.style.display = 'none'; }}

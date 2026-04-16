@@ -5,7 +5,7 @@ import { DS_DEFAULTS, saveDisplaySettings } from "../hooks/useDisplaySettings";
 import { saveHeroConfig } from "../hooks/useHeroConfig";
 import { saveBannerConfig, BANNER_EMPTY } from "../hooks/useBannerImage";
 import { getProductImage } from "../utils/productImages";
-import { STORE_DEFAULTS, loadStoreConfig, saveStoreConfig } from "../hooks/useStoreConfig";
+import { STORE_DEFAULTS, loadStoreConfig, saveStoreConfig, getStoreImage } from "../hooks/useStoreConfig";
 
 const STORAGE_KEY  = "apex_products_override";
 const AUTH_KEY     = "apex_admin_auth";
@@ -133,6 +133,7 @@ export default function AdminDashboard() {
   const [storeCfg, setStoreCfg] = useState(loadStoreConfig);
   const logoImgRef      = useRef(null);
   const storePhotoRef   = useRef(null);
+  const catImgRefs      = useRef([null, null, null, null]);
   const Fs = k => v => setStoreCfg(c => ({ ...c, [k]: v }));
   const saveStore = (next) => { saveStoreConfig(next); showToast("Saved!"); };
 
@@ -389,24 +390,69 @@ export default function AdminDashboard() {
     e.target.value = "";
   };
 
+  /**
+   * Upload a store image (logo, store photo, category image) to public/store/
+   * so it's served at /store/<filename> — a stable public URL that requires
+   * no Vite rebuild. The blob preview URL is stored immediately so the image
+   * shows right away in this tab; after Vercel redeploys (~60 s) the /store/
+   * URL works in every browser.
+   */
+  const uploadStoreImage = async (file, filename, onCommitted) => {
+    if (!file) return;
+    // 1. Immediate blob preview in this tab
+    const blobUrl = URL.createObjectURL(file);
+    onCommitted(blobUrl);
+
+    // 2. Read file as base64 and commit to public/store/ via the new API
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const base64 = ev.target.result.split(",")[1];
+      try {
+        const res  = await fetch("/api/upload-store-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ base64, filename }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Upload failed");
+        // 3. Replace blob URL with the stable /store/ URL
+        onCommitted(data.url);
+        showToast("Image saved! Will show everywhere after ~60s redeploy.");
+      } catch (err) {
+        showToast("Upload failed: " + err.message, "warn");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleLogoFileUpload = e => {
     const file = e.target.files[0]; if (!file) return;
-    const ext  = file.name.split(".").pop() || "png";
-    uploadFile(file, `store/logo.${ext}`, (result) => {
-      const next = { ...storeCfg, logoImage: result };
-      setStoreCfg(next);
-      saveStoreConfig(next);
+    const ext = file.name.split(".").pop() || "png";
+    uploadStoreImage(file, `logo.${ext}`, (url) => {
+      setStoreCfg(c => { const n = { ...c, logoImage: url }; saveStoreConfig(n); return n; });
     });
     e.target.value = "";
   };
 
   const handleStorePhotoUpload = e => {
     const file = e.target.files[0]; if (!file) return;
-    const ext  = file.name.split(".").pop() || "jpg";
-    uploadFile(file, `store/storefront.${ext}`, (result) => {
-      const next = { ...storeCfg, storePhoto: result };
-      setStoreCfg(next);
-      saveStoreConfig(next);
+    const ext = file.name.split(".").pop() || "jpg";
+    uploadStoreImage(file, `storefront.${ext}`, (url) => {
+      setStoreCfg(c => { const n = { ...c, storePhoto: url }; saveStoreConfig(n); return n; });
+    });
+    e.target.value = "";
+  };
+
+  const handleCategoryImageUpload = (catIndex, e) => {
+    const file = e.target.files[0]; if (!file) return;
+    const ext = file.name.split(".").pop() || "jpg";
+    uploadStoreImage(file, `cat-${catIndex}.${ext}`, (url) => {
+      setStoreCfg(c => {
+        const cats = c.categories.map((cat, i) => i === catIndex ? { ...cat, image: url } : cat);
+        const n = { ...c, categories: cats };
+        saveStoreConfig(n);
+        return n;
+      });
     });
     e.target.value = "";
   };
@@ -916,7 +962,7 @@ export default function AdminDashboard() {
               {storeCfg.logoImage && (
                 <div style={{ marginBottom:"14px", display:"flex", alignItems:"center", gap:"12px" }}>
                   <div style={{ width:"120px", height:"48px", background:"#1a1a1a", borderRadius:"10px", border:"1px solid #2a2a2a", display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", padding:"6px" }}>
-                    <img src={storeCfg.logoImage.startsWith("http") ? storeCfg.logoImage : "/src/assets/products/" + storeCfg.logoImage} alt="Logo" style={{ maxWidth:"100%", maxHeight:"100%", objectFit:"contain" }} onError={e=>{e.target.style.display="none";}} />
+                    <img src={getStoreImage(storeCfg.logoImage)} alt="Logo" style={{ maxWidth:"100%", maxHeight:"100%", objectFit:"contain" }} onError={e=>{e.target.style.display="none";}} />
                   </div>
                   <span style={{ color:"#555", fontSize:"11px" }}>Current logo</span>
                 </div>
@@ -1000,7 +1046,7 @@ export default function AdminDashboard() {
 
               {storeCfg.storePhoto && (
                 <div style={{ marginBottom:"14px", borderRadius:"12px", overflow:"hidden", border:"1px solid #2a2a2a", background:"#1a1a1a", maxHeight:"180px", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                  <img src={storeCfg.storePhoto.startsWith("http") ? storeCfg.storePhoto : "/src/assets/products/" + storeCfg.storePhoto} alt="Store" style={{ width:"100%", maxHeight:"180px", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
+                  <img src={getStoreImage(storeCfg.storePhoto)} alt="Store" style={{ width:"100%", maxHeight:"180px", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
                 </div>
               )}
 
@@ -1112,7 +1158,26 @@ export default function AdminDashboard() {
                       <input value={cat.sub} onChange={e => {
                         const cats = storeCfg.categories.map((c,j) => j===i?{...c,sub:e.target.value}:c);
                         setStoreCfg(s => ({...s, categories:cats}));
-                      }} placeholder="e.g. Latest Apple lineup" style={{ ...iStyle }} />
+                      }} placeholder="e.g. Latest Apple lineup" style={{ ...iStyle, marginBottom:"10px" }} />
+                    </div>
+                    <div style={{ gridColumn:"1 / -1" }}>
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Card Image</label>
+                      {cat.image ? (
+                        <div style={{ marginBottom:"8px", display:"flex", alignItems:"center", gap:"12px" }}>
+                          <div style={{ width:"80px", height:"56px", background:"#1a1a1a", borderRadius:"8px", border:"1px solid #2a2a2a", overflow:"hidden", flexShrink:0 }}>
+                            <img src={getStoreImage(cat.image)} alt={cat.label} style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
+                          </div>
+                          <button onClick={() => {
+                            const cats = storeCfg.categories.map((c,j) => j===i?{...c,image:""}:c);
+                            const n = {...storeCfg, categories:cats};
+                            setStoreCfg(n); saveStoreConfig(n);
+                          }} style={{ color:"#ff4444", background:"none", border:"none", fontSize:"12px", cursor:"pointer", padding:0 }}>Remove</button>
+                        </div>
+                      ) : null}
+                      <button onClick={() => catImgRefs.current[i]?.click()} style={{ width:"100%", padding:"8px", background:"#1a1a1a", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"12px", display:"flex", alignItems:"center", justifyContent:"center", gap:"6px" }}>
+                        📁 {cat.image ? "Change Image" : "Upload Image"}
+                      </button>
+                      <input ref={el => catImgRefs.current[i] = el} type="file" accept="image/*" style={{ display:"none" }} onChange={e => { handleCategoryImageUpload(i, e); }} />
                     </div>
                   </div>
                 </div>

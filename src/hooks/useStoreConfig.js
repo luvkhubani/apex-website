@@ -38,10 +38,10 @@ export const STORE_DEFAULTS = {
 
   // ── Shop by Category cards ───────────────────────────
   categories: [
-    { label: 'iPhones & iPads',    emoji: '🍎', filter: 'Mobiles',     sub: 'Latest Apple lineup' },
-    { label: 'Samsung & Android',  emoji: '📱', filter: 'Mobiles',     sub: 'Galaxy S series & more' },
-    { label: 'MacBooks & Laptops', emoji: '💻', filter: 'Laptops',     sub: 'Power your work' },
-    { label: 'Accessories',        emoji: '🎧', filter: 'Accessories', sub: 'Complete your setup' },
+    { label: 'iPhones & iPads',    emoji: '🍎', filter: 'Mobiles',     sub: 'Latest Apple lineup',    image: '' },
+    { label: 'Samsung & Android',  emoji: '📱', filter: 'Mobiles',     sub: 'Galaxy S series & more', image: '' },
+    { label: 'MacBooks & Laptops', emoji: '💻', filter: 'Laptops',     sub: 'Power your work',        image: '' },
+    { label: 'Accessories',        emoji: '🎧', filter: 'Accessories', sub: 'Complete your setup',    image: '' },
   ],
 
   // ── Google Maps ───────────────────────────────────────
@@ -114,4 +114,25 @@ export function useStoreConfig() {
 export function waUrl(number, text = '') {
   const base = `https://wa.me/${number || STORE_DEFAULTS.whatsappNumber}`;
   return text ? `${base}?text=${encodeURIComponent(text)}` : base;
+}
+
+/**
+ * Resolve a store image to a displayable src string.
+ *
+ * Paths returned by /api/upload-store-image start with "/" and are served
+ * directly from the public/ folder — no Vite processing, no hashed filename.
+ * This means they work as soon as Vercel redeploys (~60 s after the commit).
+ *
+ * blob: and data: URLs (in-tab preview before the commit lands) are passed through.
+ * Full https:// URLs are passed through.
+ * Empty → null.
+ */
+export function getStoreImage(path) {
+  if (!path) return null;
+  // blob preview, data URL, or full https URL → use as-is
+  if (path.startsWith('blob:') || path.startsWith('data:') || path.startsWith('http')) return path;
+  // Already an absolute path (/store/logo.png) → use as-is
+  if (path.startsWith('/')) return path;
+  // Legacy relative path (shouldn't happen with new uploads) → prefix
+  return `/store/${path}`;
 }
