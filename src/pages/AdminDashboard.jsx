@@ -198,20 +198,40 @@ export default function AdminDashboard() {
   const Fs = k => v => setStoreCfg(c => ({ ...c, [k]: v }));
   // Push store config to GitHub so all browsers pick it up
   const syncStoreConfig = (cfg) => {
+    // Strip blob: URLs before syncing — they are temporary and only valid in this browser tab
+    const clean = {
+      ...cfg,
+      storePhotos: (cfg.storePhotos || []).filter(p => p && !p.startsWith('blob:')),
+      categories: (cfg.categories || []).map(cat => ({
+        ...cat,
+        images: (cat.images || []).filter(img => img && !img.startsWith('blob:')),
+      })),
+      logoImage: (cfg.logoImage || '').startsWith('blob:') ? '' : (cfg.logoImage || ''),
+    };
     fetch("/api/sync-store-config", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ storeConfig: cfg }),
+      body: JSON.stringify({ storeConfig: clean }),
     }).catch(() => {});
   };
 
   const saveStore = (next) => {
     saveStoreConfig(next);
     showToast("Saving…");
+    // Strip blob: URLs so they never reach the repo
+    const clean = {
+      ...next,
+      storePhotos: (next.storePhotos || []).filter(p => p && !p.startsWith('blob:')),
+      categories: (next.categories || []).map(cat => ({
+        ...cat,
+        images: (cat.images || []).filter(img => img && !img.startsWith('blob:')),
+      })),
+      logoImage: (next.logoImage || '').startsWith('blob:') ? '' : (next.logoImage || ''),
+    };
     fetch("/api/sync-store-config", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ storeConfig: next }),
+      body: JSON.stringify({ storeConfig: clean }),
     })
       .then(async r => {
         const d = await r.json();
@@ -552,23 +572,59 @@ export default function AdminDashboard() {
     e.target.value = "";
   };
 
-  const handleStorePhotoUpload = e => {
+  const handleStorePhotoUpload = async e => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
-    files.forEach((file, fi) => {
-      const ext = file.name.split(".").pop() || "jpg";
-      const filename = `storefront-${Date.now()}-${fi}.${ext}`;
-      uploadStoreImage(file, filename, (url) => {
+    e.target.value = "";
+
+    // Upload one at a time to avoid GitHub SHA conflicts
+    for (let fi = 0; fi < files.length; fi++) {
+      const file = files[fi];
+      const filename = `storefront-${Date.now()}-${fi}.jpg`;
+      showToast(`Uploading photo ${fi + 1} of ${files.length}…`);
+
+      // Add blob preview immediately
+      const blobUrl = URL.createObjectURL(file);
+      setStoreCfg(c => {
+        const existing = Array.isArray(c.storePhotos) ? c.storePhotos : (c.storePhoto ? [c.storePhoto] : []);
+        return { ...c, storePhotos: [...existing, blobUrl], storePhoto: '' };
+      });
+
+      try {
+        const compressed = await compressImage(file);
+        const base64 = await new Promise((res, rej) => {
+          const r = new FileReader();
+          r.onload = ev => res(ev.target.result.split(",")[1]);
+          r.onerror = rej;
+          r.readAsDataURL(compressed);
+        });
+
+        const resp = await fetch("/api/upload-store-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ base64, filename }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || "Upload failed");
+
+        // Replace blob URL with the stable /store/ URL
         setStoreCfg(c => {
-          const existing = Array.isArray(c.storePhotos) ? c.storePhotos : (c.storePhoto ? [c.storePhoto] : []);
-          const n = { ...c, storePhotos: [...existing, url], storePhoto: '' };
+          const photos = (c.storePhotos || []).map(p => p === blobUrl ? data.url : p);
+          const n = { ...c, storePhotos: photos, storePhoto: '' };
           saveStoreConfig(n);
-          if (!url.startsWith('blob:')) { showToast(`Photo ${fi + 1}/${files.length} synced!`); syncStoreConfig(n); }
+          if (fi === files.length - 1) {
+            // Sync to repo only after all uploads done
+            syncStoreConfig(n);
+            showToast("All photos uploaded & synced!");
+          }
           return n;
         });
-      });
-    });
-    e.target.value = "";
+      } catch (err) {
+        // Remove failed blob preview
+        setStoreCfg(c => ({ ...c, storePhotos: (c.storePhotos || []).filter(p => p !== blobUrl) }));
+        showToast(`Photo ${fi + 1} failed: ${err.message}`, "warn");
+      }
+    }
   };
 
   const handleCategoryImageUpload = (catIndex, e) => {
