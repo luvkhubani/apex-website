@@ -83,12 +83,14 @@ function StorePhotoSlider({ photos }) {
             className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-xl text-apple-black hover:bg-white transition-all shadow-lg"
             style={{ zIndex:3 }}
             aria-label="Previous"
+            tabIndex={-1}
           >‹</button>
           <button
             onClick={() => { setPaused(true); go(idx + 1); }}
             className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-xl text-apple-black hover:bg-white transition-all shadow-lg"
             style={{ zIndex:3 }}
             aria-label="Next"
+            tabIndex={-1}
           >›</button>
         </>
       )}
@@ -102,6 +104,7 @@ function StorePhotoSlider({ photos }) {
               onClick={() => { setPaused(true); setIdx(i); }}
               className={`rounded-full transition-all duration-300 ${i === idx ? 'w-6 h-2 bg-white' : 'w-2 h-2 bg-white/50 hover:bg-white/80'}`}
               aria-label={`Photo ${i + 1}`}
+              tabIndex={-1}
             />
           ))}
         </div>
