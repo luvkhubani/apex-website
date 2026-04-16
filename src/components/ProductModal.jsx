@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { getProductImage } from '../utils/productImages';
+import { useStoreConfig, waUrl } from '../hooks/useStoreConfig';
 
 // ── Colour → hex ────────────────────────────────────────────
 const COLOR_HEX = {
@@ -79,10 +80,11 @@ export default function ProductModal({ group, onClose }) {
   const imgSrc = getProductImage(activeVariant?.image);
 
   // ── WhatsApp ───────────────────────────────────────────
-  const specs   = specLabel(activeVariant ?? {});
-  const color   = activeVariant?.color ?? '';
-  const waText  = `Hi Apex! I am interested in ${name}${specs ? ' ' + specs : ''}${color ? ' ' + color : ''}. Please share availability and best price.`;
-  const waUrl   = `https://wa.me/918349570000?text=${encodeURIComponent(waText)}`;
+  const storeCfg = useStoreConfig();
+  const specs    = specLabel(activeVariant ?? {});
+  const color    = activeVariant?.color ?? '';
+  const waText   = `Hi Apex! I am interested in ${name}${specs ? ' ' + specs : ''}${color ? ' ' + color : ''}. Please share availability and best price.`;
+  const waLink   = waUrl(storeCfg.whatsappNumber, waText);
 
   // ── Keyboard + scroll lock ─────────────────────────────
   useEffect(() => {
@@ -205,7 +207,7 @@ export default function ProductModal({ group, onClose }) {
             {activeVariant?.inStock ? (
               <div className="flex gap-3">
                 <a
-                  href={waUrl}
+                  href={waLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 flex items-center justify-center gap-2 text-[15px] font-semibold text-white bg-[#25D366] py-3.5 rounded-pill hover:opacity-90 active:scale-[0.98] transition-all"
@@ -216,7 +218,7 @@ export default function ProductModal({ group, onClose }) {
                   WhatsApp
                 </a>
                 <a
-                  href="tel:+918349570000"
+                  href={`tel:${storeCfg.phoneDisplay.replace(/\s/g,'')}`}
                   className="flex-1 flex items-center justify-center gap-2 text-[15px] font-semibold text-white bg-apple-black py-3.5 rounded-pill hover:opacity-80 active:scale-[0.98] transition-all"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -238,7 +240,7 @@ export default function ProductModal({ group, onClose }) {
             </div>
 
             <p className="text-center text-[11px] text-apple-gray mt-3">
-              Store open <strong className="text-apple-black">10 AM – 10 PM</strong> daily · Jail Road, Indore
+              Store open <strong className="text-apple-black">{storeCfg.storeHoursShort}</strong> daily · {storeCfg.addressLine1}
             </p>
           </div>
         </div>

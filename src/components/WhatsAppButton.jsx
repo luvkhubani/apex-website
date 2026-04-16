@@ -1,7 +1,12 @@
+import { useStoreConfig, waUrl } from '../hooks/useStoreConfig';
+
 export default function WhatsAppButton() {
+  const cfg = useStoreConfig();
+  const href = waUrl(cfg.whatsappNumber, 'Hi Apex! I am interested in your products.');
+
   return (
     <a
-      href="https://wa.me/918349570000?text=Hi%20Apex!%20I%20am%20interested%20in%20your%20products."
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"

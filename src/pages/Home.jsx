@@ -4,8 +4,7 @@ import { useProducts } from '../hooks/useProducts';
 import { useHeroConfig } from '../hooks/useHeroConfig';
 import { useBannerConfig } from '../hooks/useBannerImage';
 import { getProductImage } from '../utils/productImages';
-
-const WA = 'https://wa.me/918349570000';
+import { useStoreConfig, waUrl } from '../hooks/useStoreConfig';
 
 const BRAND_EMOJI = {
   Apple:'🍎',Samsung:'📱',OnePlus:'📲',Nothing:'⚪',Motorola:'📡',
@@ -42,7 +41,7 @@ function Section({ bg = 'bg-white', children, className = '' }) {
 }
 
 // ── Hero product section (dynamic) ────────────────────────
-function HeroProductSection({ item, products, index }) {
+function HeroProductSection({ item, products, index, waN }) {
   const variants = products.filter(p => p.brand === item.brand && p.name === item.name);
   if (variants.length === 0) return null;
 
@@ -76,7 +75,7 @@ function HeroProductSection({ item, products, index }) {
         </p>
       )}
       {priceStr && <p className="text-[28px] font-semibold text-apple-black mb-6">From {priceStr}</p>}
-      <PillBlack href={`${WA}?text=${encodeURIComponent(waMsg)}`}>
+      <PillBlack href={waUrl(waN, waMsg)}>
         Enquire on WhatsApp
       </PillBlack>
       <p className="text-[12px] font-semibold text-emerald-600 mt-4">
@@ -100,7 +99,7 @@ function HeroProductSection({ item, products, index }) {
               </p>
             )}
             {priceStr && <p className="text-[28px] font-semibold text-apple-black mb-8">From {priceStr}</p>}
-            <PillBlack href={`${WA}?text=${encodeURIComponent(waMsg)}`}>Enquire on WhatsApp</PillBlack>
+            <PillBlack href={waUrl(waN, waMsg)}>Enquire on WhatsApp</PillBlack>
           </div>
           <div className="bg-apple-light rounded-[32px] aspect-square sm:aspect-[4/3] md:aspect-[16/9] max-w-[860px] mx-auto overflow-hidden flex items-center justify-center">
             {imgSrc
@@ -164,6 +163,7 @@ export default function Home() {
   const products    = useProducts();
   const heroConfig  = useHeroConfig();
   const banner      = useBannerConfig();
+  const storeCfg    = useStoreConfig();
 
   // Dynamic brands — only show brands present in our product list, in preferred order
   const activeBrands = BRAND_ORDER.filter(b => products.some(p => p.brand === b));
@@ -189,7 +189,7 @@ export default function Home() {
 
             {/* Store headline */}
             <p className="text-[13px] font-medium text-apple-gray tracking-[0.1em] uppercase mb-4">
-              Trusted Since 1996 · Jail Road, Indore
+              Trusted Since 1996 · {storeCfg.addressLine1}
             </p>
             <h2 className="font-sans font-bold text-[32px] md:text-[48px] text-apple-black leading-[1.07] tracking-[-0.02em] mb-8">
               The Best Phones.<br />Indore&apos;s Best Price.
@@ -237,7 +237,7 @@ export default function Home() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center gap-3 mb-3">
               <a
-                href={banner.ctaLink || `${WA}?text=${encodeURIComponent('Hi Apex! I am interested in ' + banner.title + '. Please share availability and best price.')}`}
+                href={banner.ctaLink || waUrl(storeCfg.whatsappNumber, 'Hi Apex! I am interested in ' + banner.title + '. Please share availability and best price.')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 text-[15px] font-medium text-white bg-[#0071e3] px-7 py-3 rounded-full hover:bg-[#0077ed] active:scale-[0.98] transition-all shadow-sm"
@@ -298,7 +298,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <PillBlack to="/products">Shop Now</PillBlack>
-              <PillOutline href={WA}>Chat on WhatsApp</PillOutline>
+              <PillOutline href={waUrl(storeCfg.whatsappNumber)}>Chat on WhatsApp</PillOutline>
             </div>
             <p className="text-[12px] font-semibold text-emerald-600 mt-6">
               ⚡ 2-Hour COD Delivery · All Indore
@@ -336,7 +336,7 @@ export default function Home() {
       {/* ── 3. HERO PRODUCT SECTIONS ─────────────────────────── */}
       {heroConfig.length > 0
         ? heroConfig.map((item, i) => (
-            <HeroProductSection key={`${item.brand}||${item.name}`} item={item} products={products} index={i} />
+            <HeroProductSection key={`${item.brand}||${item.name}`} item={item} products={products} index={i} waN={storeCfg.whatsappNumber} />
           ))
         : <StaticHeroSections />
       }
@@ -352,13 +352,8 @@ export default function Home() {
           </div>
         </FadeUp>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {[
-            { label:'iPhones & iPads',    emoji:'🍎', filter:'Mobiles',     sub:'Latest Apple lineup' },
-            { label:'Samsung & Android',  emoji:'📱', filter:'Mobiles',     sub:'Galaxy S series & more' },
-            { label:'MacBooks & Laptops', emoji:'💻', filter:'Laptops',     sub:'Power your work' },
-            { label:'Accessories',        emoji:'🎧', filter:'Accessories', sub:'Complete your setup' },
-          ].map((cat, i) => (
-            <FadeUp key={cat.label} delay={i * 80}>
+          {storeCfg.categories.map((cat, i) => (
+            <FadeUp key={cat.label + i} delay={i * 80}>
               <Link
                 to={`/products?category=${cat.filter}`}
                 className="group block bg-white rounded-[24px] overflow-hidden transition-all duration-300 hover:-translate-y-1"
@@ -393,15 +388,12 @@ export default function Home() {
           </div>
         </FadeUp>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-          {[
-            { num:'30+',  label:'Years of trust' },
-            { num:'1L+',  label:'Happy customers' },
-            { num:`${activeBrands.length}+`, label:'Brands available' },
-            { num:'4.9★', label:'Customer rating' },
-          ].map((s, i) => (
-            <FadeUp key={s.label} delay={i * 100}>
+          {storeCfg.trustStats.map((s, i) => (
+            <FadeUp key={s.label + i} delay={i * 100}>
               <div className="text-center">
-                <p className="font-display font-bold text-[56px] md:text-[72px] text-apple-black leading-none tracking-tight mb-3">{s.num}</p>
+                <p className="font-display font-bold text-[56px] md:text-[72px] text-apple-black leading-none tracking-tight mb-3">
+                  {s.num || `${activeBrands.length}+`}
+                </p>
                 <p className="text-[16px] text-apple-gray">{s.label}</p>
               </div>
             </FadeUp>
@@ -410,51 +402,62 @@ export default function Home() {
       </Section>
 
       {/* ── 6. TESTIMONIALS ──────────────────────────────────── */}
-      <Section bg="bg-apple-light">
-        <FadeUp>
-          <div className="text-center mb-14">
-            <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Reviews</p>
-            <h2 className="font-sans font-bold text-[40px] md:text-[56px] text-apple-black leading-[1.07] tracking-[-0.02em]">
-              Loved in Indore.
-            </h2>
+      {storeCfg.testimonials.length > 0 && (
+        <Section bg="bg-apple-light">
+          <FadeUp>
+            <div className="text-center mb-14">
+              <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Reviews</p>
+              <h2 className="font-sans font-bold text-[40px] md:text-[56px] text-apple-black leading-[1.07] tracking-[-0.02em]">
+                Loved in Indore.
+              </h2>
+            </div>
+          </FadeUp>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {storeCfg.testimonials.map((t, i) => (
+              <FadeUp key={t.name + i} delay={i * 100}>
+                <div className="bg-white rounded-[20px] p-8" style={{ boxShadow:'0 4px 20px rgba(0,0,0,0.06)' }}>
+                  <p className="font-display text-[64px] leading-none text-apple-border mb-2 select-none">&ldquo;</p>
+                  <p className="font-display italic text-[19px] text-apple-black leading-relaxed mb-6">{t.quote}</p>
+                  <p className="text-[15px] font-medium text-apple-black">{t.name}</p>
+                  <p className="text-[13px] text-apple-gray mt-0.5">{t.location || 'Indore'}</p>
+                </div>
+              </FadeUp>
+            ))}
           </div>
-        </FadeUp>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            { quote:"I've been buying from Apex since 2010. The staff knows their products inside out and never pushes unnecessary upsells. Best electronics store in Indore, period.", name:'Priya Sharma' },
-            { quote:"Bought a MacBook Pro here last month. The price was actually better than online, and they helped me set it up too. Will always come back to Apex.", name:'Rahul Malhotra' },
-            { quote:"Apex has been my family's go-to electronics store for two decades. Honest advice, genuine products, and after-sales support you simply can't find elsewhere.", name:'Anjali Verma' },
-          ].map((t, i) => (
-            <FadeUp key={t.name} delay={i * 100}>
-              <div className="bg-white rounded-[20px] p-8" style={{ boxShadow:'0 4px 20px rgba(0,0,0,0.06)' }}>
-                <p className="font-display text-[64px] leading-none text-apple-border mb-2 select-none">&ldquo;</p>
-                <p className="font-display italic text-[19px] text-apple-black leading-relaxed mb-6">{t.quote}</p>
-                <p className="text-[15px] font-medium text-apple-black">{t.name}</p>
-                <p className="text-[13px] text-apple-gray mt-0.5">Indore</p>
-              </div>
-            </FadeUp>
-          ))}
-        </div>
-      </Section>
+        </Section>
+      )}
 
       {/* ── 7. STORE ──────────────────────────────────────────── */}
       <Section bg="bg-white">
         <FadeUp>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            <div className="bg-apple-light rounded-[24px] aspect-[4/3] flex flex-col items-center justify-center text-center p-10">
-              <div className="text-8xl mb-4">🏪</div>
-              <p className="text-[13px] font-medium text-apple-gray tracking-wide uppercase">Your Store Photo</p>
-            </div>
+            {/* Store photo */}
+            {storeCfg.storePhoto ? (
+              <div className="rounded-[24px] overflow-hidden aspect-[4/3]">
+                <img
+                  src={storeCfg.storePhoto.startsWith('http') ? storeCfg.storePhoto : '/src/assets/products/' + storeCfg.storePhoto}
+                  alt="Apex The Mobile Shoppe"
+                  className="w-full h-full object-cover"
+                  onError={e => { e.target.style.display = 'none'; }}
+                />
+              </div>
+            ) : (
+              <div className="bg-apple-light rounded-[24px] aspect-[4/3] flex flex-col items-center justify-center text-center p-10 border-2 border-dashed border-apple-border">
+                <div className="text-8xl mb-4">🏪</div>
+                <p className="text-[13px] font-medium text-apple-gray tracking-wide uppercase">Add your store photo</p>
+                <p className="text-[11px] text-apple-gray mt-1">Admin → 🏪 Store → Store Photo</p>
+              </div>
+            )}
             <div>
               <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Visit Us</p>
               <h2 className="font-sans font-bold text-[40px] md:text-[48px] text-apple-black leading-[1.1] tracking-[-0.02em] mb-5">
                 Apex The Mobile Shoppe.
               </h2>
-              <p className="text-[21px] text-apple-gray mb-2">Jail Road, Indore</p>
-              <p className="text-[17px] text-apple-gray mb-10">Open daily 10AM – 8PM</p>
+              <p className="text-[21px] text-apple-gray mb-2">{storeCfg.addressLine1}</p>
+              <p className="text-[17px] text-apple-gray mb-10">Open daily {storeCfg.storeHoursShort}</p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <PillBlack href="https://maps.google.com/?q=Jail+Road+Indore">Get Directions</PillBlack>
-                <PillBlack href={WA}>WhatsApp Us</PillBlack>
+                <PillBlack href={storeCfg.googleMapsLink || 'https://maps.google.com/?q=Apex+The+Mobile+Shoppe+Jail+Road+Indore'}>Get Directions</PillBlack>
+                <PillBlack href={waUrl(storeCfg.whatsappNumber)}>WhatsApp Us</PillBlack>
               </div>
             </div>
           </div>
@@ -468,7 +471,7 @@ export default function Home() {
             <h2 className="font-sans font-bold text-[40px] md:text-[56px] text-apple-black leading-[1.07] tracking-[-0.02em] mb-3">
               Follow Along.
             </h2>
-            <p className="text-[19px] text-apple-gray">@apexmobileindia</p>
+            <p className="text-[19px] text-apple-gray">@{storeCfg.instagramHandle}</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-10">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -481,7 +484,7 @@ export default function Home() {
             ))}
           </div>
           <div className="text-center">
-            <PillBlack href="https://instagram.com/apexmobileindia">Follow on Instagram</PillBlack>
+            <PillBlack href={storeCfg.instagramUrl}>Follow on Instagram</PillBlack>
           </div>
         </FadeUp>
       </Section>

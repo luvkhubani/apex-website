@@ -5,6 +5,7 @@ import { DS_DEFAULTS, saveDisplaySettings } from "../hooks/useDisplaySettings";
 import { saveHeroConfig } from "../hooks/useHeroConfig";
 import { saveBannerConfig, BANNER_EMPTY } from "../hooks/useBannerImage";
 import { getProductImage } from "../utils/productImages";
+import { STORE_DEFAULTS, loadStoreConfig, saveStoreConfig } from "../hooks/useStoreConfig";
 
 const STORAGE_KEY  = "apex_products_override";
 const AUTH_KEY     = "apex_admin_auth";
@@ -127,6 +128,13 @@ export default function AdminDashboard() {
   });
   const [bannerImporting, setBannerImporting] = useState(false);
   const Fb = k => v => setBanner(b => ({ ...b, [k]: v }));
+
+  // ── Store config (logo, categories, about, maps, contact, social) ─────
+  const [storeCfg, setStoreCfg] = useState(loadStoreConfig);
+  const logoImgRef      = useRef(null);
+  const storePhotoRef   = useRef(null);
+  const Fs = k => v => setStoreCfg(c => ({ ...c, [k]: v }));
+  const saveStore = (next) => { saveStoreConfig(next); showToast("Saved!"); };
 
   useEffect(() => { if (!localStorage.getItem(AUTH_KEY)) navigate("/admin-apex-secret"); }, []);
 
@@ -381,6 +389,28 @@ export default function AdminDashboard() {
     e.target.value = "";
   };
 
+  const handleLogoFileUpload = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const ext  = file.name.split(".").pop() || "png";
+    uploadFile(file, `store/logo.${ext}`, (result) => {
+      const next = { ...storeCfg, logoImage: result };
+      setStoreCfg(next);
+      saveStoreConfig(next);
+    });
+    e.target.value = "";
+  };
+
+  const handleStorePhotoUpload = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const ext  = file.name.split(".").pop() || "jpg";
+    uploadFile(file, `store/storefront.${ext}`, (result) => {
+      const next = { ...storeCfg, storePhoto: result };
+      setStoreCfg(next);
+      saveStoreConfig(next);
+    });
+    e.target.value = "";
+  };
+
   // ── Banner config ──────────────────────────────────────
   const handleSaveBanner = () => {
     saveBannerConfig(banner);
@@ -489,7 +519,7 @@ export default function AdminDashboard() {
 
       {/* Tabs */}
       <div style={{ background:"#111", borderBottom:"1px solid #1a1a1a", padding:"0 16px", display:"flex", gap:"2px", overflowX:"auto" }}>
-        {[["products","📦 Products"],["add",editId?"✏️ Edit":"➕ Add"],["hero","🌟 Hero"],["settings","⚙️ Settings"],["stats","📊 Stats"]].map(([t,label]) => (
+        {[["products","📦 Products"],["add",editId?"✏️ Edit":"➕ Add"],["hero","🌟 Hero"],["store","🏪 Store"],["about","📖 About"],["settings","⚙️ Settings"],["stats","📊 Stats"]].map(([t,label]) => (
           <button key={t} onClick={() => { setTab(t); if (t!=="add") { setEditId(null); setForm(EMPTY); } }} style={{ ...tabBtn, color:tab===t?"#00c851":"#666", borderBottom:tab===t?"2px solid #00c851":"2px solid transparent" }}>
             {label}
           </button>
@@ -867,6 +897,423 @@ export default function AdminDashboard() {
                   Clear highlight
                 </button>
                 <Btn onClick={handleSaveBanner}>Publish to Home Page</Btn>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════════════════════════ STORE ═══════════════════════════════ */}
+        {tab === "store" && (
+          <div style={{ maxWidth:"680px" }}>
+            <h2 style={{ fontSize:"20px", fontWeight:700, marginBottom:"6px" }}>🏪 Store Settings</h2>
+            <p style={{ color:"#555", fontSize:"13px", margin:"0 0 28px" }}>Manage your logo, contact details, social links, category cards, and Maps info.</p>
+
+            {/* ── Logo ── */}
+            <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🖼️ Logo & Branding</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Upload your store logo — appears in the navigation bar. If left blank, the fallback text is shown.</p>
+
+              {storeCfg.logoImage && (
+                <div style={{ marginBottom:"14px", display:"flex", alignItems:"center", gap:"12px" }}>
+                  <div style={{ width:"120px", height:"48px", background:"#1a1a1a", borderRadius:"10px", border:"1px solid #2a2a2a", display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", padding:"6px" }}>
+                    <img src={storeCfg.logoImage.startsWith("http") ? storeCfg.logoImage : "/src/assets/products/" + storeCfg.logoImage} alt="Logo" style={{ maxWidth:"100%", maxHeight:"100%", objectFit:"contain" }} onError={e=>{e.target.style.display="none";}} />
+                  </div>
+                  <span style={{ color:"#555", fontSize:"11px" }}>Current logo</span>
+                </div>
+              )}
+
+              <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Logo Image URL</label>
+              <input value={storeCfg.logoImage} onChange={e => Fs("logoImage")(e.target.value)} placeholder="Paste image URL, or upload from device →" style={{ ...iStyle, marginBottom:"8px" }} />
+              <button onClick={() => logoImgRef.current?.click()} style={{ width:"100%", padding:"10px", background:"#1a1a1a", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"13px", marginBottom:"14px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}>
+                📁 Upload Logo from Device
+              </button>
+              <input ref={logoImgRef} type="file" accept="image/*" style={{ display:"none" }} onChange={handleLogoFileUpload} />
+
+              <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Fallback Text</label>
+              <input value={storeCfg.logoText} onChange={e => Fs("logoText")(e.target.value)} placeholder="APEX" style={{ ...iStyle, marginBottom:"16px" }} />
+
+              <Btn onClick={() => saveStore({...storeCfg})}>Save Branding</Btn>
+            </div>
+
+            {/* ── Contact Details ── */}
+            <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>📞 Contact Details</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>These values are used across all pages — WhatsApp buttons, footer, contact page, and product modals.</p>
+
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0 16px" }}>
+                <div style={{ gridColumn:"1 / -1" }}>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>
+                    WhatsApp Number <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(for wa.me links — include country code, no + or spaces)</span>
+                  </label>
+                  <input value={storeCfg.whatsappNumber} onChange={e => Fs("whatsappNumber")(e.target.value.replace(/\D/g,""))} placeholder="918349570000" style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+                <div style={{ gridColumn:"1 / -1" }}>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>
+                    Phone Display <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(shown as text and tel: link)</span>
+                  </label>
+                  <input value={storeCfg.phoneDisplay} onChange={e => Fs("phoneDisplay")(e.target.value)} placeholder="+91 83495 70000" style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+                <div>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Address Line 1</label>
+                  <input value={storeCfg.addressLine1} onChange={e => Fs("addressLine1")(e.target.value)} placeholder="Jail Road, Indore" style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+                <div>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Address Line 2</label>
+                  <input value={storeCfg.addressLine2} onChange={e => Fs("addressLine2")(e.target.value)} placeholder="Madhya Pradesh — 452 001" style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+                <div>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Store Hours (full)</label>
+                  <input value={storeCfg.storeHours} onChange={e => Fs("storeHours")(e.target.value)} placeholder="Monday – Sunday, 10:00 AM – 8:00 PM" style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+                <div>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Store Hours (short)</label>
+                  <input value={storeCfg.storeHoursShort} onChange={e => Fs("storeHoursShort")(e.target.value)} placeholder="10AM – 8PM" style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+              </div>
+
+              <Btn onClick={() => saveStore({...storeCfg})}>Save Contact Details</Btn>
+            </div>
+
+            {/* ── Social Media ── */}
+            <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>📸 Social Media</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Shown in the Instagram section on the home page.</p>
+
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0 16px" }}>
+                <div>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Instagram Handle <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(without @)</span></label>
+                  <input value={storeCfg.instagramHandle} onChange={e => Fs("instagramHandle")(e.target.value.replace(/^@/,""))} placeholder="apexmobileindia" style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+                <div>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Instagram URL</label>
+                  <input value={storeCfg.instagramUrl} onChange={e => Fs("instagramUrl")(e.target.value)} placeholder="https://instagram.com/..." style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+              </div>
+
+              <Btn onClick={() => saveStore({...storeCfg})}>Save Social</Btn>
+            </div>
+
+            {/* ── Store Photo ── */}
+            <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🏪 Store Photo</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>The storefront image shown in the "Visit Us" section on the home page.</p>
+
+              {storeCfg.storePhoto && (
+                <div style={{ marginBottom:"14px", borderRadius:"12px", overflow:"hidden", border:"1px solid #2a2a2a", background:"#1a1a1a", maxHeight:"180px", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <img src={storeCfg.storePhoto.startsWith("http") ? storeCfg.storePhoto : "/src/assets/products/" + storeCfg.storePhoto} alt="Store" style={{ width:"100%", maxHeight:"180px", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
+                </div>
+              )}
+
+              <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Image URL</label>
+              <input value={storeCfg.storePhoto} onChange={e => Fs("storePhoto")(e.target.value)} placeholder="Paste image URL, or upload from device →" style={{ ...iStyle, marginBottom:"8px" }} />
+              <button onClick={() => storePhotoRef.current?.click()} style={{ width:"100%", padding:"10px", background:"#1a1a1a", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"13px", marginBottom:"16px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}>
+                📁 Upload Store Photo from Device
+              </button>
+              <input ref={storePhotoRef} type="file" accept="image/*" style={{ display:"none" }} onChange={handleStorePhotoUpload} />
+
+              <Btn onClick={() => saveStore({...storeCfg})}>Save Store Photo</Btn>
+            </div>
+
+            {/* ── Trust Stats ── */}
+            <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>📊 Trust Stats</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>The four big numbers on the home page. Leave "Number" blank on any card to auto-count brands from your product list.</p>
+
+              {storeCfg.trustStats.map((stat, i) => (
+                <div key={i} style={{ background:"#0d0d0d", borderRadius:"10px", padding:"14px 16px", marginBottom:"10px", border:"1px solid #1a1a1a", display:"grid", gridTemplateColumns:"120px 1fr", gap:"0 12px", alignItems:"end" }}>
+                  <div>
+                    <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Number</label>
+                    <input value={stat.num} onChange={e => {
+                      const arr = storeCfg.trustStats.map((s,j) => j===i?{...s,num:e.target.value}:s);
+                      setStoreCfg(c => ({...c, trustStats:arr}));
+                    }} placeholder="e.g. 30+" style={{ ...iStyle }} />
+                  </div>
+                  <div>
+                    <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Label</label>
+                    <input value={stat.label} onChange={e => {
+                      const arr = storeCfg.trustStats.map((s,j) => j===i?{...s,label:e.target.value}:s);
+                      setStoreCfg(c => ({...c, trustStats:arr}));
+                    }} placeholder="e.g. Years of trust" style={{ ...iStyle }} />
+                  </div>
+                </div>
+              ))}
+
+              <Btn onClick={() => saveStore({...storeCfg})}>Save Stats</Btn>
+            </div>
+
+            {/* ── Testimonials ── */}
+            <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>💬 Testimonials</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Customer reviews shown in the "Loved in Indore" section on the home page.</p>
+
+              {storeCfg.testimonials.map((t, i) => (
+                <div key={i} style={{ background:"#0d0d0d", borderRadius:"10px", padding:"16px", marginBottom:"12px", border:"1px solid #1a1a1a" }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"10px" }}>
+                    <span style={{ color:"#888", fontSize:"10px", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.08em" }}>Review {i + 1}</span>
+                    <button onClick={() => setStoreCfg(c => ({...c, testimonials:c.testimonials.filter((_,j) => j!==i)}))} style={{ background:"none", border:"none", color:"#ff4444", fontSize:"11px", cursor:"pointer", padding:"2px 6px" }}>Remove</button>
+                  </div>
+                  <div style={{ marginBottom:"8px" }}>
+                    <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Quote</label>
+                    <textarea value={t.quote} onChange={e => {
+                      const arr = storeCfg.testimonials.map((x,j) => j===i?{...x,quote:e.target.value}:x);
+                      setStoreCfg(c => ({...c, testimonials:arr}));
+                    }} rows={3} style={{ ...iStyle, resize:"vertical", lineHeight:"1.6" }} />
+                  </div>
+                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0 12px" }}>
+                    <div>
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Name</label>
+                      <input value={t.name} onChange={e => {
+                        const arr = storeCfg.testimonials.map((x,j) => j===i?{...x,name:e.target.value}:x);
+                        setStoreCfg(c => ({...c, testimonials:arr}));
+                      }} placeholder="e.g. Priya Sharma" style={{ ...iStyle }} />
+                    </div>
+                    <div>
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Location</label>
+                      <input value={t.location || ""} onChange={e => {
+                        const arr = storeCfg.testimonials.map((x,j) => j===i?{...x,location:e.target.value}:x);
+                        setStoreCfg(c => ({...c, testimonials:arr}));
+                      }} placeholder="Indore" style={{ ...iStyle }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <div style={{ display:"flex", gap:"10px" }}>
+                <Btn small color="#007aff" onClick={() => setStoreCfg(c => ({...c, testimonials:[...c.testimonials, {quote:"",name:"",location:"Indore"}]}))}>+ Add Review</Btn>
+                <Btn onClick={() => saveStore({...storeCfg})}>Save Testimonials</Btn>
+              </div>
+            </div>
+
+            {/* ── Shop by Category ── */}
+            <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🗂️ Shop by Category Cards</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Edit the category browse cards shown on the home page.</p>
+
+              {storeCfg.categories.map((cat, i) => (
+                <div key={i} style={{ background:"#0d0d0d", borderRadius:"10px", padding:"16px", marginBottom:"12px", border:"1px solid #1a1a1a" }}>
+                  <div style={{ color:"#888", fontSize:"11px", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:"12px" }}>Card {i + 1}</div>
+                  <div style={{ display:"grid", gridTemplateColumns:"72px 1fr", gap:"0 12px" }}>
+                    <div>
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Emoji</label>
+                      <input value={cat.emoji} onChange={e => {
+                        const cats = storeCfg.categories.map((c,j) => j===i?{...c,emoji:e.target.value}:c);
+                        setStoreCfg(s => ({...s, categories:cats}));
+                      }} style={{ ...iStyle, textAlign:"center", fontSize:"22px", padding:"8px" }} />
+                    </div>
+                    <div>
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Title</label>
+                      <input value={cat.label} onChange={e => {
+                        const cats = storeCfg.categories.map((c,j) => j===i?{...c,label:e.target.value}:c);
+                        setStoreCfg(s => ({...s, categories:cats}));
+                      }} placeholder="e.g. iPhones & iPads" style={{ ...iStyle, marginBottom:"8px" }} />
+                    </div>
+                    <div style={{ gridColumn:"1 / -1" }}>
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Subtitle</label>
+                      <input value={cat.sub} onChange={e => {
+                        const cats = storeCfg.categories.map((c,j) => j===i?{...c,sub:e.target.value}:c);
+                        setStoreCfg(s => ({...s, categories:cats}));
+                      }} placeholder="e.g. Latest Apple lineup" style={{ ...iStyle }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <Btn onClick={() => saveStore({...storeCfg})}>Save Category Cards</Btn>
+            </div>
+
+            {/* ── Google Maps ── */}
+            <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🗺️ Google Maps</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Add your Google Business Maps embed so customers can find you on the Contact page.</p>
+
+              <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Maps Embed URL <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(Google Maps → Share → Embed a map → copy the src URL)</span></label>
+              <input value={storeCfg.googleMapsEmbed} onChange={e => Fs("googleMapsEmbed")(e.target.value)} placeholder="https://www.google.com/maps/embed?pb=..." style={{ ...iStyle, marginBottom:"14px" }} />
+
+              <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Directions Link</label>
+              <input value={storeCfg.googleMapsLink} onChange={e => Fs("googleMapsLink")(e.target.value)} placeholder="https://maps.google.com/?q=..." style={{ ...iStyle, marginBottom:"16px" }} />
+
+              {storeCfg.googleMapsEmbed ? (
+                <div style={{ marginBottom:"16px", borderRadius:"10px", overflow:"hidden", border:"1px solid #2a2a2a" }}>
+                  <iframe src={storeCfg.googleMapsEmbed} width="100%" height="200" style={{ border:0, display:"block" }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Store location" />
+                </div>
+              ) : (
+                <div style={{ background:"#0d0d0d", borderRadius:"10px", padding:"32px", textAlign:"center", marginBottom:"16px", border:"1px dashed #2a2a2a" }}>
+                  <div style={{ fontSize:"32px", marginBottom:"8px" }}>🗺️</div>
+                  <div style={{ color:"#555", fontSize:"13px" }}>Paste a Google Maps embed URL above to preview</div>
+                  <div style={{ color:"#333", fontSize:"11px", marginTop:"6px" }}>maps.google.com → search your store → Share → Embed a map → copy the src</div>
+                </div>
+              )}
+
+              <Btn onClick={() => saveStore({...storeCfg})}>Save Maps Info</Btn>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════════════════════════ ABOUT ═══════════════════════════════ */}
+        {tab === "about" && (
+          <div style={{ maxWidth:"680px" }}>
+            <h2 style={{ fontSize:"20px", fontWeight:700, marginBottom:"6px" }}>📖 About Page</h2>
+            <p style={{ color:"#555", fontSize:"13px", margin:"0 0 28px" }}>Edit your story, services, and values shown on the About page.</p>
+
+            {/* ── Hero section ── */}
+            <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🌟 Hero Section</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>The big headline and subtext at the top of the About page.</p>
+
+              <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Headline <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(use \n for a line break)</span></label>
+              <input value={storeCfg.aboutHeadline} onChange={e => Fs("aboutHeadline")(e.target.value)} placeholder="Three decades.\nOne promise." style={{ ...iStyle, marginBottom:"14px" }} />
+
+              <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Subtext</label>
+              <textarea value={storeCfg.aboutSub} onChange={e => Fs("aboutSub")(e.target.value)} placeholder="Honest advice, genuine products…" rows={2} style={{ ...iStyle, resize:"vertical", lineHeight:"1.6", marginBottom:"16px" }} />
+
+              <Btn onClick={() => saveStore({...storeCfg})}>Save Hero</Btn>
+            </div>
+
+            {/* ── Our Story ── */}
+            <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>📝 Our Story</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>The body paragraphs in the story section. Each box is one paragraph.</p>
+
+              {storeCfg.aboutStory.map((para, i) => (
+                <div key={i} style={{ marginBottom:"12px" }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"4px" }}>
+                    <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase" }}>Paragraph {i + 1}</label>
+                    <button onClick={() => {
+                      const arr = storeCfg.aboutStory.filter((_,j) => j!==i);
+                      setStoreCfg(s => ({...s, aboutStory:arr}));
+                    }} style={{ background:"none", border:"none", color:"#ff4444", fontSize:"11px", cursor:"pointer", padding:"2px 6px" }}>Remove</button>
+                  </div>
+                  <textarea value={para} onChange={e => {
+                    const arr = storeCfg.aboutStory.map((p,j) => j===i?e.target.value:p);
+                    setStoreCfg(s => ({...s, aboutStory:arr}));
+                  }} rows={3} style={{ ...iStyle, resize:"vertical", lineHeight:"1.6" }} />
+                </div>
+              ))}
+              <div style={{ display:"flex", gap:"10px", marginTop:"4px" }}>
+                <Btn small color="#007aff" onClick={() => setStoreCfg(s => ({...s, aboutStory:[...s.aboutStory, ""]}) )}>+ Add Paragraph</Btn>
+                <Btn onClick={() => saveStore({...storeCfg})}>Save Story</Btn>
+              </div>
+            </div>
+
+            {/* ── Stats box ── */}
+            <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>📊 Stats Box</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>The card with your headline number and bullet facts.</p>
+
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0 16px" }}>
+                <div>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Main Stat</label>
+                  <input value={storeCfg.aboutStat} onChange={e => Fs("aboutStat")(e.target.value)} placeholder="30+" style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+                <div>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Stat Label</label>
+                  <input value={storeCfg.aboutStatLabel} onChange={e => Fs("aboutStatLabel")(e.target.value)} placeholder="Years Serving Indore" style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+              </div>
+
+              <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"8px" }}>Bullet Facts</label>
+              {storeCfg.aboutStatItems.map((item, i) => (
+                <div key={i} style={{ display:"flex", gap:"8px", marginBottom:"8px" }}>
+                  <input value={item} onChange={e => {
+                    const arr = storeCfg.aboutStatItems.map((x,j) => j===i?e.target.value:x);
+                    setStoreCfg(s => ({...s, aboutStatItems:arr}));
+                  }} placeholder="e.g. 📍 Jail Road, Indore — Since 1996" style={{ ...iStyle, flex:1 }} />
+                  <button onClick={() => setStoreCfg(s => ({...s, aboutStatItems:s.aboutStatItems.filter((_,j) => j!==i)}))} style={{ background:"#ff444422", border:"1px solid #ff444444", borderRadius:"6px", color:"#ff4444", cursor:"pointer", padding:"6px 10px", fontSize:"12px", whiteSpace:"nowrap" }}>✕</button>
+                </div>
+              ))}
+              <div style={{ display:"flex", gap:"10px", marginTop:"8px" }}>
+                <Btn small color="#007aff" onClick={() => setStoreCfg(s => ({...s, aboutStatItems:[...s.aboutStatItems, ""]}))}>+ Add Fact</Btn>
+                <Btn onClick={() => saveStore({...storeCfg})}>Save Stats</Btn>
+              </div>
+            </div>
+
+            {/* ── Values ── */}
+            <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>💡 Our Values</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>The four principle cards.</p>
+
+              {storeCfg.aboutValues.map((val, i) => (
+                <div key={i} style={{ background:"#0d0d0d", borderRadius:"10px", padding:"16px", marginBottom:"12px", border:"1px solid #1a1a1a" }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"10px" }}>
+                    <span style={{ color:"#888", fontSize:"10px", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.08em" }}>Value {i + 1}</span>
+                    <button onClick={() => setStoreCfg(s => ({...s, aboutValues:s.aboutValues.filter((_,j) => j!==i)}))} style={{ background:"none", border:"none", color:"#ff4444", fontSize:"11px", cursor:"pointer", padding:"2px 6px" }}>Remove</button>
+                  </div>
+                  <div style={{ display:"grid", gridTemplateColumns:"72px 1fr", gap:"0 12px" }}>
+                    <div>
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Icon</label>
+                      <input value={val.icon} onChange={e => {
+                        const arr = storeCfg.aboutValues.map((v,j) => j===i?{...v,icon:e.target.value}:v);
+                        setStoreCfg(s => ({...s, aboutValues:arr}));
+                      }} style={{ ...iStyle, textAlign:"center", fontSize:"22px", padding:"8px" }} />
+                    </div>
+                    <div>
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Title</label>
+                      <input value={val.title} onChange={e => {
+                        const arr = storeCfg.aboutValues.map((v,j) => j===i?{...v,title:e.target.value}:v);
+                        setStoreCfg(s => ({...s, aboutValues:arr}));
+                      }} placeholder="e.g. Honest Advice" style={{ ...iStyle, marginBottom:"8px" }} />
+                    </div>
+                    <div style={{ gridColumn:"1 / -1" }}>
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Description</label>
+                      <textarea value={val.desc} onChange={e => {
+                        const arr = storeCfg.aboutValues.map((v,j) => j===i?{...v,desc:e.target.value}:v);
+                        setStoreCfg(s => ({...s, aboutValues:arr}));
+                      }} rows={2} style={{ ...iStyle, resize:"vertical", lineHeight:"1.5" }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <div style={{ display:"flex", gap:"10px" }}>
+                <Btn small color="#007aff" onClick={() => setStoreCfg(s => ({...s, aboutValues:[...s.aboutValues, {icon:"⭐",title:"",desc:""}]}))}>+ Add Value</Btn>
+                <Btn onClick={() => saveStore({...storeCfg})}>Save Values</Btn>
+              </div>
+            </div>
+
+            {/* ── Services ── */}
+            <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🛠️ Service Offerings</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>List the services your store provides — repairs, trade-ins, EMI, etc.</p>
+
+              {storeCfg.aboutServices.length === 0 && (
+                <div style={{ background:"#0d0d0d", borderRadius:"10px", padding:"32px", textAlign:"center", marginBottom:"16px", border:"1px dashed #2a2a2a" }}>
+                  <div style={{ fontSize:"32px", marginBottom:"8px" }}>🛠️</div>
+                  <div style={{ color:"#555", fontSize:"13px" }}>No services added yet. Click "+ Add Service" to get started.</div>
+                </div>
+              )}
+
+              {storeCfg.aboutServices.map((svc, i) => (
+                <div key={i} style={{ background:"#0d0d0d", borderRadius:"10px", padding:"16px", marginBottom:"12px", border:"1px solid #1a1a1a" }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"10px" }}>
+                    <span style={{ color:"#888", fontSize:"10px", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.08em" }}>Service {i + 1}</span>
+                    <button onClick={() => setStoreCfg(s => ({...s, aboutServices:s.aboutServices.filter((_,j) => j!==i)}))} style={{ background:"none", border:"none", color:"#ff4444", fontSize:"11px", cursor:"pointer", padding:"2px 6px" }}>Remove</button>
+                  </div>
+                  <div style={{ display:"grid", gridTemplateColumns:"72px 1fr", gap:"0 12px" }}>
+                    <div>
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Icon</label>
+                      <input value={svc.icon} onChange={e => {
+                        const arr = storeCfg.aboutServices.map((v,j) => j===i?{...v,icon:e.target.value}:v);
+                        setStoreCfg(s => ({...s, aboutServices:arr}));
+                      }} style={{ ...iStyle, textAlign:"center", fontSize:"22px", padding:"8px" }} />
+                    </div>
+                    <div>
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Service Name</label>
+                      <input value={svc.title} onChange={e => {
+                        const arr = storeCfg.aboutServices.map((v,j) => j===i?{...v,title:e.target.value}:v);
+                        setStoreCfg(s => ({...s, aboutServices:arr}));
+                      }} placeholder="e.g. Screen Repair, EMI Available" style={{ ...iStyle, marginBottom:"8px" }} />
+                    </div>
+                    <div style={{ gridColumn:"1 / -1" }}>
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Details</label>
+                      <textarea value={svc.desc} onChange={e => {
+                        const arr = storeCfg.aboutServices.map((v,j) => j===i?{...v,desc:e.target.value}:v);
+                        setStoreCfg(s => ({...s, aboutServices:arr}));
+                      }} rows={2} style={{ ...iStyle, resize:"vertical", lineHeight:"1.5" }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <div style={{ display:"flex", gap:"10px" }}>
+                <Btn small color="#007aff" onClick={() => setStoreCfg(s => ({...s, aboutServices:[...s.aboutServices, {icon:"🛠️",title:"",desc:""}]}))}>+ Add Service</Btn>
+                <Btn onClick={() => saveStore({...storeCfg})}>Save Services</Btn>
               </div>
             </div>
           </div>

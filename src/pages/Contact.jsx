@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import FadeUp from '../components/FadeUp';
+import { useStoreConfig, waUrl } from '../hooks/useStoreConfig';
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', phone: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const storeCfg = useStoreConfig();
 
   function handleChange(e) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -11,8 +13,8 @@ export default function Contact() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    const text = encodeURIComponent(`Hi Apex! My name is ${form.name}. ${form.message} (Phone: ${form.phone})`);
-    window.open(`https://wa.me/918349570000?text=${text}`, '_blank', 'noopener,noreferrer');
+    const text = `Hi Apex! My name is ${form.name}. ${form.message} (Phone: ${form.phone})`;
+    window.open(waUrl(storeCfg.whatsappNumber, text), '_blank', 'noopener,noreferrer');
     setSubmitted(true);
   }
 
@@ -52,7 +54,7 @@ export default function Contact() {
                       </svg>
                     ),
                     label: 'Address',
-                    content: <span className="text-apple-gray text-[15px] leading-relaxed">Jail Road, Indore<br />Madhya Pradesh — 452 001</span>,
+                    content: <span className="text-apple-gray text-[15px] leading-relaxed">{storeCfg.addressLine1}<br />{storeCfg.addressLine2}</span>,
                   },
                   {
                     icon: (
@@ -61,7 +63,7 @@ export default function Contact() {
                       </svg>
                     ),
                     label: 'Phone',
-                    content: <a href="tel:+918349570000" className="text-apple-black text-[15px] hover:opacity-70 transition-opacity">+91 83495 70000</a>,
+                    content: <a href={`tel:${storeCfg.phoneDisplay.replace(/\s/g,'')}`} className="text-apple-black text-[15px] hover:opacity-70 transition-opacity">{storeCfg.phoneDisplay}</a>,
                   },
                   {
                     icon: (
@@ -70,7 +72,7 @@ export default function Contact() {
                       </svg>
                     ),
                     label: 'Hours',
-                    content: <span className="text-apple-gray text-[15px]">Monday – Sunday, 10:00 AM – 8:00 PM</span>,
+                    content: <span className="text-apple-gray text-[15px]">{storeCfg.storeHours}</span>,
                   },
                   {
                     icon: (
@@ -81,8 +83,8 @@ export default function Contact() {
                     label: 'WhatsApp',
                     content: (
                       <div>
-                        <a href="https://wa.me/918349570000" target="_blank" rel="noopener noreferrer" className="text-[#25D366] text-[15px] font-semibold hover:opacity-80 transition-opacity">
-                          +91 83495 70000
+                        <a href={waUrl(storeCfg.whatsappNumber)} target="_blank" rel="noopener noreferrer" className="text-[#25D366] text-[15px] font-semibold hover:opacity-80 transition-opacity">
+                          {storeCfg.phoneDisplay}
                         </a>
                         <p className="text-apple-gray text-[13px] mt-0.5">Fastest way to reach us</p>
                       </div>
@@ -174,6 +176,85 @@ export default function Contact() {
             </div>
           </FadeUp>
 
+        </div>
+      </section>
+
+      {/* Google Maps */}
+      <section className="border-t border-apple-border">
+        {storeCfg.googleMapsEmbed ? (
+          <iframe
+            src={storeCfg.googleMapsEmbed}
+            width="100%"
+            height="420"
+            style={{ border: 0, display: 'block' }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Apex The Mobile Shoppe — Location"
+          />
+        ) : (
+          <div className="bg-apple-light py-[60px] px-6 text-center">
+            <div className="max-w-[560px] mx-auto">
+              <div className="text-6xl mb-4">🗺️</div>
+              <h3 className="font-sans font-bold text-[22px] text-apple-black mb-3">Find Us on Google Maps</h3>
+              <p className="text-[15px] text-apple-gray mb-6">
+                Apex The Mobile Shoppe · {storeCfg.addressLine1}, {storeCfg.addressLine2}
+              </p>
+              <a
+                href={storeCfg.googleMapsLink || 'https://maps.google.com/?q=Apex+The+Mobile+Shoppe+Jail+Road+Indore'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-[15px] font-medium text-white bg-apple-black px-6 py-3 rounded-pill hover:scale-[1.02] transition-transform"
+              >
+                Open in Google Maps →
+              </a>
+              <p className="text-[12px] text-apple-gray mt-4">
+                Add your Google Maps embed in Admin → 🏪 Store → Google Maps
+              </p>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* Directions card */}
+      <section className="bg-white py-[60px] px-6 border-t border-apple-border">
+        <div className="max-w-[1200px] mx-auto">
+          <FadeUp>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-apple-light flex items-center justify-center flex-shrink-0 text-[20px]">📍</div>
+                <div>
+                  <p className="text-[13px] font-semibold text-apple-black mb-1">Address</p>
+                  <p className="text-[14px] text-apple-gray leading-relaxed">
+                    Apex — The Mobile Shoppe<br />
+                    {storeCfg.addressLine1}<br />
+                    {storeCfg.addressLine2}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-apple-light flex items-center justify-center flex-shrink-0 text-[20px]">🕙</div>
+                <div>
+                  <p className="text-[13px] font-semibold text-apple-black mb-1">Store Hours</p>
+                  <p className="text-[14px] text-apple-gray">{storeCfg.storeHours}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-apple-light flex items-center justify-center flex-shrink-0 text-[20px]">🗺️</div>
+                <div>
+                  <p className="text-[13px] font-semibold text-apple-black mb-1">Directions</p>
+                  <a
+                    href={storeCfg.googleMapsLink || 'https://maps.google.com/?q=Apex+The+Mobile+Shoppe+Jail+Road+Indore'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[14px] text-[#0071e3] font-medium hover:underline"
+                  >
+                    Get Directions on Google Maps →
+                  </a>
+                </div>
+              </div>
+            </div>
+          </FadeUp>
         </div>
       </section>
     </main>

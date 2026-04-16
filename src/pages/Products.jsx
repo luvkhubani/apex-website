@@ -3,6 +3,7 @@ import ProductCard  from '../components/ProductCard';
 import ProductModal from '../components/ProductModal';
 import FadeUp       from '../components/FadeUp';
 import { useProducts } from '../hooks/useProducts';
+import { useStoreConfig, waUrl } from '../hooks/useStoreConfig';
 
 // ── Filter config ────────────────────────────────────────────
 const BRANDS = [
@@ -61,7 +62,8 @@ function Pill({ active, onClick, children }) {
 }
 
 export default function Products() {
-  const products = useProducts();
+  const products  = useProducts();
+  const storeCfg  = useStoreConfig();
   const [search,     setSearch]     = useState('');
   const [brand,      setBrand]      = useState('All');
   const [category,   setCategory]   = useState('All');
@@ -128,7 +130,7 @@ export default function Products() {
       {/* ── WhatsApp banner ───────────────────────────────── */}
       <div className="bg-[#25D366] text-white text-center py-2.5 px-4">
         <a
-          href="https://wa.me/918349570000?text=Hi%20Apex!%20Please%20share%20your%20complete%20price%20list."
+          href={waUrl(storeCfg.whatsappNumber, 'Hi Apex! Please share your complete price list.')}
           target="_blank"
           rel="noopener noreferrer"
           className="text-[13px] font-medium hover:underline"
@@ -148,8 +150,8 @@ export default function Products() {
               Our Complete Price List — {totalVariants}+ Models
             </h1>
             <p className="text-[15px] text-apple-gray">
-              Store hours: <strong className="text-apple-black">10 AM – 10 PM</strong>, Monday to Sunday
-              &nbsp;·&nbsp; Jail Road, Indore
+              Store hours: <strong className="text-apple-black">{storeCfg.storeHoursShort}</strong>, Monday to Sunday
+              &nbsp;·&nbsp; {storeCfg.addressLine1}
             </p>
           </FadeUp>
         </div>
@@ -248,10 +250,10 @@ export default function Products() {
             We stock thousands of products. Just ask — our team will source it for you.
           </p>
           <p className="text-[13px] text-apple-gray mb-8">
-            Store open <strong className="text-apple-black">10 AM – 10 PM</strong> daily
+            Store open <strong className="text-apple-black">{storeCfg.storeHoursShort}</strong> daily
           </p>
           <a
-            href="https://wa.me/918349570000?text=Hi%20Apex!%20I%20am%20looking%20for%20a%20specific%20product.%20Please%20help."
+            href={waUrl(storeCfg.whatsappNumber, 'Hi Apex! I am looking for a specific product. Please help.')}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-[14px] font-medium text-white bg-[#25D366] px-7 py-3 rounded-pill hover:opacity-90 transition-opacity"

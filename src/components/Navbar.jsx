@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { useStoreConfig, waUrl } from '../hooks/useStoreConfig';
 
 const navLinks = [
   { to: '/',         label: 'Home',     end: true },
@@ -10,6 +11,10 @@ const navLinks = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const storeCfg = useStoreConfig();
+  const logoSrc  = storeCfg.logoImage
+    ? (storeCfg.logoImage.startsWith('http') ? storeCfg.logoImage : '/src/assets/products/' + storeCfg.logoImage)
+    : null;
 
   return (
     <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-xl border-b border-apple-border">
@@ -19,9 +24,12 @@ export default function Navbar() {
         <Link
           to="/"
           onClick={() => setOpen(false)}
-          className="text-[20px] font-bold text-apple-black tracking-tight shrink-0 hover:opacity-70 transition-opacity duration-200"
+          className="shrink-0 hover:opacity-70 transition-opacity duration-200"
         >
-          APEX
+          {logoSrc
+            ? <img src={logoSrc} alt={storeCfg.logoText || 'Apex'} className="h-8 w-auto object-contain" onError={e => { e.target.style.display = 'none'; }} />
+            : <span className="text-[20px] font-bold text-apple-black tracking-tight">{storeCfg.logoText || 'APEX'}</span>
+          }
         </Link>
 
         {/* Desktop center nav */}
@@ -45,7 +53,7 @@ export default function Navbar() {
 
         {/* Desktop right CTA */}
         <a
-          href="https://wa.me/918349570000"
+          href={waUrl(storeCfg.whatsappNumber)}
           target="_blank"
           rel="noopener noreferrer"
           className="hidden md:inline-flex items-center text-[14px] font-medium text-white bg-apple-black px-4 py-1.5 rounded-pill hover:scale-[1.02] transition-transform duration-200 shrink-0"
@@ -86,7 +94,7 @@ export default function Navbar() {
             </NavLink>
           ))}
           <a
-            href="https://wa.me/918349570000"
+            href={waUrl(storeCfg.whatsappNumber)}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setOpen(false)}
