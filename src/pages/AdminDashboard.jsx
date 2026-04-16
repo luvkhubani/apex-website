@@ -1254,7 +1254,7 @@ export default function AdminDashboard() {
               <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>📊 Trust Stats</h3>
               <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>The four big numbers on the home page. Leave "Number" blank on any card to auto-count brands from your product list.</p>
 
-              {storeCfg.trustStats.map((stat, i) => (
+              {(storeCfg.trustStats || []).map((stat, i) => (
                 <div key={i} style={{ background:"#0d0d0d", borderRadius:"10px", padding:"14px 16px", marginBottom:"10px", border:"1px solid #1a1a1a", display:"grid", gridTemplateColumns:"120px 1fr", gap:"0 12px", alignItems:"end" }}>
                   <div>
                     <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Number</label>
@@ -1281,7 +1281,7 @@ export default function AdminDashboard() {
               <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>💬 Testimonials</h3>
               <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Customer reviews shown in the "Loved in Indore" section on the home page.</p>
 
-              {storeCfg.testimonials.map((t, i) => (
+              {(storeCfg.testimonials || []).map((t, i) => (
                 <div key={i} style={{ background:"#0d0d0d", borderRadius:"10px", padding:"16px", marginBottom:"12px", border:"1px solid #1a1a1a" }}>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"10px" }}>
                     <span style={{ color:"#888", fontSize:"10px", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.08em" }}>Review {i + 1}</span>
@@ -1314,7 +1314,7 @@ export default function AdminDashboard() {
               ))}
 
               <div style={{ display:"flex", gap:"10px" }}>
-                <Btn small color="#007aff" onClick={() => setStoreCfg(c => ({...c, testimonials:[...c.testimonials, {quote:"",name:"",location:"Indore"}]}))}>+ Add Review</Btn>
+                <Btn small color="#007aff" onClick={() => setStoreCfg(c => ({...c, testimonials:[...(c.testimonials||[]), {quote:"",name:"",location:"Indore"}]}))}>+ Add Review</Btn>
                 <Btn onClick={() => saveStore({...storeCfg})}>Save Testimonials</Btn>
               </div>
             </div>
@@ -1324,7 +1324,7 @@ export default function AdminDashboard() {
               <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🗂️ Shop by Category Cards</h3>
               <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Edit the category browse cards shown on the home page.</p>
 
-              {storeCfg.categories.map((cat, i) => (
+              {(storeCfg.categories || []).map((cat, i) => (
                 <div key={i} style={{ background:"#0d0d0d", borderRadius:"10px", padding:"16px", marginBottom:"12px", border:"1px solid #1a1a1a" }}>
                   <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"12px" }}>
                     <span style={{ color:"#888", fontSize:"11px", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.08em" }}>Card {i + 1}</span>
