@@ -1137,25 +1137,40 @@ export default function AdminDashboard() {
               <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🏪 Store Photos</h3>
               <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Photos shown in the "Visit Us" section on the home page. Add multiple for a gallery layout.</p>
 
-              {/* Existing photos */}
+              {/* Existing photos with reorder */}
               {(() => {
                 const photos = Array.isArray(storeCfg.storePhotos) && storeCfg.storePhotos.length
                   ? storeCfg.storePhotos
                   : (storeCfg.storePhoto ? [storeCfg.storePhoto] : []);
+                const reorder = (from, to) => {
+                  const arr = [...photos];
+                  const [item] = arr.splice(from, 1);
+                  arr.splice(to, 0, item);
+                  const n = {...storeCfg, storePhotos: arr, storePhoto: ''};
+                  setStoreCfg(n); saveStoreConfig(n); syncStoreConfig(n);
+                };
                 return photos.length > 0 ? (
-                  <div style={{ display:"flex", gap:"10px", flexWrap:"wrap", marginBottom:"14px" }}>
-                    {photos.map((ph, idx) => (
-                      <div key={idx} style={{ position:"relative", width:"120px", height:"84px", borderRadius:"10px", overflow:"hidden", border:"1px solid #2a2a2a", flexShrink:0 }}>
-                        <img src={getStoreImage(ph)} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
-                        <button onClick={() => {
-                          const allPhotos = Array.isArray(storeCfg.storePhotos) && storeCfg.storePhotos.length
-                            ? storeCfg.storePhotos : (storeCfg.storePhoto ? [storeCfg.storePhoto] : []);
-                          const n = {...storeCfg, storePhotos: allPhotos.filter((_,k)=>k!==idx), storePhoto:''};
-                          setStoreCfg(n); saveStoreConfig(n); syncStoreConfig(n);
-                        }} style={{ position:"absolute", top:"4px", right:"4px", width:"20px", height:"20px", borderRadius:"50%", background:"rgba(0,0,0,0.75)", border:"none", color:"#fff", fontSize:"11px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
-                        <div style={{ position:"absolute", bottom:"3px", left:"5px", color:"#fff", fontSize:"10px", fontWeight:600, textShadow:"0 1px 2px rgba(0,0,0,0.8)" }}>{idx+1}</div>
-                      </div>
-                    ))}
+                  <div style={{ marginBottom:"14px" }}>
+                    <p style={{ color:"#555", fontSize:"11px", marginBottom:"10px" }}>Drag order: use arrows to reorder. First photo shows first in the slider.</p>
+                    <div style={{ display:"flex", gap:"10px", flexWrap:"wrap" }}>
+                      {photos.map((ph, idx) => (
+                        <div key={idx} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"4px" }}>
+                          <div style={{ position:"relative", width:"120px", height:"84px", borderRadius:"10px", overflow:"hidden", border:"1px solid #2a2a2a", flexShrink:0 }}>
+                            <img src={getStoreImage(ph)} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
+                            <button onClick={() => {
+                              const n = {...storeCfg, storePhotos: photos.filter((_,k)=>k!==idx), storePhoto:''};
+                              setStoreCfg(n); saveStoreConfig(n); syncStoreConfig(n);
+                            }} style={{ position:"absolute", top:"4px", right:"4px", width:"20px", height:"20px", borderRadius:"50%", background:"rgba(0,0,0,0.75)", border:"none", color:"#fff", fontSize:"11px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
+                            <div style={{ position:"absolute", bottom:"3px", left:"5px", color:"#fff", fontSize:"10px", fontWeight:600, textShadow:"0 1px 2px rgba(0,0,0,0.8)" }}>{idx+1}</div>
+                          </div>
+                          {/* Reorder buttons */}
+                          <div style={{ display:"flex", gap:"4px" }}>
+                            <button disabled={idx === 0} onClick={() => reorder(idx, idx - 1)} style={{ background:"#1a1a1a", border:"1px solid #2a2a2a", borderRadius:"5px", color: idx===0?"#333":"#888", cursor:idx===0?"not-allowed":"pointer", fontSize:"13px", padding:"2px 7px", lineHeight:1 }}>←</button>
+                            <button disabled={idx === photos.length - 1} onClick={() => reorder(idx, idx + 1)} style={{ background:"#1a1a1a", border:"1px solid #2a2a2a", borderRadius:"5px", color:idx===photos.length-1?"#333":"#888", cursor:idx===photos.length-1?"not-allowed":"pointer", fontSize:"13px", padding:"2px 7px", lineHeight:1 }}>→</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : null;
               })()}

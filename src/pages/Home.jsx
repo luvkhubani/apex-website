@@ -1,10 +1,101 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import FadeUp from '../components/FadeUp';
 import { useProducts } from '../hooks/useProducts';
 import { useHeroConfig } from '../hooks/useHeroConfig';
 import { useBannerConfig } from '../hooks/useBannerImage';
 import { getProductImage } from '../utils/productImages';
 import { useStoreConfig, waUrl, getStoreImage, getCatImages, getStorePhotos } from '../hooks/useStoreConfig';
+
+// ── Store photo slider ────────────────────────────────────
+function StorePhotoSlider({ photos }) {
+  const [idx, setIdx]       = useState(0);
+  const [paused, setPaused] = useState(false);
+  const timerRef            = useRef(null);
+
+  const go = useCallback((next) => {
+    setIdx((next + photos.length) % photos.length);
+  }, [photos.length]);
+
+  // Auto-advance every 3.5 s
+  useEffect(() => {
+    if (photos.length < 2 || paused) return;
+    timerRef.current = setInterval(() => go(idx + 1), 3500);
+    return () => clearInterval(timerRef.current);
+  }, [idx, paused, go, photos.length]);
+
+  if (photos.length === 0) return (
+    <div className="bg-apple-light rounded-[28px] h-[360px] md:h-[480px] flex flex-col items-center justify-center text-center p-10 border-2 border-dashed border-apple-border">
+      <div className="text-8xl mb-4">🏪</div>
+      <p className="text-[13px] font-medium text-apple-gray tracking-wide uppercase">Add your store photos</p>
+      <p className="text-[11px] text-apple-gray mt-1">Admin → 🏪 Store → Store Photos</p>
+    </div>
+  );
+
+  return (
+    <div
+      className="relative rounded-[28px] overflow-hidden h-[360px] md:h-[480px] select-none"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {/* Sliding track */}
+      <div
+        className="flex h-full"
+        style={{
+          width: `${photos.length * 100}%`,
+          transform: `translateX(-${(idx * 100) / photos.length}%)`,
+          transition: 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+        }}
+      >
+        {photos.map((ph, i) => (
+          <div key={i} style={{ width: `${100 / photos.length}%` }} className="h-full flex-shrink-0">
+            <img
+              src={getStoreImage(ph)}
+              alt={`Store ${i + 1}`}
+              className="w-full h-full object-cover"
+              draggable={false}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Gradient overlays */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
+
+      {/* Prev / Next arrows — only when multiple photos */}
+      {photos.length > 1 && (
+        <>
+          <button
+            onClick={() => go(idx - 1)}
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-apple-black hover:bg-white transition-all shadow-md"
+            aria-label="Previous"
+          >‹</button>
+          <button
+            onClick={() => go(idx + 1)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-apple-black hover:bg-white transition-all shadow-md"
+            aria-label="Next"
+          >›</button>
+        </>
+      )}
+
+      {/* Dot indicators */}
+      {photos.length > 1 && (
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5">
+          {photos.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setIdx(i)}
+              className={`rounded-full transition-all duration-300 ${
+                i === idx ? 'w-5 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/50'
+              }`}
+              aria-label={`Go to photo ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const BRAND_EMOJI = {
   Apple:'🍎',Samsung:'📱',OnePlus:'📲',Nothing:'⚪',Motorola:'📡',
@@ -463,47 +554,8 @@ export default function Home() {
       <Section bg="bg-white">
         <FadeUp>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Store photos */}
-            {(() => {
-              const photos = getStorePhotos(storeCfg);
-              if (photos.length === 0) return (
-                <div className="bg-apple-light rounded-[24px] aspect-[4/3] flex flex-col items-center justify-center text-center p-10 border-2 border-dashed border-apple-border">
-                  <div className="text-8xl mb-4">🏪</div>
-                  <p className="text-[13px] font-medium text-apple-gray tracking-wide uppercase">Add your store photos</p>
-                  <p className="text-[11px] text-apple-gray mt-1">Admin → 🏪 Store → Store Photos</p>
-                </div>
-              );
-              if (photos.length === 1) return (
-                <div className="rounded-[24px] overflow-hidden aspect-[4/3]">
-                  <img src={getStoreImage(photos[0])} alt="Apex The Mobile Shoppe" className="w-full h-full object-cover" onError={e => { e.target.style.display='none'; }} />
-                </div>
-              );
-              // 2 photos: left tall + right tall
-              if (photos.length === 2) return (
-                <div className="grid grid-cols-2 gap-3 aspect-[4/3]">
-                  {photos.map((ph, i) => (
-                    <div key={i} className="rounded-[16px] overflow-hidden h-full">
-                      <img src={getStoreImage(ph)} alt={`Store ${i+1}`} className="w-full h-full object-cover" onError={e=>{e.target.style.display='none';}} />
-                    </div>
-                  ))}
-                </div>
-              );
-              // 3+ photos: first image large left, remaining stacked right
-              return (
-                <div className="grid grid-cols-2 gap-3 aspect-[4/3]">
-                  <div className="rounded-[16px] overflow-hidden row-span-2 h-full">
-                    <img src={getStoreImage(photos[0])} alt="Store 1" className="w-full h-full object-cover" onError={e=>{e.target.style.display='none';}} />
-                  </div>
-                  <div className="flex flex-col gap-3 h-full">
-                    {photos.slice(1, 3).map((ph, i) => (
-                      <div key={i} className="rounded-[16px] overflow-hidden flex-1">
-                        <img src={getStoreImage(ph)} alt={`Store ${i+2}`} className="w-full h-full object-cover" onError={e=>{e.target.style.display='none';}} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
+            {/* Store photo slider */}
+            <StorePhotoSlider photos={getStorePhotos(storeCfg)} />
             <div>
               <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Visit Us</p>
               <h2 className="font-sans font-bold text-[40px] md:text-[48px] text-apple-black leading-[1.1] tracking-[-0.02em] mb-5">
