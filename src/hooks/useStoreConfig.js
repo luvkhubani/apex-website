@@ -41,10 +41,10 @@ export const STORE_DEFAULTS = {
 
   // ── Shop by Category cards ───────────────────────────
   categories: [
-    { label: 'iPhones & iPads',    emoji: '🍎', filter: 'Mobiles',     sub: 'Latest Apple lineup',    image: '', link: '' },
-    { label: 'Samsung & Android',  emoji: '📱', filter: 'Mobiles',     sub: 'Galaxy S series & more', image: '', link: '' },
-    { label: 'MacBooks & Laptops', emoji: '💻', filter: 'Laptops',     sub: 'Power your work',        image: '', link: '' },
-    { label: 'Accessories',        emoji: '🎧', filter: 'Accessories', sub: 'Complete your setup',    image: '', link: '' },
+    { label: 'iPhones & iPads',    emoji: '🍎', filter: 'Mobiles',     sub: 'Latest Apple lineup',    images: [], link: '' },
+    { label: 'Samsung & Android',  emoji: '📱', filter: 'Mobiles',     sub: 'Galaxy S series & more', images: [], link: '' },
+    { label: 'MacBooks & Laptops', emoji: '💻', filter: 'Laptops',     sub: 'Power your work',        images: [], link: '' },
+    { label: 'Accessories',        emoji: '🎧', filter: 'Accessories', sub: 'Complete your setup',    images: [], link: '' },
   ],
 
   // ── Google Maps ───────────────────────────────────────
@@ -118,6 +118,17 @@ export function useStoreConfig() {
 export function waUrl(number, text = '') {
   const base = `https://wa.me/${number || STORE_DEFAULTS.whatsappNumber}`;
   return text ? `${base}?text=${encodeURIComponent(text)}` : base;
+}
+
+/**
+ * Get the images array for a category card.
+ * Handles backward-compat: old cards stored a single `image` string;
+ * new cards store an `images` array.
+ */
+export function getCatImages(cat) {
+  if (Array.isArray(cat.images) && cat.images.length) return cat.images;
+  if (cat.image) return [cat.image]; // legacy
+  return [];
 }
 
 /**

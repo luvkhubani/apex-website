@@ -4,7 +4,7 @@ import { useProducts } from '../hooks/useProducts';
 import { useHeroConfig } from '../hooks/useHeroConfig';
 import { useBannerConfig } from '../hooks/useBannerImage';
 import { getProductImage } from '../utils/productImages';
-import { useStoreConfig, waUrl, getStoreImage } from '../hooks/useStoreConfig';
+import { useStoreConfig, waUrl, getStoreImage, getCatImages } from '../hooks/useStoreConfig';
 
 const BRAND_EMOJI = {
   Apple:'🍎',Samsung:'📱',OnePlus:'📲',Nothing:'⚪',Motorola:'📡',
@@ -361,12 +361,34 @@ export default function Home() {
                 onMouseEnter={e => e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.12)'}
                 onMouseLeave={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)'}
               >
-                <div className="bg-apple-light h-52 flex items-center justify-center overflow-hidden relative">
-                  {cat.image
-                    ? <img src={getStoreImage(cat.image)} alt={cat.label} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
-                    : null}
-                  <span className={`text-7xl transition-transform duration-300 group-hover:scale-110 ${cat.image ? 'absolute hidden' : ''}`}>{cat.emoji}</span>
-                </div>
+                {(() => {
+                  const imgs = getCatImages(cat);
+                  if (imgs.length === 0) {
+                    return (
+                      <div className="bg-apple-light h-52 flex items-center justify-center">
+                        <span className="text-7xl transition-transform duration-300 group-hover:scale-110">{cat.emoji}</span>
+                      </div>
+                    );
+                  }
+                  if (imgs.length === 1) {
+                    return (
+                      <div className="bg-apple-light h-52 overflow-hidden">
+                        <img src={getStoreImage(imgs[0])} alt={cat.label} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                      </div>
+                    );
+                  }
+                  // 2+ images: side by side
+                  return (
+                    <div className="h-52 flex overflow-hidden">
+                      {imgs.slice(0, 2).map((img, idx) => (
+                        <div key={idx} className="flex-1 overflow-hidden relative">
+                          <img src={getStoreImage(img)} alt={`${cat.label} ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                          {idx === 0 && <div className="absolute inset-y-0 right-0 w-px bg-white/40" />}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
                 <div className="px-7 py-5 flex items-center justify-between">
                   <div>
                     <p className="text-[18px] font-semibold text-apple-black">{cat.label}</p>

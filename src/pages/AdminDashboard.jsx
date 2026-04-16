@@ -479,9 +479,14 @@ export default function AdminDashboard() {
   const handleCategoryImageUpload = (catIndex, e) => {
     const file = e.target.files[0]; if (!file) return;
     const ext = file.name.split(".").pop() || "jpg";
-    uploadStoreImage(file, `cat-${catIndex}.${ext}`, (url) => {
+    // Use timestamp so multiple uploads don't overwrite each other
+    const filename = `cat-${catIndex}-${Date.now()}.${ext}`;
+    uploadStoreImage(file, filename, (url) => {
       setStoreCfg(c => {
-        const cats = c.categories.map((cat, i) => i === catIndex ? { ...cat, image: url } : cat);
+        const cat = c.categories[catIndex];
+        // Migrate legacy single image → array
+        const existing = Array.isArray(cat.images) ? cat.images : (cat.image ? [cat.image] : []);
+        const cats = c.categories.map((c2, i) => i === catIndex ? { ...c2, images: [...existing, url], image: '' } : c2);
         const n = { ...c, categories: cats };
         saveStoreConfig(n);
         return n;
@@ -1232,21 +1237,32 @@ export default function AdminDashboard() {
                       }} placeholder="e.g. /products or https://..." style={{ ...iStyle, marginBottom:"10px" }} />
                     </div>
                     <div style={{ gridColumn:"1 / -1" }}>
-                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Card Image</label>
-                      {cat.image ? (
-                        <div style={{ marginBottom:"8px", display:"flex", alignItems:"center", gap:"12px" }}>
-                          <div style={{ width:"80px", height:"56px", background:"#1a1a1a", borderRadius:"8px", border:"1px solid #2a2a2a", overflow:"hidden", flexShrink:0 }}>
-                            <img src={getStoreImage(cat.image)} alt={cat.label} style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>
+                        Card Images <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>— 1 image: full cover · 2 images: side-by-side</span>
+                      </label>
+                      {/* Existing images */}
+                      {(() => {
+                        const imgs = Array.isArray(cat.images) && cat.images.length ? cat.images : (cat.image ? [cat.image] : []);
+                        return imgs.length > 0 ? (
+                          <div style={{ display:"flex", gap:"8px", marginBottom:"10px", flexWrap:"wrap" }}>
+                            {imgs.map((img, imgIdx) => (
+                              <div key={imgIdx} style={{ position:"relative", width:"88px", height:"62px", borderRadius:"8px", overflow:"hidden", border:"1px solid #2a2a2a", flexShrink:0 }}>
+                                <img src={getStoreImage(img)} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
+                                <button onClick={() => {
+                                  const allImgs = Array.isArray(cat.images) && cat.images.length ? cat.images : (cat.image ? [cat.image] : []);
+                                  const newImgs = allImgs.filter((_,k) => k !== imgIdx);
+                                  const cats = storeCfg.categories.map((c,j) => j===i ? {...c, images:newImgs, image:''} : c);
+                                  const n = {...storeCfg, categories:cats};
+                                  setStoreCfg(n); saveStoreConfig(n);
+                                }} style={{ position:"absolute", top:"2px", right:"2px", width:"18px", height:"18px", borderRadius:"50%", background:"rgba(0,0,0,0.7)", border:"none", color:"#fff", fontSize:"10px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", lineHeight:1 }}>✕</button>
+                                <div style={{ position:"absolute", bottom:"2px", left:"4px", color:"#fff", fontSize:"9px", opacity:0.7 }}>{imgIdx + 1}</div>
+                              </div>
+                            ))}
                           </div>
-                          <button onClick={() => {
-                            const cats = storeCfg.categories.map((c,j) => j===i?{...c,image:""}:c);
-                            const n = {...storeCfg, categories:cats};
-                            setStoreCfg(n); saveStoreConfig(n);
-                          }} style={{ color:"#ff4444", background:"none", border:"none", fontSize:"12px", cursor:"pointer", padding:0 }}>Remove</button>
-                        </div>
-                      ) : null}
+                        ) : null;
+                      })()}
                       <button onClick={() => catImgRefs.current[i]?.click()} style={{ width:"100%", padding:"8px", background:"#1a1a1a", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"12px", display:"flex", alignItems:"center", justifyContent:"center", gap:"6px" }}>
-                        📁 {cat.image ? "Change Image" : "Upload Image"}
+                        📁 Add Image
                       </button>
                       <input ref={el => catImgRefs.current[i] = el} type="file" accept="image/*" style={{ display:"none" }} onChange={e => { handleCategoryImageUpload(i, e); }} />
                     </div>
@@ -1255,7 +1271,7 @@ export default function AdminDashboard() {
               ))}
               <div style={{ display:"flex", gap:"10px", flexWrap:"wrap" }}>
                 <button onClick={() => {
-                  const newCat = { label:'', emoji:'📦', filter:'', sub:'', image:'', link:'' };
+                  const newCat = { label:'', emoji:'📦', filter:'', sub:'', images:[], link:'' };
                   const n = {...storeCfg, categories:[...storeCfg.categories, newCat]};
                   setStoreCfg(n);
                 }} style={{ flex:1, minWidth:"140px", padding:"10px", background:"#0d0d0d", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"13px", display:"flex", alignItems:"center", justifyContent:"center", gap:"6px" }}>
