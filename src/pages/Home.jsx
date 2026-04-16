@@ -41,7 +41,7 @@ function StorePhotoSlider({ photos }) {
   };
 
   if (n === 0) return (
-    <div className="bg-apple-light rounded-[28px] h-[340px] md:h-[500px] flex flex-col items-center justify-center text-center p-10 border-2 border-dashed border-apple-border">
+    <div className="bg-apple-light rounded-[28px] min-h-[340px] md:min-h-[500px] h-full flex flex-col items-center justify-center text-center p-10 border-2 border-dashed border-apple-border">
       <div className="text-8xl mb-4">🏪</div>
       <p className="text-[13px] font-medium text-apple-gray tracking-wide uppercase">Add your store photos</p>
       <p className="text-[11px] text-apple-gray mt-1">Admin → 🏪 Store → Store Photos</p>
@@ -50,7 +50,7 @@ function StorePhotoSlider({ photos }) {
 
   return (
     <div
-      className="relative rounded-[28px] overflow-hidden h-[340px] md:h-[500px] select-none"
+      className="relative rounded-[28px] overflow-hidden min-h-[340px] md:min-h-[500px] h-full select-none"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={onTouchStart}
@@ -566,10 +566,10 @@ export default function Home() {
       {/* ── 7. STORE ──────────────────────────────────────────── */}
       <Section bg="bg-white">
         <FadeUp>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Store photo slider */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-stretch">
+            {/* Store photo slider — stretches to match right column height */}
             <StorePhotoSlider photos={getStorePhotos(storeCfg)} />
-            <div>
+            <div className="py-2">
               <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Visit Us</p>
               <h2 className="font-sans font-bold text-[40px] md:text-[48px] text-apple-black leading-[1.1] tracking-[-0.02em] mb-5">
                 Apex The Mobile Shoppe.
