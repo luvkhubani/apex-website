@@ -89,17 +89,29 @@ const Btn = ({ children, onClick, color="#00c851", small, danger, disabled, styl
   </button>
 );
 
-const FInput = ({ label, value, onChange, type="text", placeholder, options, required }) => (
-  <div style={{ marginBottom:"14px" }}>
-    <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>
-      {label}{required && <span style={{ color:"#ff4444" }}> *</span>}
-    </label>
-    {options
-      ? <select value={value} onChange={e => onChange(e.target.value)} style={iStyle}>{options.map(o => <option key={o} value={o}>{o||"— none —"}</option>)}</select>
-      : <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} style={iStyle} />
-    }
-  </div>
-);
+const FInput = ({ label, value, onChange, type="text", placeholder, options, required }) => {
+  const listId = options ? `dl-${label.replace(/\s+/g,"-").toLowerCase()}` : null;
+  return (
+    <div style={{ marginBottom:"14px" }}>
+      <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>
+        {label}{required && <span style={{ color:"#ff4444" }}> *</span>}
+      </label>
+      <input
+        type={type}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder || (options ? `Choose or type custom…` : "")}
+        list={listId}
+        style={iStyle}
+      />
+      {options && (
+        <datalist id={listId}>
+          {options.filter(o => o !== "").map(o => <option key={o} value={o} />)}
+        </datalist>
+      )}
+    </div>
+  );
+};
 
 const Toggle = ({ value, onChange, label, desc }) => (
   <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 0", borderBottom:"1px solid #1a1a1a" }}>
