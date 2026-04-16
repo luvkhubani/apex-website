@@ -505,16 +505,19 @@ export default function AdminDashboard() {
   };
 
   const handleStorePhotoUpload = e => {
-    const file = e.target.files[0]; if (!file) return;
-    const ext = file.name.split(".").pop() || "jpg";
-    const filename = `storefront-${Date.now()}.${ext}`;
-    uploadStoreImage(file, filename, (url) => {
-      setStoreCfg(c => {
-        const existing = Array.isArray(c.storePhotos) ? c.storePhotos : (c.storePhoto ? [c.storePhoto] : []);
-        const n = { ...c, storePhotos: [...existing, url], storePhoto: '' };
-        saveStoreConfig(n);
-        if (!url.startsWith('blob:')) { showToast("Store photo synced to repo!"); syncStoreConfig(n); }
-        return n;
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    files.forEach((file, fi) => {
+      const ext = file.name.split(".").pop() || "jpg";
+      const filename = `storefront-${Date.now()}-${fi}.${ext}`;
+      uploadStoreImage(file, filename, (url) => {
+        setStoreCfg(c => {
+          const existing = Array.isArray(c.storePhotos) ? c.storePhotos : (c.storePhoto ? [c.storePhoto] : []);
+          const n = { ...c, storePhotos: [...existing, url], storePhoto: '' };
+          saveStoreConfig(n);
+          if (!url.startsWith('blob:')) { showToast(`Photo ${fi + 1}/${files.length} synced!`); syncStoreConfig(n); }
+          return n;
+        });
       });
     });
     e.target.value = "";
@@ -1212,9 +1215,9 @@ export default function AdminDashboard() {
               })()}
 
               <button onClick={() => storePhotoRef.current?.click()} style={{ width:"100%", padding:"10px", background:"#1a1a1a", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"13px", marginBottom:"12px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}>
-                📁 Add Store Photo
+                📁 Add Store Photos (select multiple at once)
               </button>
-              <input ref={storePhotoRef} type="file" accept="image/*" style={{ display:"none" }} onChange={handleStorePhotoUpload} />
+              <input ref={storePhotoRef} type="file" accept="image/*" multiple style={{ display:"none" }} onChange={handleStorePhotoUpload} />
               <Btn onClick={() => saveStore({...storeCfg})}>Save Store Photos</Btn>
             </div>
 
