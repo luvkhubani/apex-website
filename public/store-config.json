@@ -51,7 +51,14 @@
     }
   ],
   "storePhoto": "",
-  "storePhotos": [],
+  "storePhotos": [
+    "blob:https://www.apexmobile.in/2517cf2c-2074-4516-a97a-f90e3121c777",
+    "blob:https://www.apexmobile.in/073c5857-e964-4154-aff1-1b27272d35b5",
+    "blob:https://www.apexmobile.in/aab0e499-1100-44a7-bb50-62761b36d052",
+    "blob:https://www.apexmobile.in/0d877870-d04e-4a9b-b0f6-178e4c5eed58",
+    "blob:https://www.apexmobile.in/17365598-3497-4486-b407-af7a95cd3efb",
+    "/store/storefront-1776338220262-1.HEIC"
+  ],
   "categories": [
     {
       "label": "iPhones & iPads",
@@ -119,5 +126,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-16T11:16:56.061Z"
+  "_savedAt": "2026-04-16T11:17:08.505Z"
 }
