@@ -4,7 +4,7 @@ import { useProducts } from '../hooks/useProducts';
 import { useHeroConfig } from '../hooks/useHeroConfig';
 import { useBannerConfig } from '../hooks/useBannerImage';
 import { getProductImage } from '../utils/productImages';
-import { useStoreConfig, waUrl, getStoreImage, getCatImages } from '../hooks/useStoreConfig';
+import { useStoreConfig, waUrl, getStoreImage, getCatImages, getStorePhotos } from '../hooks/useStoreConfig';
 
 const BRAND_EMOJI = {
   Apple:'🍎',Samsung:'📱',OnePlus:'📲',Nothing:'⚪',Motorola:'📡',
@@ -463,23 +463,47 @@ export default function Home() {
       <Section bg="bg-white">
         <FadeUp>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Store photo */}
-            {storeCfg.storePhoto ? (
-              <div className="rounded-[24px] overflow-hidden aspect-[4/3]">
-                <img
-                  src={getStoreImage(storeCfg.storePhoto)}
-                  alt="Apex The Mobile Shoppe"
-                  className="w-full h-full object-cover"
-                  onError={e => { e.target.style.display = 'none'; }}
-                />
-              </div>
-            ) : (
-              <div className="bg-apple-light rounded-[24px] aspect-[4/3] flex flex-col items-center justify-center text-center p-10 border-2 border-dashed border-apple-border">
-                <div className="text-8xl mb-4">🏪</div>
-                <p className="text-[13px] font-medium text-apple-gray tracking-wide uppercase">Add your store photo</p>
-                <p className="text-[11px] text-apple-gray mt-1">Admin → 🏪 Store → Store Photo</p>
-              </div>
-            )}
+            {/* Store photos */}
+            {(() => {
+              const photos = getStorePhotos(storeCfg);
+              if (photos.length === 0) return (
+                <div className="bg-apple-light rounded-[24px] aspect-[4/3] flex flex-col items-center justify-center text-center p-10 border-2 border-dashed border-apple-border">
+                  <div className="text-8xl mb-4">🏪</div>
+                  <p className="text-[13px] font-medium text-apple-gray tracking-wide uppercase">Add your store photos</p>
+                  <p className="text-[11px] text-apple-gray mt-1">Admin → 🏪 Store → Store Photos</p>
+                </div>
+              );
+              if (photos.length === 1) return (
+                <div className="rounded-[24px] overflow-hidden aspect-[4/3]">
+                  <img src={getStoreImage(photos[0])} alt="Apex The Mobile Shoppe" className="w-full h-full object-cover" onError={e => { e.target.style.display='none'; }} />
+                </div>
+              );
+              // 2 photos: left tall + right tall
+              if (photos.length === 2) return (
+                <div className="grid grid-cols-2 gap-3 aspect-[4/3]">
+                  {photos.map((ph, i) => (
+                    <div key={i} className="rounded-[16px] overflow-hidden h-full">
+                      <img src={getStoreImage(ph)} alt={`Store ${i+1}`} className="w-full h-full object-cover" onError={e=>{e.target.style.display='none';}} />
+                    </div>
+                  ))}
+                </div>
+              );
+              // 3+ photos: first image large left, remaining stacked right
+              return (
+                <div className="grid grid-cols-2 gap-3 aspect-[4/3]">
+                  <div className="rounded-[16px] overflow-hidden row-span-2 h-full">
+                    <img src={getStoreImage(photos[0])} alt="Store 1" className="w-full h-full object-cover" onError={e=>{e.target.style.display='none';}} />
+                  </div>
+                  <div className="flex flex-col gap-3 h-full">
+                    {photos.slice(1, 3).map((ph, i) => (
+                      <div key={i} className="rounded-[16px] overflow-hidden flex-1">
+                        <img src={getStoreImage(ph)} alt={`Store ${i+2}`} className="w-full h-full object-cover" onError={e=>{e.target.style.display='none';}} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
             <div>
               <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Visit Us</p>
               <h2 className="font-sans font-bold text-[40px] md:text-[48px] text-apple-black leading-[1.1] tracking-[-0.02em] mb-5">

@@ -168,6 +168,15 @@ export default function AdminDashboard() {
   const storePhotoRef   = useRef(null);
   const catImgRefs      = useRef([null, null, null, null]);
   const Fs = k => v => setStoreCfg(c => ({ ...c, [k]: v }));
+  // Push store config to GitHub so all browsers pick it up
+  const syncStoreConfig = (cfg) => {
+    fetch("/api/sync-store-config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ storeConfig: cfg }),
+    }).catch(() => {});
+  };
+
   const saveStore = (next) => {
     saveStoreConfig(next);
     showToast("Saving…");
@@ -473,7 +482,12 @@ export default function AdminDashboard() {
     const file = e.target.files[0]; if (!file) return;
     const ext = file.name.split(".").pop() || "png";
     uploadStoreImage(file, `logo.${ext}`, (url) => {
-      setStoreCfg(c => { const n = { ...c, logoImage: url }; saveStoreConfig(n); return n; });
+      setStoreCfg(c => {
+        const n = { ...c, logoImage: url };
+        saveStoreConfig(n);
+        if (!url.startsWith('blob:')) { showToast("Logo synced to repo!"); syncStoreConfig(n); }
+        return n;
+      });
     });
     e.target.value = "";
   };
@@ -481,8 +495,15 @@ export default function AdminDashboard() {
   const handleStorePhotoUpload = e => {
     const file = e.target.files[0]; if (!file) return;
     const ext = file.name.split(".").pop() || "jpg";
-    uploadStoreImage(file, `storefront.${ext}`, (url) => {
-      setStoreCfg(c => { const n = { ...c, storePhoto: url }; saveStoreConfig(n); return n; });
+    const filename = `storefront-${Date.now()}.${ext}`;
+    uploadStoreImage(file, filename, (url) => {
+      setStoreCfg(c => {
+        const existing = Array.isArray(c.storePhotos) ? c.storePhotos : (c.storePhoto ? [c.storePhoto] : []);
+        const n = { ...c, storePhotos: [...existing, url], storePhoto: '' };
+        saveStoreConfig(n);
+        if (!url.startsWith('blob:')) { showToast("Store photo synced to repo!"); syncStoreConfig(n); }
+        return n;
+      });
     });
     e.target.value = "";
   };
@@ -500,6 +521,7 @@ export default function AdminDashboard() {
         const cats = c.categories.map((c2, i) => i === catIndex ? { ...c2, images: [...existing, url], image: '' } : c2);
         const n = { ...c, categories: cats };
         saveStoreConfig(n);
+        if (!url.startsWith('blob:')) { showToast("Category image synced!"); syncStoreConfig(n); }
         return n;
       });
     });
@@ -1110,25 +1132,39 @@ export default function AdminDashboard() {
               <Btn onClick={() => saveStore({...storeCfg})}>Save Social</Btn>
             </div>
 
-            {/* ── Store Photo ── */}
+            {/* ── Store Photos ── */}
             <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
-              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🏪 Store Photo</h3>
-              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>The storefront image shown in the "Visit Us" section on the home page.</p>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🏪 Store Photos</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Photos shown in the "Visit Us" section on the home page. Add multiple for a gallery layout.</p>
 
-              {storeCfg.storePhoto && (
-                <div style={{ marginBottom:"14px", borderRadius:"12px", overflow:"hidden", border:"1px solid #2a2a2a", background:"#1a1a1a", maxHeight:"180px", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                  <img src={getStoreImage(storeCfg.storePhoto)} alt="Store" style={{ width:"100%", maxHeight:"180px", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
-                </div>
-              )}
+              {/* Existing photos */}
+              {(() => {
+                const photos = Array.isArray(storeCfg.storePhotos) && storeCfg.storePhotos.length
+                  ? storeCfg.storePhotos
+                  : (storeCfg.storePhoto ? [storeCfg.storePhoto] : []);
+                return photos.length > 0 ? (
+                  <div style={{ display:"flex", gap:"10px", flexWrap:"wrap", marginBottom:"14px" }}>
+                    {photos.map((ph, idx) => (
+                      <div key={idx} style={{ position:"relative", width:"120px", height:"84px", borderRadius:"10px", overflow:"hidden", border:"1px solid #2a2a2a", flexShrink:0 }}>
+                        <img src={getStoreImage(ph)} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
+                        <button onClick={() => {
+                          const allPhotos = Array.isArray(storeCfg.storePhotos) && storeCfg.storePhotos.length
+                            ? storeCfg.storePhotos : (storeCfg.storePhoto ? [storeCfg.storePhoto] : []);
+                          const n = {...storeCfg, storePhotos: allPhotos.filter((_,k)=>k!==idx), storePhoto:''};
+                          setStoreCfg(n); saveStoreConfig(n); syncStoreConfig(n);
+                        }} style={{ position:"absolute", top:"4px", right:"4px", width:"20px", height:"20px", borderRadius:"50%", background:"rgba(0,0,0,0.75)", border:"none", color:"#fff", fontSize:"11px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
+                        <div style={{ position:"absolute", bottom:"3px", left:"5px", color:"#fff", fontSize:"10px", fontWeight:600, textShadow:"0 1px 2px rgba(0,0,0,0.8)" }}>{idx+1}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : null;
+              })()}
 
-              <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Image URL</label>
-              <input value={storeCfg.storePhoto} onChange={e => Fs("storePhoto")(e.target.value)} placeholder="Paste image URL, or upload from device →" style={{ ...iStyle, marginBottom:"8px" }} />
-              <button onClick={() => storePhotoRef.current?.click()} style={{ width:"100%", padding:"10px", background:"#1a1a1a", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"13px", marginBottom:"16px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}>
-                📁 Upload Store Photo from Device
+              <button onClick={() => storePhotoRef.current?.click()} style={{ width:"100%", padding:"10px", background:"#1a1a1a", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"13px", marginBottom:"12px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}>
+                📁 Add Store Photo
               </button>
               <input ref={storePhotoRef} type="file" accept="image/*" style={{ display:"none" }} onChange={handleStorePhotoUpload} />
-
-              <Btn onClick={() => saveStore({...storeCfg})}>Save Store Photo</Btn>
+              <Btn onClick={() => saveStore({...storeCfg})}>Save Store Photos</Btn>
             </div>
 
             {/* ── Trust Stats ── */}

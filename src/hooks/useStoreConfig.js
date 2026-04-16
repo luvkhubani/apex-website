@@ -38,8 +38,9 @@ export const STORE_DEFAULTS = {
     { quote: "Apex has been my family's go-to electronics store for two decades. Honest advice, genuine products, and after-sales support you simply can't find elsewhere.",  name: 'Anjali Verma',   location: 'Indore' },
   ],
 
-  // ── Home page — Store photo ───────────────────────────
-  storePhoto: '',   // image path or URL for the "Visit Us" section
+  // ── Home page — Store photos ──────────────────────────
+  storePhoto:  '',  // legacy single photo — kept for compat
+  storePhotos: [],  // list of store photos for the "Visit Us" section
 
   // ── Shop by Category cards ───────────────────────────
   categories: [
@@ -95,6 +96,7 @@ export function loadStoreConfig() {
         ...STORE_DEFAULTS,
         ...parsed,
         phoneNumbers:   parsed.phoneNumbers   ?? STORE_DEFAULTS.phoneNumbers,
+        storePhotos:    parsed.storePhotos    ?? STORE_DEFAULTS.storePhotos,
         categories:     parsed.categories     ?? STORE_DEFAULTS.categories,
         trustStats:     parsed.trustStats     ?? STORE_DEFAULTS.trustStats,
         testimonials:   parsed.testimonials   ?? STORE_DEFAULTS.testimonials,
@@ -125,6 +127,7 @@ export function useStoreConfig() {
           ...STORE_DEFAULTS,
           ...remote,
           phoneNumbers:   remote.phoneNumbers   ?? STORE_DEFAULTS.phoneNumbers,
+          storePhotos:    remote.storePhotos    ?? STORE_DEFAULTS.storePhotos,
           categories:     remote.categories     ?? STORE_DEFAULTS.categories,
           trustStats:     remote.trustStats     ?? STORE_DEFAULTS.trustStats,
           testimonials:   remote.testimonials   ?? STORE_DEFAULTS.testimonials,
@@ -157,6 +160,15 @@ export function useStoreConfig() {
 export function waUrl(number, text = '') {
   const base = `https://wa.me/${number || STORE_DEFAULTS.whatsappNumber}`;
   return text ? `${base}?text=${encodeURIComponent(text)}` : base;
+}
+
+/**
+ * Get the store photos array — backward-compat with legacy storePhoto string.
+ */
+export function getStorePhotos(cfg) {
+  if (Array.isArray(cfg.storePhotos) && cfg.storePhotos.length) return cfg.storePhotos;
+  if (cfg.storePhoto) return [cfg.storePhoto];
+  return [];
 }
 
 /**
