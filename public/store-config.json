@@ -51,41 +51,36 @@
     }
   ],
   "storePhoto": "",
-  "storePhotos": [
-    "blob:https://www.apexmobile.in/8586f306-57ed-4405-a446-3f53026ed87c",
-    "blob:https://www.apexmobile.in/3f8e0990-c0ec-47a1-8228-84f0c88a482d",
-    "blob:https://www.apexmobile.in/81858bb9-d3c2-4735-afa5-b9588aac472c",
-    "blob:https://www.apexmobile.in/0e23c8b2-4993-4f98-a01a-722bceff19b1",
-    "blob:https://www.apexmobile.in/8f2dc092-28dd-456d-8358-4c37e9634ffd",
-    "blob:https://www.apexmobile.in/0e2ab6a0-bbea-462e-be19-af75f121843a",
-    "blob:https://www.apexmobile.in/6d011435-bff4-4b9b-ba9e-256b15f9857f",
-    "blob:https://www.apexmobile.in/f39af1be-cec3-4874-a5af-65f7a65dba9a"
-  ],
+  "storePhotos": [],
   "categories": [
     {
       "label": "iPhones & iPads",
       "emoji": "🍎",
       "filter": "Mobiles",
       "sub": "Latest Apple lineup",
-      "link": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317415_6_SGB-RnikO.png?updatedAt=1757529439070?tr=w-1000"
+      "link": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317415_6_SGB-RnikO.png?updatedAt=1757529439070?tr=w-1000",
+      "images": []
     },
     {
       "label": "Samsung & Android",
       "emoji": "📱",
       "filter": "Mobiles",
-      "sub": "Galaxy S series & more"
+      "sub": "Galaxy S series & more",
+      "images": []
     },
     {
       "label": "MacBooks & Laptops",
       "emoji": "💻",
       "filter": "Laptops",
-      "sub": "Power your work"
+      "sub": "Power your work",
+      "images": []
     },
     {
       "label": "Accessories",
       "emoji": "🎧",
       "filter": "Accessories",
-      "sub": "Complete your setup"
+      "sub": "Complete your setup",
+      "images": []
     }
   ],
   "googleMapsEmbed": "https://share.google/COjQTrz41gegF0ueE",
@@ -128,5 +123,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-16T16:04:49.854Z"
+  "_savedAt": "2026-04-16T16:04:58.049Z"
 }
