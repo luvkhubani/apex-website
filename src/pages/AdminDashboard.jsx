@@ -1152,7 +1152,7 @@ export default function AdminDashboard() {
               <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🏪 Store Photos</h3>
               <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Photos shown in the "Visit Us" section on the home page. Add multiple for a gallery layout.</p>
 
-              {/* Existing photos with reorder */}
+              {/* Existing photos — vertical list with reorder + delete */}
               {(() => {
                 const photos = Array.isArray(storeCfg.storePhotos) && storeCfg.storePhotos.length
                   ? storeCfg.storePhotos
@@ -1162,54 +1162,66 @@ export default function AdminDashboard() {
                 const move = (from, to) => {
                   setStoreCfg(prev => {
                     const cur = Array.isArray(prev.storePhotos) && prev.storePhotos.length
-                      ? [...prev.storePhotos]
-                      : (prev.storePhoto ? [prev.storePhoto] : []);
+                      ? [...prev.storePhotos] : (prev.storePhoto ? [prev.storePhoto] : []);
                     const [item] = cur.splice(from, 1);
                     cur.splice(to, 0, item);
                     const next = { ...prev, storePhotos: cur, storePhoto: '' };
-                    saveStoreConfig(next);
-                    syncStoreConfig(next);
+                    saveStoreConfig(next); syncStoreConfig(next);
                     return next;
                   });
                 };
 
-                const remove = (removeIdx) => {
+                const remove = (idx) => {
                   setStoreCfg(prev => {
                     const cur = Array.isArray(prev.storePhotos) && prev.storePhotos.length
                       ? prev.storePhotos : (prev.storePhoto ? [prev.storePhoto] : []);
-                    const next = { ...prev, storePhotos: cur.filter((_,k) => k !== removeIdx), storePhoto: '' };
-                    saveStoreConfig(next);
-                    syncStoreConfig(next);
+                    const next = { ...prev, storePhotos: cur.filter((_,k) => k !== idx), storePhoto: '' };
+                    saveStoreConfig(next); syncStoreConfig(next);
                     return next;
                   });
                 };
 
+                const btnBase = { border:"1px solid #2a2a2a", borderRadius:"8px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"18px", width:"38px", height:"38px", flexShrink:0, transition:"all 0.15s" };
+
                 return (
-                  <div style={{ marginBottom:"14px" }}>
-                    <p style={{ color:"#555", fontSize:"11px", marginBottom:"10px" }}>Use ← → to reorder. First photo shows first in the slider.</p>
-                    <div style={{ display:"flex", gap:"10px", flexWrap:"wrap" }}>
-                      {photos.map((ph, i) => (
-                        <div key={i} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"6px" }}>
-                          <div style={{ position:"relative", width:"120px", height:"84px", borderRadius:"10px", overflow:"hidden", border:"1px solid #2a2a2a" }}>
-                            <img src={getStoreImage(ph)} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
-                            <button onClick={() => remove(i)} style={{ position:"absolute", top:"4px", right:"4px", width:"22px", height:"22px", borderRadius:"50%", background:"rgba(0,0,0,0.8)", border:"none", color:"#fff", fontSize:"12px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
-                            <div style={{ position:"absolute", bottom:"3px", left:"5px", color:"#fff", fontSize:"10px", fontWeight:700, textShadow:"0 1px 3px rgba(0,0,0,0.9)" }}>{i + 1}</div>
-                          </div>
-                          <div style={{ display:"flex", gap:"4px" }}>
-                            <button
-                              disabled={i === 0}
-                              onClick={() => move(i, i - 1)}
-                              style={{ background: i===0?"#0d0d0d":"#1a1a1a", border:"1px solid #2a2a2a", borderRadius:"6px", color:i===0?"#2a2a2a":"#aaa", cursor:i===0?"default":"pointer", fontSize:"14px", padding:"3px 10px", lineHeight:1, fontWeight:600 }}
-                            >←</button>
-                            <button
-                              disabled={i === photos.length - 1}
-                              onClick={() => move(i, i + 1)}
-                              style={{ background:i===photos.length-1?"#0d0d0d":"#1a1a1a", border:"1px solid #2a2a2a", borderRadius:"6px", color:i===photos.length-1?"#2a2a2a":"#aaa", cursor:i===photos.length-1?"default":"pointer", fontSize:"14px", padding:"3px 10px", lineHeight:1, fontWeight:600 }}
-                            >→</button>
-                          </div>
+                  <div style={{ marginBottom:"16px", display:"flex", flexDirection:"column", gap:"8px" }}>
+                    {photos.map((ph, i) => (
+                      <div key={i} style={{ display:"flex", alignItems:"center", gap:"10px", background:"#0d0d0d", borderRadius:"12px", padding:"10px", border:"1px solid #1a1a1a" }}>
+                        {/* Thumbnail */}
+                        <div style={{ width:"96px", height:"68px", borderRadius:"8px", overflow:"hidden", flexShrink:0, border:"1px solid #2a2a2a" }}>
+                          <img src={getStoreImage(ph)} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
                         </div>
-                      ))}
-                    </div>
+
+                        {/* Order badge */}
+                        <div style={{ color:"#555", fontSize:"13px", fontWeight:700, flexShrink:0, width:"20px", textAlign:"center" }}>{i + 1}</div>
+
+                        {/* Up / Down */}
+                        <div style={{ display:"flex", flexDirection:"column", gap:"4px", flexShrink:0 }}>
+                          <button
+                            disabled={i === 0}
+                            onClick={() => move(i, i - 1)}
+                            title="Move up"
+                            style={{ ...btnBase, background: i===0?"#0d0d0d":"#1a1a1a", color:i===0?"#2a2a2a":"#aaa", cursor:i===0?"default":"pointer", fontSize:"14px" }}
+                          >↑</button>
+                          <button
+                            disabled={i === photos.length - 1}
+                            onClick={() => move(i, i + 1)}
+                            title="Move down"
+                            style={{ ...btnBase, background:i===photos.length-1?"#0d0d0d":"#1a1a1a", color:i===photos.length-1?"#2a2a2a":"#aaa", cursor:i===photos.length-1?"default":"pointer", fontSize:"14px" }}
+                          >↓</button>
+                        </div>
+
+                        {/* Spacer */}
+                        <div style={{ flex:1 }} />
+
+                        {/* Delete */}
+                        <button
+                          onClick={() => remove(i)}
+                          title="Delete photo"
+                          style={{ ...btnBase, background:"#ff444422", border:"1px solid #ff444444", color:"#ff4444", width:"42px", height:"42px", fontSize:"16px" }}
+                        >🗑</button>
+                      </div>
+                    ))}
                   </div>
                 );
               })()}
