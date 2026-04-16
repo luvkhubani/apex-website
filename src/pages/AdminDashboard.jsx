@@ -206,6 +206,29 @@ export default function AdminDashboard() {
   const [dropDragging, setDropDragging] = useState(false);
   const logoImgRef      = useRef(null);
   const storePhotoRef   = useRef(null);
+
+  // ── Store photos — managed independently via /api/store-photos ──────
+  const [storePhotos, setStorePhotos] = useState([]);
+  const [photosLoading, setPhotosLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/store-photos")
+      .then(r => r.json())
+      .then(data => { setStorePhotos(Array.isArray(data) ? data : []); setPhotosLoading(false); })
+      .catch(() => setPhotosLoading(false));
+  }, []);
+
+  const savePhotos = async (newPhotos) => {
+    setStorePhotos(newPhotos);
+    const r = await fetch("/api/store-photos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ photos: newPhotos }),
+    });
+    const d = await r.json();
+    if (!d.success) showToast("Save failed: " + (d.error || "unknown"), "warn");
+    return d.success;
+  };
   const catImgRefs      = useRef([null, null, null, null]);
   const Fs = k => v => setStoreCfg(c => ({ ...c, [k]: v }));
   // Push store config to GitHub so all browsers pick it up
@@ -589,18 +612,12 @@ export default function AdminDashboard() {
     if (!files.length) return;
     e.target.value = "";
 
-    // Upload one at a time to avoid GitHub SHA conflicts
+    let currentPhotos = [...storePhotos];
+
     for (let fi = 0; fi < files.length; fi++) {
       const file = files[fi];
       const filename = `storefront-${Date.now()}-${fi}.jpg`;
       showToast(`Uploading photo ${fi + 1} of ${files.length}…`);
-
-      // Add blob preview immediately
-      const blobUrl = URL.createObjectURL(file);
-      setStoreCfg(c => {
-        const existing = Array.isArray(c.storePhotos) ? c.storePhotos : (c.storePhoto ? [c.storePhoto] : []);
-        return { ...c, storePhotos: [...existing, blobUrl], storePhoto: '' };
-      });
 
       try {
         const compressed = await compressImage(file);
@@ -619,24 +636,16 @@ export default function AdminDashboard() {
         const data = await resp.json();
         if (!resp.ok) throw new Error(data.error || "Upload failed");
 
-        // Replace blob URL with the stable /store/ URL
-        setStoreCfg(c => {
-          const photos = (c.storePhotos || []).map(p => p === blobUrl ? data.url : p);
-          const n = { ...c, storePhotos: photos, storePhoto: '' };
-          saveStoreConfig(n);
-          if (fi === files.length - 1) {
-            // Sync to repo only after all uploads done
-            syncStoreConfig(n);
-            showToast("All photos uploaded & synced!");
-          }
-          return n;
-        });
+        currentPhotos = [...currentPhotos, data.url];
+        setStorePhotos(currentPhotos);
       } catch (err) {
-        // Remove failed blob preview
-        setStoreCfg(c => ({ ...c, storePhotos: (c.storePhotos || []).filter(p => p !== blobUrl) }));
         showToast(`Photo ${fi + 1} failed: ${err.message}`, "warn");
       }
     }
+
+    // Save the full updated list to repo once after all uploads
+    const ok = await savePhotos(currentPhotos);
+    if (ok) showToast("All photos saved & synced!");
   };
 
   const handleCategoryImageUpload = (catIndex, e) => {
@@ -1267,81 +1276,34 @@ export default function AdminDashboard() {
             {/* ── Store Photos ── */}
             <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
               <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🏪 Store Photos</h3>
-              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Photos shown in the "Visit Us" section on the home page. Add multiple for a gallery layout.</p>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Photos shown in the "Visit Us" slider on the home page — visible on all browsers instantly.</p>
 
-              {/* Existing photos — vertical list with reorder + delete */}
-              {(() => {
-                const photos = Array.isArray(storeCfg.storePhotos) && storeCfg.storePhotos.length
-                  ? storeCfg.storePhotos
-                  : (storeCfg.storePhoto ? [storeCfg.storePhoto] : []);
-                if (photos.length === 0) return null;
-
-                const move = (from, to) => {
-                  setStoreCfg(prev => {
-                    const cur = Array.isArray(prev.storePhotos) && prev.storePhotos.length
-                      ? [...prev.storePhotos] : (prev.storePhoto ? [prev.storePhoto] : []);
-                    const [item] = cur.splice(from, 1);
-                    cur.splice(to, 0, item);
-                    const next = { ...prev, storePhotos: cur, storePhoto: '' };
-                    saveStoreConfig(next); syncStoreConfig(next);
-                    return next;
-                  });
-                };
-
-                const remove = (idx) => {
-                  setStoreCfg(prev => {
-                    const cur = Array.isArray(prev.storePhotos) && prev.storePhotos.length
-                      ? prev.storePhotos : (prev.storePhoto ? [prev.storePhoto] : []);
-                    const next = { ...prev, storePhotos: cur.filter((_,k) => k !== idx), storePhoto: '' };
-                    saveStoreConfig(next); syncStoreConfig(next);
-                    return next;
-                  });
-                };
-
-                const btnBase = { border:"1px solid #2a2a2a", borderRadius:"8px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"18px", width:"38px", height:"38px", flexShrink:0, transition:"all 0.15s" };
-
-                return (
-                  <div style={{ marginBottom:"16px", display:"flex", flexDirection:"column", gap:"8px" }}>
-                    {photos.map((ph, i) => (
+              {/* Photo list */}
+              {photosLoading ? (
+                <div style={{ color:"#555", fontSize:"13px", marginBottom:"16px" }}>Loading photos…</div>
+              ) : storePhotos.length > 0 ? (
+                <div style={{ marginBottom:"16px", display:"flex", flexDirection:"column", gap:"8px" }}>
+                  {storePhotos.map((ph, i) => {
+                    const btnBase = { border:"1px solid #2a2a2a", borderRadius:"8px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", width:"36px", height:"36px", flexShrink:0, background:"#1a1a1a", color:"#aaa", transition:"all 0.15s", fontSize:"14px" };
+                    return (
                       <div key={i} style={{ display:"flex", alignItems:"center", gap:"10px", background:"#0d0d0d", borderRadius:"12px", padding:"10px", border:"1px solid #1a1a1a" }}>
-                        {/* Thumbnail */}
                         <div style={{ width:"96px", height:"68px", borderRadius:"8px", overflow:"hidden", flexShrink:0, border:"1px solid #2a2a2a" }}>
                           <img src={getStoreImage(ph)} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
                         </div>
-
-                        {/* Order badge */}
                         <div style={{ color:"#555", fontSize:"13px", fontWeight:700, flexShrink:0, width:"20px", textAlign:"center" }}>{i + 1}</div>
-
-                        {/* Up / Down */}
-                        <div style={{ display:"flex", flexDirection:"column", gap:"4px", flexShrink:0 }}>
-                          <button
-                            disabled={i === 0}
-                            onClick={() => move(i, i - 1)}
-                            title="Move up"
-                            style={{ ...btnBase, background: i===0?"#0d0d0d":"#1a1a1a", color:i===0?"#2a2a2a":"#aaa", cursor:i===0?"default":"pointer", fontSize:"14px" }}
-                          >↑</button>
-                          <button
-                            disabled={i === photos.length - 1}
-                            onClick={() => move(i, i + 1)}
-                            title="Move down"
-                            style={{ ...btnBase, background:i===photos.length-1?"#0d0d0d":"#1a1a1a", color:i===photos.length-1?"#2a2a2a":"#aaa", cursor:i===photos.length-1?"default":"pointer", fontSize:"14px" }}
-                          >↓</button>
+                        <div style={{ display:"flex", flexDirection:"column", gap:"4px" }}>
+                          <button disabled={i===0} onClick={async () => { const p=[...storePhotos]; [p[i-1],p[i]]=[p[i],p[i-1]]; await savePhotos(p); }} style={{ ...btnBase, background:i===0?"#0d0d0d":"#1a1a1a", color:i===0?"#2a2a2a":"#aaa", cursor:i===0?"default":"pointer" }}>↑</button>
+                          <button disabled={i===storePhotos.length-1} onClick={async () => { const p=[...storePhotos]; [p[i],p[i+1]]=[p[i+1],p[i]]; await savePhotos(p); }} style={{ ...btnBase, background:i===storePhotos.length-1?"#0d0d0d":"#1a1a1a", color:i===storePhotos.length-1?"#2a2a2a":"#aaa", cursor:i===storePhotos.length-1?"default":"pointer" }}>↓</button>
                         </div>
-
-                        {/* Spacer */}
                         <div style={{ flex:1 }} />
-
-                        {/* Delete */}
-                        <button
-                          onClick={() => remove(i)}
-                          title="Delete photo"
-                          style={{ ...btnBase, background:"#ff444422", border:"1px solid #ff444444", color:"#ff4444", width:"42px", height:"42px", fontSize:"16px" }}
-                        >🗑</button>
+                        <button onClick={async () => { await savePhotos(storePhotos.filter((_,k)=>k!==i)); showToast("Photo deleted.","warn"); }} style={{ ...btnBase, background:"#ff444422", border:"1px solid #ff444444", color:"#ff4444", width:"42px", height:"42px", fontSize:"16px" }}>🗑</button>
                       </div>
-                    ))}
-                  </div>
-                );
-              })()}
+                    );
+                  })}
+                </div>
+              ) : (
+                <div style={{ color:"#555", fontSize:"13px", marginBottom:"16px" }}>No photos yet — upload below.</div>
+              )}
 
               {/* Drop zone */}
               <div
@@ -1352,17 +1314,15 @@ export default function AdminDashboard() {
                   e.preventDefault(); setDropDragging(false);
                   const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith("image/"));
                   if (!files.length) return;
-                  const fakeEvt = { target: { files, value: "" }, preventDefault: ()=>{} };
-                  handleStorePhotoUpload(fakeEvt);
+                  handleStorePhotoUpload({ target: { files, value:"" } });
                 }}
-                style={{ width:"100%", padding:"24px 16px", background: dropDragging ? "#1a2a1a" : "#1a1a1a", border: `2px dashed ${dropDragging ? "#00c851" : "#3a3a3a"}`, borderRadius:"10px", color: dropDragging ? "#00c851" : "#888", cursor:"pointer", fontSize:"13px", marginBottom:"12px", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"6px", transition:"all 0.15s", boxSizing:"border-box" }}
+                style={{ width:"100%", padding:"24px 16px", background: dropDragging?"#1a2a1a":"#1a1a1a", border:`2px dashed ${dropDragging?"#00c851":"#3a3a3a"}`, borderRadius:"10px", color:dropDragging?"#00c851":"#888", cursor:"pointer", fontSize:"13px", marginBottom:"12px", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"6px", transition:"all 0.15s", boxSizing:"border-box" }}
               >
-                <span style={{ fontSize:"28px" }}>{dropDragging ? "🟢" : "📁"}</span>
-                <span style={{ fontWeight:600 }}>{dropDragging ? "Drop to upload" : "Drop photos here, or click to select"}</span>
-                <span style={{ fontSize:"11px", color:"#555" }}>Supports multiple files at once</span>
+                <span style={{ fontSize:"28px" }}>{dropDragging?"🟢":"📁"}</span>
+                <span style={{ fontWeight:600 }}>{dropDragging?"Drop to upload":"Drop photos here, or click to select"}</span>
+                <span style={{ fontSize:"11px", color:"#555" }}>Multiple files OK · Auto-compressed · Saved to all browsers</span>
               </div>
               <input ref={storePhotoRef} type="file" accept="image/*" multiple style={{ display:"none" }} onChange={handleStorePhotoUpload} />
-              <Btn onClick={() => saveStore({...storeCfg})}>Save Store Photos</Btn>
             </div>
 
             {/* ── Trust Stats ── */}

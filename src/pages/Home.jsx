@@ -5,7 +5,7 @@ import { useProducts } from '../hooks/useProducts';
 import { useHeroConfig } from '../hooks/useHeroConfig';
 import { useBannerConfig } from '../hooks/useBannerImage';
 import { getProductImage } from '../utils/productImages';
-import { useStoreConfig, waUrl, getStoreImage, getCatImages, getStorePhotos } from '../hooks/useStoreConfig';
+import { useStoreConfig, waUrl, getStoreImage, getCatImages } from '../hooks/useStoreConfig';
 
 // ── Store photo slider ────────────────────────────────────
 function StorePhotoSlider({ photos }) {
@@ -111,6 +111,17 @@ function StorePhotoSlider({ photos }) {
       )}
     </div>
   );
+}
+
+function useStorePhotos() {
+  const [photos, setPhotos] = useState([]);
+  useEffect(() => {
+    fetch('/api/store-photos')
+      .then(r => r.ok ? r.json() : [])
+      .then(d => setPhotos(Array.isArray(d) ? d : []))
+      .catch(() => {});
+  }, []);
+  return photos;
 }
 
 const BRAND_EMOJI = {
@@ -271,6 +282,7 @@ export default function Home() {
   const heroConfig  = useHeroConfig();
   const banner      = useBannerConfig();
   const storeCfg    = useStoreConfig();
+  const storePhotos = useStorePhotos();
 
   // Dynamic brands — only show brands present in our product list, in preferred order
   const activeBrands = BRAND_ORDER.filter(b => products.some(p => p.brand === b));
@@ -571,7 +583,7 @@ export default function Home() {
         <FadeUp>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-stretch">
             {/* Store photo slider — stretches to match right column height */}
-            <StorePhotoSlider photos={getStorePhotos(storeCfg)} />
+            <StorePhotoSlider photos={storePhotos} />
             <div className="py-2">
               <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Visit Us</p>
               <h2 className="font-sans font-bold text-[40px] md:text-[48px] text-apple-black leading-[1.1] tracking-[-0.02em] mb-5">
