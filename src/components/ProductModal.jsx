@@ -218,7 +218,7 @@ export default function ProductModal({ group, onClose }) {
                   WhatsApp
                 </a>
                 <a
-                  href={`tel:${storeCfg.phoneDisplay.replace(/\s/g,'')}`}
+                  href={`tel:${(storeCfg.phoneNumbers?.[0]?.number || storeCfg.phoneDisplay).replace(/\s/g,'')}`}
                   className="flex-1 flex items-center justify-center gap-2 text-[15px] font-semibold text-white bg-apple-black py-3.5 rounded-pill hover:opacity-80 active:scale-[0.98] transition-all"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">

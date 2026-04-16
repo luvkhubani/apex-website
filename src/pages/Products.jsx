@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import ProductCard  from '../components/ProductCard';
 import ProductModal from '../components/ProductModal';
 import FadeUp       from '../components/FadeUp';
@@ -62,14 +63,29 @@ function Pill({ active, onClick, children }) {
 }
 
 export default function Products() {
-  const products  = useProducts();
-  const storeCfg  = useStoreConfig();
+  const products       = useProducts();
+  const storeCfg       = useStoreConfig();
+  const [searchParams] = useSearchParams();
   const [search,     setSearch]     = useState('');
-  const [brand,      setBrand]      = useState('All');
-  const [category,   setCategory]   = useState('All');
+  const [brand,      setBrand]      = useState(() => {
+    const b = searchParams.get('brand');
+    return b && BRANDS.includes(b) ? b : 'All';
+  });
+  const [category,   setCategory]   = useState(() => {
+    const c = searchParams.get('category');
+    return c && CATEGORIES.includes(c) ? c : 'All';
+  });
   const [priceRange, setPriceRange] = useState('All Prices');
   const [sort,       setSort]       = useState('newest');
   const [openGroup,  setOpenGroup]  = useState(null);   // modal state
+
+  // Sync if URL params change (e.g. back/forward navigation)
+  useEffect(() => {
+    const b = searchParams.get('brand');
+    if (b && BRANDS.includes(b)) setBrand(b);
+    const c = searchParams.get('category');
+    if (c && CATEGORIES.includes(c)) setCategory(c);
+  }, [searchParams]);
 
   // ── Filtered + grouped ───────────────────────────────────
   const groups = useMemo(() => {

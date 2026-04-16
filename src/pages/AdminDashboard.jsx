@@ -101,6 +101,39 @@ const Toggle = ({ value, onChange, label, desc }) => (
   </div>
 );
 
+function ChangePasswordSection() {
+  const [cur,    setCur]    = useState("");
+  const [next,   setNext]   = useState("");
+  const [conf,   setConf]   = useState("");
+  const [msg,    setMsg]    = useState(null); // {text, ok}
+
+  const DEFAULT_PW = "Apex@2024#Secret";
+  const getStored  = () => localStorage.getItem("apex_admin_password") || DEFAULT_PW;
+
+  const handleChange = () => {
+    if (cur !== getStored()) { setMsg({ text: "Current password is incorrect.", ok: false }); return; }
+    if (next.length < 8)     { setMsg({ text: "New password must be at least 8 characters.", ok: false }); return; }
+    if (next !== conf)        { setMsg({ text: "Passwords don't match.", ok: false }); return; }
+    localStorage.setItem("apex_admin_password", next);
+    setCur(""); setNext(""); setConf("");
+    setMsg({ text: "Password changed successfully!", ok: true });
+  };
+
+  const pw = s => ({ ...iStyle, marginBottom:"10px", WebkitTextSecurity:"disc" });
+
+  return (
+    <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
+      <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🔐 Change Admin Password</h3>
+      <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Stored locally on this device. Affects login on this browser only.</p>
+      <input type="password" value={cur}  onChange={e=>{setCur(e.target.value);setMsg(null);}}  placeholder="Current password"  style={pw()} />
+      <input type="password" value={next} onChange={e=>{setNext(e.target.value);setMsg(null);}} placeholder="New password (min 8 chars)" style={pw()} />
+      <input type="password" value={conf} onChange={e=>{setConf(e.target.value);setMsg(null);}} placeholder="Confirm new password" style={{ ...iStyle, marginBottom:"14px" }} />
+      {msg && <p style={{ color: msg.ok ? "#00c851" : "#ff4444", fontSize:"12px", marginBottom:"12px" }}>{msg.text}</p>}
+      <Btn onClick={handleChange}>Change Password</Btn>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   const navigate    = useNavigate();
   const csvInputRef    = useRef(null);
@@ -137,7 +170,7 @@ export default function AdminDashboard() {
   const Fs = k => v => setStoreCfg(c => ({ ...c, [k]: v }));
   const saveStore = (next) => { saveStoreConfig(next); showToast("Saved!"); };
 
-  useEffect(() => { if (!localStorage.getItem(AUTH_KEY)) navigate("/admin-apex-secret"); }, []);
+  useEffect(() => { if (!localStorage.getItem(AUTH_KEY)) navigate("/admin"); }, []);
 
   // On first load: push everything from localStorage to GitHub so all browsers stay in sync
   useEffect(() => {
@@ -559,7 +592,7 @@ export default function AdminDashboard() {
         </div>
         <div style={{ display:"flex", gap:"8px", alignItems:"center" }}>
           <span style={{ color:"#555", fontSize:"12px" }}>{products.length} variants · {totalModels} models</span>
-          <Btn color="ghost" small onClick={() => { localStorage.removeItem(AUTH_KEY); navigate("/admin-apex-secret"); }}>Logout</Btn>
+          <Btn color="ghost" small onClick={() => { localStorage.removeItem(AUTH_KEY); navigate("/admin"); }}>Logout</Btn>
         </div>
       </div>
 
@@ -995,9 +1028,31 @@ export default function AdminDashboard() {
                 </div>
                 <div style={{ gridColumn:"1 / -1" }}>
                   <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>
-                    Phone Display <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(shown as text and tel: link)</span>
+                    Phone Numbers <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(all numbers shown on contact page and footer)</span>
                   </label>
-                  <input value={storeCfg.phoneDisplay} onChange={e => Fs("phoneDisplay")(e.target.value)} placeholder="+91 83495 70000" style={{ ...iStyle, marginBottom:"14px" }} />
+                  {(storeCfg.phoneNumbers || []).map((ph, i) => (
+                    <div key={i} style={{ display:"flex", gap:"8px", marginBottom:"8px", alignItems:"center" }}>
+                      <input value={ph.label||''} onChange={e => {
+                        const arr = storeCfg.phoneNumbers.map((p,j) => j===i?{...p,label:e.target.value}:p);
+                        setStoreCfg(s => ({...s, phoneNumbers:arr}));
+                      }} placeholder="Label (e.g. Main, Sales)" style={{ ...iStyle, width:"130px", flexShrink:0 }} />
+                      <input value={ph.number||''} onChange={e => {
+                        const arr = storeCfg.phoneNumbers.map((p,j) => j===i?{...p,number:e.target.value}:p);
+                        setStoreCfg(s => ({...s, phoneNumbers:arr}));
+                      }} placeholder="+91 XXXXX XXXXX" style={{ ...iStyle, flex:1 }} />
+                      <button onClick={() => {
+                        const arr = storeCfg.phoneNumbers.filter((_,j) => j!==i);
+                        const n = {...storeCfg, phoneNumbers:arr};
+                        setStoreCfg(n); saveStoreConfig(n);
+                      }} style={{ color:"#ff4444", background:"none", border:"none", fontSize:"18px", cursor:"pointer", lineHeight:1, padding:"0 4px", flexShrink:0 }}>✕</button>
+                    </div>
+                  ))}
+                  <button onClick={() => {
+                    const arr = [...(storeCfg.phoneNumbers||[]), {label:'',number:''}];
+                    setStoreCfg(s => ({...s, phoneNumbers:arr}));
+                  }} style={{ width:"100%", padding:"8px", background:"#0d0d0d", border:"1px dashed #2a2a2a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"12px", marginBottom:"14px" }}>
+                    ＋ Add Phone Number
+                  </button>
                 </div>
                 <div>
                   <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Address Line 1</label>
@@ -1235,6 +1290,9 @@ export default function AdminDashboard() {
 
               <Btn onClick={() => saveStore({...storeCfg})}>Save Maps Info</Btn>
             </div>
+
+            {/* ── Change Password ── */}
+            <ChangePasswordSection />
           </div>
         )}
 

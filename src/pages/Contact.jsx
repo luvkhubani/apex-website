@@ -63,7 +63,16 @@ export default function Contact() {
                       </svg>
                     ),
                     label: 'Phone',
-                    content: <a href={`tel:${storeCfg.phoneDisplay.replace(/\s/g,'')}`} className="text-apple-black text-[15px] hover:opacity-70 transition-opacity">{storeCfg.phoneDisplay}</a>,
+                    content: (
+                      <div className="flex flex-col gap-0.5">
+                        {(storeCfg.phoneNumbers?.length ? storeCfg.phoneNumbers : [{ label: '', number: storeCfg.phoneDisplay }]).map((ph, i) => (
+                          <div key={i} className="flex items-center gap-2">
+                            {ph.label && <span className="text-apple-gray text-[13px]">{ph.label}:</span>}
+                            <a href={`tel:${ph.number.replace(/\s/g,'')}`} className="text-apple-black text-[15px] hover:opacity-70 transition-opacity">{ph.number}</a>
+                          </div>
+                        ))}
+                      </div>
+                    ),
                   },
                   {
                     icon: (

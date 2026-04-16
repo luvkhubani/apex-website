@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const ADMIN_PASSWORD = "Apex@2024#Secret";
+const DEFAULT_PASSWORD = "Apex@2024#Secret";
+function getAdminPassword() {
+  return localStorage.getItem("apex_admin_password") || DEFAULT_PASSWORD;
+}
 
 export default function AdminLogin() {
   const [password, setPassword] = useState("");
@@ -13,9 +16,9 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     setTimeout(() => {
-      if (password === ADMIN_PASSWORD) {
+      if (password === getAdminPassword()) {
         localStorage.setItem("apex_admin_auth", "true");
-        navigate("/admin-apex-secret/dashboard");
+        navigate("/admin/dashboard");
       } else {
         setError("Incorrect password. Try again.");
         setLoading(false);

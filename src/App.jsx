@@ -42,8 +42,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/admin-apex-secret" element={<AdminLogin />} />
-        <Route path="/admin-apex-secret/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
         <Route path="/products" element={<PublicLayout><Products /></PublicLayout>} />
         <Route path="/about" element={<PublicLayout><About /></PublicLayout>} />

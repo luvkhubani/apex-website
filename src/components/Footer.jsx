@@ -68,11 +68,14 @@ export default function Footer() {
             <ul className="space-y-2.5 text-[12px] text-apple-gray">
               <li>{cfg.addressLine1}</li>
               <li>{cfg.addressLine2}</li>
-              <li className="pt-1">
-                <a href={`tel:${cfg.phoneDisplay.replace(/\s/g, '')}`} className="hover:text-apple-black transition-colors duration-200">
-                  {cfg.phoneDisplay}
-                </a>
-              </li>
+              {(cfg.phoneNumbers?.length ? cfg.phoneNumbers : [{ label: '', number: cfg.phoneDisplay }]).map((ph, i) => (
+                <li key={i} className={i === 0 ? 'pt-1' : ''}>
+                  {ph.label && <span className="text-apple-gray">{ph.label}: </span>}
+                  <a href={`tel:${ph.number.replace(/\s/g, '')}`} className="hover:text-apple-black transition-colors duration-200">
+                    {ph.number}
+                  </a>
+                </li>
+              ))}
               <li>
                 <a
                   href={waUrl(cfg.whatsappNumber)}

@@ -7,7 +7,10 @@ export const STORE_DEFAULTS = {
 
   // ── Contact details ───────────────────────────────────
   whatsappNumber: '918349570000',   // used in wa.me URLs — no + prefix
-  phoneDisplay: '+91 83495 70000',  // shown as text / tel: links
+  phoneDisplay: '+91 83495 70000',  // legacy single number — kept for compat
+  phoneNumbers: [                   // list of all store numbers
+    { label: '', number: '+91 83495 70000' },
+  ],
   addressLine1: 'Jail Road, Indore',
   addressLine2: 'Madhya Pradesh — 452 001',
   storeHours: 'Monday – Sunday, 10:00 AM – 8:00 PM',
@@ -89,6 +92,7 @@ export function loadStoreConfig() {
       return {
         ...STORE_DEFAULTS,
         ...parsed,
+        phoneNumbers:   parsed.phoneNumbers   ?? STORE_DEFAULTS.phoneNumbers,
         categories:     parsed.categories     ?? STORE_DEFAULTS.categories,
         trustStats:     parsed.trustStats     ?? STORE_DEFAULTS.trustStats,
         testimonials:   parsed.testimonials   ?? STORE_DEFAULTS.testimonials,

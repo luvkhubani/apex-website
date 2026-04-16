@@ -320,7 +320,7 @@ export default function Home() {
           {activeBrands.map((brand, i) => (
             <span key={brand} className="flex items-center">
               <Link
-                to="/products"
+                to={`/products?brand=${encodeURIComponent(brand)}`}
                 className="text-[18px] font-medium text-apple-black px-5 hover:underline underline-offset-4 transition-all duration-150"
               >
                 {brand}
