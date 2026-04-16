@@ -255,7 +255,7 @@ export default function AdminDashboard() {
     }).catch(() => {});
   }, [heroConfig]);
 
-  const showToast = (msg, type="ok") => { setToast({ msg, type }); setTimeout(() => setToast(null), 3500); };
+  const showToast = (msg, type="ok") => { setToast({ msg, type }); setTimeout(() => setToast(null), type==="ok" && !msg.startsWith("Sync error") && !msg.startsWith("Sync failed") ? 3500 : 12000); };
   const persist   = (p) => {
     setProducts(p);
     saveProducts(p);
