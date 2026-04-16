@@ -355,7 +355,7 @@ export default function Home() {
           {storeCfg.categories.map((cat, i) => (
             <FadeUp key={cat.label + i} delay={i * 80}>
               <Link
-                to={`/products?category=${cat.filter}`}
+                to={cat.link || `/products?category=${cat.filter}`}
                 className="group block bg-white rounded-[24px] overflow-hidden transition-all duration-300 hover:-translate-y-1"
                 style={{ boxShadow:'0 4px 20px rgba(0,0,0,0.06)' }}
                 onMouseEnter={e => e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.12)'}

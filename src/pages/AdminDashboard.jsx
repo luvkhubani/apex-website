@@ -1137,28 +1137,44 @@ export default function AdminDashboard() {
 
               {storeCfg.categories.map((cat, i) => (
                 <div key={i} style={{ background:"#0d0d0d", borderRadius:"10px", padding:"16px", marginBottom:"12px", border:"1px solid #1a1a1a" }}>
-                  <div style={{ color:"#888", fontSize:"11px", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:"12px" }}>Card {i + 1}</div>
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"12px" }}>
+                    <span style={{ color:"#888", fontSize:"11px", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.08em" }}>Card {i + 1}</span>
+                    <button onClick={() => {
+                      const cats = storeCfg.categories.filter((_,j) => j !== i);
+                      const n = {...storeCfg, categories:cats};
+                      setStoreCfg(n); saveStoreConfig(n);
+                    }} style={{ color:"#ff4444", background:"none", border:"none", fontSize:"12px", cursor:"pointer", padding:0 }}>✕ Remove</button>
+                  </div>
                   <div style={{ display:"grid", gridTemplateColumns:"72px 1fr", gap:"0 12px" }}>
                     <div>
                       <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Emoji</label>
-                      <input value={cat.emoji} onChange={e => {
+                      <input value={cat.emoji||''} onChange={e => {
                         const cats = storeCfg.categories.map((c,j) => j===i?{...c,emoji:e.target.value}:c);
                         setStoreCfg(s => ({...s, categories:cats}));
                       }} style={{ ...iStyle, textAlign:"center", fontSize:"22px", padding:"8px" }} />
                     </div>
                     <div>
                       <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Title</label>
-                      <input value={cat.label} onChange={e => {
+                      <input value={cat.label||''} onChange={e => {
                         const cats = storeCfg.categories.map((c,j) => j===i?{...c,label:e.target.value}:c);
                         setStoreCfg(s => ({...s, categories:cats}));
                       }} placeholder="e.g. iPhones & iPads" style={{ ...iStyle, marginBottom:"8px" }} />
                     </div>
                     <div style={{ gridColumn:"1 / -1" }}>
                       <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Subtitle</label>
-                      <input value={cat.sub} onChange={e => {
+                      <input value={cat.sub||''} onChange={e => {
                         const cats = storeCfg.categories.map((c,j) => j===i?{...c,sub:e.target.value}:c);
                         setStoreCfg(s => ({...s, categories:cats}));
                       }} placeholder="e.g. Latest Apple lineup" style={{ ...iStyle, marginBottom:"10px" }} />
+                    </div>
+                    <div style={{ gridColumn:"1 / -1" }}>
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>
+                        Link <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(leave blank to link to the filtered products page)</span>
+                      </label>
+                      <input value={cat.link||''} onChange={e => {
+                        const cats = storeCfg.categories.map((c,j) => j===i?{...c,link:e.target.value}:c);
+                        setStoreCfg(s => ({...s, categories:cats}));
+                      }} placeholder="e.g. /products or https://..." style={{ ...iStyle, marginBottom:"10px" }} />
                     </div>
                     <div style={{ gridColumn:"1 / -1" }}>
                       <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Card Image</label>
@@ -1182,7 +1198,16 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               ))}
-              <Btn onClick={() => saveStore({...storeCfg})}>Save Category Cards</Btn>
+              <div style={{ display:"flex", gap:"10px", flexWrap:"wrap" }}>
+                <button onClick={() => {
+                  const newCat = { label:'', emoji:'📦', filter:'', sub:'', image:'', link:'' };
+                  const n = {...storeCfg, categories:[...storeCfg.categories, newCat]};
+                  setStoreCfg(n);
+                }} style={{ flex:1, minWidth:"140px", padding:"10px", background:"#0d0d0d", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"13px", display:"flex", alignItems:"center", justifyContent:"center", gap:"6px" }}>
+                  ＋ Add Card
+                </button>
+                <Btn onClick={() => saveStore({...storeCfg})}>Save Category Cards</Btn>
+              </div>
             </div>
 
             {/* ── Google Maps ── */}

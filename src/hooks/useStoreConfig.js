@@ -38,10 +38,10 @@ export const STORE_DEFAULTS = {
 
   // ── Shop by Category cards ───────────────────────────
   categories: [
-    { label: 'iPhones & iPads',    emoji: '🍎', filter: 'Mobiles',     sub: 'Latest Apple lineup',    image: '' },
-    { label: 'Samsung & Android',  emoji: '📱', filter: 'Mobiles',     sub: 'Galaxy S series & more', image: '' },
-    { label: 'MacBooks & Laptops', emoji: '💻', filter: 'Laptops',     sub: 'Power your work',        image: '' },
-    { label: 'Accessories',        emoji: '🎧', filter: 'Accessories', sub: 'Complete your setup',    image: '' },
+    { label: 'iPhones & iPads',    emoji: '🍎', filter: 'Mobiles',     sub: 'Latest Apple lineup',    image: '', link: '' },
+    { label: 'Samsung & Android',  emoji: '📱', filter: 'Mobiles',     sub: 'Galaxy S series & more', image: '', link: '' },
+    { label: 'MacBooks & Laptops', emoji: '💻', filter: 'Laptops',     sub: 'Power your work',        image: '', link: '' },
+    { label: 'Accessories',        emoji: '🎧', filter: 'Accessories', sub: 'Complete your setup',    image: '', link: '' },
   ],
 
   // ── Google Maps ───────────────────────────────────────
