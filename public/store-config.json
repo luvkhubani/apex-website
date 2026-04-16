@@ -10,9 +10,9 @@
     }
   ],
   "addressLine1": "Jail Road, Indore",
-  "addressLine2": "Madhya Pradesh \u2014 452001",
-  "storeHours": "Monday \u2013 Sunday, 10:00 AM \u2013 8:00 PM",
-  "storeHoursShort": "10AM \u2013 8PM",
+  "addressLine2": "Madhya Pradesh — 452001",
+  "storeHours": "Monday – Sunday, 10:00 AM – 8:00 PM",
+  "storeHoursShort": "10AM – 8PM",
   "instagramHandle": "apexmobile_indore",
   "instagramUrl": "https://instagram.com/apexmobile_indore",
   "trustStats": [
@@ -29,7 +29,7 @@
       "label": "Brands available"
     },
     {
-      "num": "4.9\u2605",
+      "num": "4.9★",
       "label": "Customer rating"
     }
   ],
@@ -51,83 +51,77 @@
     }
   ],
   "storePhoto": "",
-  "storePhotos": [
-    "/store/storefront-1776335261895.jpg",
-    "/store/storefront-1776335267534.JPEG",
-    "/store/storefront-1776335295617.jpg",
-    "/store/storefront-1776335306247.jpg",
-    "/store/storefront-1776338281057-1.jpg",
-    "/store/storefront-1776338281058-3.jpg",
-    "/store/storefront-1776338315457-0.JPEG",
-    "/store/storefront-1776338337924-0.jpg",
-    "/store/storefront-1776338347274-0.jpg"
-  ],
+  "storePhotos": [],
   "categories": [
     {
       "label": "iPhones & iPads",
-      "emoji": "\ud83c\udf4e",
+      "emoji": "🍎",
       "filter": "Mobiles",
       "sub": "Latest Apple lineup",
-      "link": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317415_6_SGB-RnikO.png?updatedAt=1757529439070?tr=w-1000"
+      "link": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317415_6_SGB-RnikO.png?updatedAt=1757529439070?tr=w-1000",
+      "images": []
     },
     {
       "label": "Samsung & Android",
-      "emoji": "\ud83d\udcf1",
+      "emoji": "📱",
       "filter": "Mobiles",
-      "sub": "Galaxy S series & more"
+      "sub": "Galaxy S series & more",
+      "images": []
     },
     {
       "label": "MacBooks & Laptops",
-      "emoji": "\ud83d\udcbb",
+      "emoji": "💻",
       "filter": "Laptops",
-      "sub": "Power your work"
+      "sub": "Power your work",
+      "images": []
     },
     {
       "label": "Accessories",
-      "emoji": "\ud83c\udfa7",
+      "emoji": "🎧",
       "filter": "Accessories",
-      "sub": "Complete your setup"
+      "sub": "Complete your setup",
+      "images": []
     }
   ],
   "googleMapsEmbed": "https://share.google/COjQTrz41gegF0ueE",
   "googleMapsLink": "https://www.google.com/maps/dir//Apex+Mobile,+Indore,+8,+Jail+Rd,+Nagar+Nigam,+Indore,+Madhya+Pradesh+452007,+India/@22.7124622,75.8650143,15z/data=!3m1!4b1!4m8!4m7!1m0!1m5!1m1!1s0x3962fd0cf8cd3125:0x76b71664f43c32f4!2m2!1d75.861609!2d22.720964?entry=ttu&g_ep=EgoyMDI2MDQxMy4wIKXMDSoASAFQAw%3D%3D",
   "aboutHeadline": "Three decades.\nOne promise.",
-  "aboutSub": "Honest advice, genuine products, and the best prices in Indore \u2014 since 1996.",
+  "aboutSub": "Honest advice, genuine products, and the best prices in Indore — since 1996.",
   "aboutStory": [
-    "Apex \u2014 The Mobile Shoppe was founded in 1996 on Jail Road, Indore, with a simple mission: give every customer honest advice and the best product for their needs \u2014 not just the most expensive one.",
-    "What started as a small mobile accessories shop has grown into Indore's most trusted destination for premium electronics \u2014 from the latest iPhones and MacBooks to Galaxy tablets and everything in between.",
+    "Apex — The Mobile Shoppe was founded in 1996 on Jail Road, Indore, with a simple mission: give every customer honest advice and the best product for their needs — not just the most expensive one.",
+    "What started as a small mobile accessories shop has grown into Indore's most trusted destination for premium electronics — from the latest iPhones and MacBooks to Galaxy tablets and everything in between.",
     "Over 30 years, more than a lakh customers have trusted us for their most important tech purchases. Many are now on their second and third generation of shopping with us."
   ],
   "aboutStat": "30+",
   "aboutStatLabel": "Years Serving Indore",
   "aboutStatItems": [
-    "\ud83d\udccd Jail Road, Indore \u2014 Since 1996",
-    "\ud83d\udc65 1 Lakh+ satisfied customers",
-    "\ud83d\udcf1 All major brands under one roof",
-    "\u2705 100% genuine products guaranteed"
+    "📍 Jail Road, Indore — Since 1996",
+    "👥 1 Lakh+ satisfied customers",
+    "📱 All major brands under one roof",
+    "✅ 100% genuine products guaranteed"
   ],
   "aboutValues": [
     {
-      "icon": "\ud83e\udd1d",
+      "icon": "🤝",
       "title": "Honest Advice",
       "desc": "We recommend what you actually need, not the highest-margin product."
     },
     {
-      "icon": "\u2705",
+      "icon": "✅",
       "title": "Genuine Products",
       "desc": "Every item we sell is 100% original from authorised channels."
     },
     {
-      "icon": "\ud83d\udcac",
+      "icon": "💬",
       "title": "Expert Team",
       "desc": "Years of hands-on experience with every product we carry."
     },
     {
-      "icon": "\ud83d\udcb0",
+      "icon": "💰",
       "title": "Fair Pricing",
       "desc": "Competitive prices. No hidden charges. What you see is what you pay."
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-16T11:44:50.784Z"
+  "_savedAt": "2026-04-16T16:09:46.299Z"
 }
