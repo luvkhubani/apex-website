@@ -9,23 +9,39 @@ import { useStoreConfig, waUrl, getStoreImage, getCatImages, getStorePhotos } fr
 
 // ── Store photo slider ────────────────────────────────────
 function StorePhotoSlider({ photos }) {
-  const [idx, setIdx]       = useState(0);
+  const [idx, setIdx]     = useState(0);
   const [paused, setPaused] = useState(false);
-  const timerRef            = useRef(null);
+  const touchX            = useRef(null);
+  const touchY            = useRef(null);
+  const n                 = photos.length;
 
-  const go = useCallback((next) => {
-    setIdx((next + photos.length) % photos.length);
-  }, [photos.length]);
+  const go = useCallback((next) => setIdx((next + n) % n), [n]);
 
   // Auto-advance every 3.5 s
   useEffect(() => {
-    if (photos.length < 2 || paused) return;
-    timerRef.current = setInterval(() => go(idx + 1), 3500);
-    return () => clearInterval(timerRef.current);
-  }, [idx, paused, go, photos.length]);
+    if (n < 2 || paused) return;
+    const t = setInterval(() => setIdx(i => (i + 1) % n), 3500);
+    return () => clearInterval(t);
+  }, [n, paused]);
 
-  if (photos.length === 0) return (
-    <div className="bg-apple-light rounded-[28px] min-h-[360px] h-full flex flex-col items-center justify-center text-center p-10 border-2 border-dashed border-apple-border">
+  // Touch swipe — horizontal = change slide, vertical = let page scroll
+  const onTouchStart = (e) => {
+    touchX.current = e.touches[0].clientX;
+    touchY.current = e.touches[0].clientY;
+  };
+  const onTouchEnd = (e) => {
+    if (touchX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchX.current;
+    const dy = e.changedTouches[0].clientY - touchY.current;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      go(idx + (dx < 0 ? 1 : -1));
+    }
+    touchX.current = null;
+    touchY.current = null;
+  };
+
+  if (n === 0) return (
+    <div className="bg-apple-light rounded-[28px] h-[340px] md:h-[500px] flex flex-col items-center justify-center text-center p-10 border-2 border-dashed border-apple-border">
       <div className="text-8xl mb-4">🏪</div>
       <p className="text-[13px] font-medium text-apple-gray tracking-wide uppercase">Add your store photos</p>
       <p className="text-[11px] text-apple-gray mt-1">Admin → 🏪 Store → Store Photos</p>
@@ -34,61 +50,58 @@ function StorePhotoSlider({ photos }) {
 
   return (
     <div
-      className="relative rounded-[28px] overflow-hidden min-h-[360px] h-full select-none"
+      className="relative rounded-[28px] overflow-hidden h-[340px] md:h-[500px] select-none"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
-      {/* Sliding track */}
-      <div
-        className="flex h-full"
-        style={{
-          width: `${photos.length * 100}%`,
-          transform: `translateX(-${(idx * 100) / photos.length}%)`,
-          transition: 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-        }}
-      >
-        {photos.map((ph, i) => (
-          <div key={i} style={{ width: `${100 / photos.length}%` }} className="h-full flex-shrink-0">
-            <img
-              src={getStoreImage(ph)}
-              alt={`Store ${i + 1}`}
-              className="w-full h-full object-cover"
-              draggable={false}
-            />
-          </div>
-        ))}
-      </div>
+      {/* Each slide absolutely stacked, opacity cross-fade */}
+      {photos.map((ph, i) => (
+        <div
+          key={i}
+          className="absolute inset-0 transition-opacity duration-700"
+          style={{ opacity: i === idx ? 1 : 0, zIndex: i === idx ? 1 : 0 }}
+        >
+          <img
+            src={getStoreImage(ph)}
+            alt={`Store ${i + 1}`}
+            className="w-full h-full object-cover"
+            draggable={false}
+          />
+        </div>
+      ))}
 
-      {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" style={{ zIndex:2 }} />
 
-      {/* Prev / Next arrows — only when multiple photos */}
-      {photos.length > 1 && (
+      {/* Prev / Next arrows */}
+      {n > 1 && (
         <>
           <button
-            onClick={() => go(idx - 1)}
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-apple-black hover:bg-white transition-all shadow-md"
+            onClick={() => { setPaused(true); go(idx - 1); }}
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-xl text-apple-black hover:bg-white transition-all shadow-lg"
+            style={{ zIndex:3 }}
             aria-label="Previous"
           >‹</button>
           <button
-            onClick={() => go(idx + 1)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-apple-black hover:bg-white transition-all shadow-md"
+            onClick={() => { setPaused(true); go(idx + 1); }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/85 backdrop-blur-sm flex items-center justify-center text-xl text-apple-black hover:bg-white transition-all shadow-lg"
+            style={{ zIndex:3 }}
             aria-label="Next"
           >›</button>
         </>
       )}
 
       {/* Dot indicators */}
-      {photos.length > 1 && (
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5">
+      {n > 1 && (
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2" style={{ zIndex:3 }}>
           {photos.map((_, i) => (
             <button
               key={i}
-              onClick={() => setIdx(i)}
-              className={`rounded-full transition-all duration-300 ${
-                i === idx ? 'w-5 h-1.5 bg-white' : 'w-1.5 h-1.5 bg-white/50'
-              }`}
-              aria-label={`Go to photo ${i + 1}`}
+              onClick={() => { setPaused(true); setIdx(i); }}
+              className={`rounded-full transition-all duration-300 ${i === idx ? 'w-6 h-2 bg-white' : 'w-2 h-2 bg-white/50 hover:bg-white/80'}`}
+              aria-label={`Photo ${i + 1}`}
             />
           ))}
         </div>
@@ -553,10 +566,10 @@ export default function Home() {
       {/* ── 7. STORE ──────────────────────────────────────────── */}
       <Section bg="bg-white">
         <FadeUp>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-stretch">
-            {/* Store photo slider — fills full height of right column */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Store photo slider */}
             <StorePhotoSlider photos={getStorePhotos(storeCfg)} />
-            <div className="flex flex-col justify-center">
+            <div>
               <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-4">Visit Us</p>
               <h2 className="font-sans font-bold text-[40px] md:text-[48px] text-apple-black leading-[1.1] tracking-[-0.02em] mb-5">
                 Apex The Mobile Shoppe.

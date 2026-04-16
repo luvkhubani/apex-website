@@ -1142,37 +1142,61 @@ export default function AdminDashboard() {
                 const photos = Array.isArray(storeCfg.storePhotos) && storeCfg.storePhotos.length
                   ? storeCfg.storePhotos
                   : (storeCfg.storePhoto ? [storeCfg.storePhoto] : []);
-                const reorder = (from, to) => {
-                  const arr = [...photos];
-                  const [item] = arr.splice(from, 1);
-                  arr.splice(to, 0, item);
-                  const n = {...storeCfg, storePhotos: arr, storePhoto: ''};
-                  setStoreCfg(n); saveStoreConfig(n); syncStoreConfig(n);
+                if (photos.length === 0) return null;
+
+                const move = (from, to) => {
+                  setStoreCfg(prev => {
+                    const cur = Array.isArray(prev.storePhotos) && prev.storePhotos.length
+                      ? [...prev.storePhotos]
+                      : (prev.storePhoto ? [prev.storePhoto] : []);
+                    const [item] = cur.splice(from, 1);
+                    cur.splice(to, 0, item);
+                    const next = { ...prev, storePhotos: cur, storePhoto: '' };
+                    saveStoreConfig(next);
+                    syncStoreConfig(next);
+                    return next;
+                  });
                 };
-                return photos.length > 0 ? (
+
+                const remove = (removeIdx) => {
+                  setStoreCfg(prev => {
+                    const cur = Array.isArray(prev.storePhotos) && prev.storePhotos.length
+                      ? prev.storePhotos : (prev.storePhoto ? [prev.storePhoto] : []);
+                    const next = { ...prev, storePhotos: cur.filter((_,k) => k !== removeIdx), storePhoto: '' };
+                    saveStoreConfig(next);
+                    syncStoreConfig(next);
+                    return next;
+                  });
+                };
+
+                return (
                   <div style={{ marginBottom:"14px" }}>
-                    <p style={{ color:"#555", fontSize:"11px", marginBottom:"10px" }}>Drag order: use arrows to reorder. First photo shows first in the slider.</p>
+                    <p style={{ color:"#555", fontSize:"11px", marginBottom:"10px" }}>Use ← → to reorder. First photo shows first in the slider.</p>
                     <div style={{ display:"flex", gap:"10px", flexWrap:"wrap" }}>
-                      {photos.map((ph, idx) => (
-                        <div key={idx} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"4px" }}>
-                          <div style={{ position:"relative", width:"120px", height:"84px", borderRadius:"10px", overflow:"hidden", border:"1px solid #2a2a2a", flexShrink:0 }}>
+                      {photos.map((ph, i) => (
+                        <div key={i} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"6px" }}>
+                          <div style={{ position:"relative", width:"120px", height:"84px", borderRadius:"10px", overflow:"hidden", border:"1px solid #2a2a2a" }}>
                             <img src={getStoreImage(ph)} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
-                            <button onClick={() => {
-                              const n = {...storeCfg, storePhotos: photos.filter((_,k)=>k!==idx), storePhoto:''};
-                              setStoreCfg(n); saveStoreConfig(n); syncStoreConfig(n);
-                            }} style={{ position:"absolute", top:"4px", right:"4px", width:"20px", height:"20px", borderRadius:"50%", background:"rgba(0,0,0,0.75)", border:"none", color:"#fff", fontSize:"11px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
-                            <div style={{ position:"absolute", bottom:"3px", left:"5px", color:"#fff", fontSize:"10px", fontWeight:600, textShadow:"0 1px 2px rgba(0,0,0,0.8)" }}>{idx+1}</div>
+                            <button onClick={() => remove(i)} style={{ position:"absolute", top:"4px", right:"4px", width:"22px", height:"22px", borderRadius:"50%", background:"rgba(0,0,0,0.8)", border:"none", color:"#fff", fontSize:"12px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
+                            <div style={{ position:"absolute", bottom:"3px", left:"5px", color:"#fff", fontSize:"10px", fontWeight:700, textShadow:"0 1px 3px rgba(0,0,0,0.9)" }}>{i + 1}</div>
                           </div>
-                          {/* Reorder buttons */}
                           <div style={{ display:"flex", gap:"4px" }}>
-                            <button disabled={idx === 0} onClick={() => reorder(idx, idx - 1)} style={{ background:"#1a1a1a", border:"1px solid #2a2a2a", borderRadius:"5px", color: idx===0?"#333":"#888", cursor:idx===0?"not-allowed":"pointer", fontSize:"13px", padding:"2px 7px", lineHeight:1 }}>←</button>
-                            <button disabled={idx === photos.length - 1} onClick={() => reorder(idx, idx + 1)} style={{ background:"#1a1a1a", border:"1px solid #2a2a2a", borderRadius:"5px", color:idx===photos.length-1?"#333":"#888", cursor:idx===photos.length-1?"not-allowed":"pointer", fontSize:"13px", padding:"2px 7px", lineHeight:1 }}>→</button>
+                            <button
+                              disabled={i === 0}
+                              onClick={() => move(i, i - 1)}
+                              style={{ background: i===0?"#0d0d0d":"#1a1a1a", border:"1px solid #2a2a2a", borderRadius:"6px", color:i===0?"#2a2a2a":"#aaa", cursor:i===0?"default":"pointer", fontSize:"14px", padding:"3px 10px", lineHeight:1, fontWeight:600 }}
+                            >←</button>
+                            <button
+                              disabled={i === photos.length - 1}
+                              onClick={() => move(i, i + 1)}
+                              style={{ background:i===photos.length-1?"#0d0d0d":"#1a1a1a", border:"1px solid #2a2a2a", borderRadius:"6px", color:i===photos.length-1?"#2a2a2a":"#aaa", cursor:i===photos.length-1?"default":"pointer", fontSize:"14px", padding:"3px 10px", lineHeight:1, fontWeight:600 }}
+                            >→</button>
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
-                ) : null;
+                );
               })()}
 
               <button onClick={() => storePhotoRef.current?.click()} style={{ width:"100%", padding:"10px", background:"#1a1a1a", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"13px", marginBottom:"12px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}>
