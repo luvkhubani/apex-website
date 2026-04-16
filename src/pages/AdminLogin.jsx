@@ -1,22 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const DEFAULT_PASSWORD = "Apex@2024#Secret";
-function getAdminPassword() {
-  return localStorage.getItem("apex_admin_password") || DEFAULT_PASSWORD;
-}
+const PW_KEY = "apex_admin_password";
 
 export default function AdminLogin() {
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [error,    setError]    = useState("");
+  const [loading,  setLoading]  = useState(false);
   const navigate = useNavigate();
+
+  // Fetch current password from repo so it works on every browser/device
+  useEffect(() => {
+    fetch("/admin-password.json?v=" + Date.now())
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.password) localStorage.setItem(PW_KEY, d.password); })
+      .catch(() => {});
+  }, []);
+
+  const getPassword = () => localStorage.getItem(PW_KEY) || DEFAULT_PASSWORD;
 
   const handleLogin = (e) => {
     e.preventDefault();
     setLoading(true);
     setTimeout(() => {
-      if (password === getAdminPassword()) {
+      if (password === getPassword()) {
         localStorage.setItem("apex_admin_auth", "true");
         navigate("/admin/dashboard");
       } else {

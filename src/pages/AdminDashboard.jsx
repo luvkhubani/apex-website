@@ -102,34 +102,46 @@ const Toggle = ({ value, onChange, label, desc }) => (
 );
 
 function ChangePasswordSection() {
-  const [cur,    setCur]    = useState("");
-  const [next,   setNext]   = useState("");
-  const [conf,   setConf]   = useState("");
-  const [msg,    setMsg]    = useState(null); // {text, ok}
+  const [cur,     setCur]     = useState("");
+  const [next,    setNext]    = useState("");
+  const [conf,    setConf]    = useState("");
+  const [msg,     setMsg]     = useState(null);
+  const [saving,  setSaving]  = useState(false);
 
-  const DEFAULT_PW = "Apex@2024#Secret";
-  const getStored  = () => localStorage.getItem("apex_admin_password") || DEFAULT_PW;
-
-  const handleChange = () => {
-    if (cur !== getStored()) { setMsg({ text: "Current password is incorrect.", ok: false }); return; }
-    if (next.length < 8)     { setMsg({ text: "New password must be at least 8 characters.", ok: false }); return; }
-    if (next !== conf)        { setMsg({ text: "Passwords don't match.", ok: false }); return; }
-    localStorage.setItem("apex_admin_password", next);
-    setCur(""); setNext(""); setConf("");
-    setMsg({ text: "Password changed successfully!", ok: true });
+  const handleChange = async () => {
+    if (next.length < 8) { setMsg({ text: "New password must be at least 8 characters.", ok: false }); return; }
+    if (next !== conf)   { setMsg({ text: "Passwords don't match.", ok: false }); return; }
+    setSaving(true);
+    try {
+      const res  = await fetch("/api/change-admin-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword: cur, newPassword: next }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setMsg({ text: data.error || "Failed.", ok: false }); return; }
+      // Also update localStorage so current session works immediately
+      localStorage.setItem("apex_admin_password", next);
+      setCur(""); setNext(""); setConf("");
+      setMsg({ text: "Password changed on all browsers!", ok: true });
+    } catch (e) {
+      setMsg({ text: "Network error: " + e.message, ok: false });
+    } finally {
+      setSaving(false);
+    }
   };
-
-  const pw = s => ({ ...iStyle, marginBottom:"10px", WebkitTextSecurity:"disc" });
 
   return (
     <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
       <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🔐 Change Admin Password</h3>
-      <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Stored locally on this device. Affects login on this browser only.</p>
-      <input type="password" value={cur}  onChange={e=>{setCur(e.target.value);setMsg(null);}}  placeholder="Current password"  style={pw()} />
-      <input type="password" value={next} onChange={e=>{setNext(e.target.value);setMsg(null);}} placeholder="New password (min 8 chars)" style={pw()} />
+      <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Saved to the repo — takes effect on all browsers and devices immediately.</p>
+      <input type="password" value={cur}  onChange={e=>{setCur(e.target.value);setMsg(null);}}  placeholder="Current password" style={{ ...iStyle, marginBottom:"10px" }} />
+      <input type="password" value={next} onChange={e=>{setNext(e.target.value);setMsg(null);}} placeholder="New password (min 8 chars)" style={{ ...iStyle, marginBottom:"10px" }} />
       <input type="password" value={conf} onChange={e=>{setConf(e.target.value);setMsg(null);}} placeholder="Confirm new password" style={{ ...iStyle, marginBottom:"14px" }} />
       {msg && <p style={{ color: msg.ok ? "#00c851" : "#ff4444", fontSize:"12px", marginBottom:"12px" }}>{msg.text}</p>}
-      <Btn onClick={handleChange}>Change Password</Btn>
+      <Btn disabled={saving || !cur || !next || !conf} onClick={handleChange}>
+        {saving ? "Saving…" : "Change Password"}
+      </Btn>
     </div>
   );
 }
