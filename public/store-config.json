@@ -53,7 +53,8 @@
   "storePhoto": "",
   "storePhotos": [
     "blob:https://www.apexmobile.in/c8c85638-0d9b-4ccd-804e-1cab3bc993a9",
-    "blob:https://www.apexmobile.in/5d3ba9ca-20ab-45ed-85cf-429353ba3c7e"
+    "blob:https://www.apexmobile.in/5d3ba9ca-20ab-45ed-85cf-429353ba3c7e",
+    "/store/storefront-1776335279996.HEIC"
   ],
   "categories": [
     {
@@ -122,5 +123,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-16T10:28:06.178Z"
+  "_savedAt": "2026-04-16T10:28:10.349Z"
 }
