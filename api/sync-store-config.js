@@ -24,13 +24,28 @@ export default async function handler(req, res) {
 
   try {
     let existingSha;
+    let existingPhotos = [];
     const checkRes = await fetch(
       `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`,
       { headers: GH }
     );
-    if (checkRes.ok) existingSha = (await checkRes.json()).sha;
+    if (checkRes.ok) {
+      const checkData = await checkRes.json();
+      existingSha = checkData.sha;
+      // Always preserve existing store photos — they are managed via /api/store-photos
+      // and must never be overwritten by a store-settings sync with empty localStorage
+      try {
+        const existingCfg = JSON.parse(Buffer.from(checkData.content, "base64").toString("utf8"));
+        existingPhotos = Array.isArray(existingCfg.storePhotos) ? existingCfg.storePhotos : [];
+      } catch {}
+    }
 
-    const payload = { ...storeConfig, _savedAt: new Date().toISOString() };
+    // Use incoming photos only if non-empty; otherwise keep what's already in the repo
+    const photosToSave = (Array.isArray(storeConfig.storePhotos) && storeConfig.storePhotos.length > 0)
+      ? storeConfig.storePhotos
+      : existingPhotos;
+
+    const payload = { ...storeConfig, storePhotos: photosToSave, _savedAt: new Date().toISOString() };
     const content = Buffer.from(JSON.stringify(payload, null, 2)).toString("base64");
 
     const commitRes = await fetch(

@@ -36,18 +36,19 @@ function useAdminAutoSync() {
       }
 
       if (storeConfig && typeof storeConfig === 'object') {
-        // Strip blob: URLs before syncing — they are session-only and must never reach the repo
+        // Strip blob: URLs and storePhotos before syncing.
+        // storePhotos are managed independently via /api/store-photos — the server-side
+        // sync-store-config API will preserve whatever photos are already in GitHub.
         const cleanStore = {
           ...storeConfig,
-          storePhotos: (storeConfig.storePhotos || []).filter(p => p && !p.startsWith('blob:')),
+          storePhotos: [],  // Never overwrite repo photos from localStorage
           categories:  (storeConfig.categories  || []).map(cat => ({
             ...cat,
             images: (cat.images || []).filter(img => img && !img.startsWith('blob:')),
           })),
           logoImage: (storeConfig.logoImage || '').startsWith('blob:') ? '' : (storeConfig.logoImage || ''),
         };
-        // Only sync if we actually have photos — don't overwrite a good repo config with empty localStorage
-        if (cleanStore.storePhotos.length > 0 || storeConfig._savedAt) {
+        if (storeConfig._savedAt) {
           fetch('/api/sync-store-config', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
