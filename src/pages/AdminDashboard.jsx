@@ -176,6 +176,7 @@ export default function AdminDashboard() {
 
   // ── Store config (logo, categories, about, maps, contact, social) ─────
   const [storeCfg, setStoreCfg] = useState(loadStoreConfig);
+  const [dropDragging, setDropDragging] = useState(false);
   const logoImgRef      = useRef(null);
   const storePhotoRef   = useRef(null);
   const catImgRefs      = useRef([null, null, null, null]);
@@ -1227,29 +1228,23 @@ export default function AdminDashboard() {
               })()}
 
               {/* Drop zone */}
-              {(() => {
-                const [dragging, setDragging] = React.useState(false);
-                const handleDrop = (e) => {
-                  e.preventDefault(); setDragging(false);
+              <div
+                onClick={() => storePhotoRef.current?.click()}
+                onDragOver={e => { e.preventDefault(); setDropDragging(true); }}
+                onDragLeave={() => setDropDragging(false)}
+                onDrop={e => {
+                  e.preventDefault(); setDropDragging(false);
                   const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith("image/"));
                   if (!files.length) return;
                   const fakeEvt = { target: { files, value: "" }, preventDefault: ()=>{} };
                   handleStorePhotoUpload(fakeEvt);
-                };
-                return (
-                  <div
-                    onClick={() => storePhotoRef.current?.click()}
-                    onDragOver={e => { e.preventDefault(); setDragging(true); }}
-                    onDragLeave={() => setDragging(false)}
-                    onDrop={handleDrop}
-                    style={{ width:"100%", padding:"24px 16px", background: dragging ? "#1a2a1a" : "#1a1a1a", border: `2px dashed ${dragging ? "#00c851" : "#3a3a3a"}`, borderRadius:"10px", color: dragging ? "#00c851" : "#888", cursor:"pointer", fontSize:"13px", marginBottom:"12px", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"6px", transition:"all 0.15s", boxSizing:"border-box" }}
-                  >
-                    <span style={{ fontSize:"28px" }}>{dragging ? "🟢" : "📁"}</span>
-                    <span style={{ fontWeight:600 }}>{dragging ? "Drop to upload" : "Drop photos here, or click to select"}</span>
-                    <span style={{ fontSize:"11px", color:"#555" }}>Supports multiple files at once</span>
-                  </div>
-                );
-              })()}
+                }}
+                style={{ width:"100%", padding:"24px 16px", background: dropDragging ? "#1a2a1a" : "#1a1a1a", border: `2px dashed ${dropDragging ? "#00c851" : "#3a3a3a"}`, borderRadius:"10px", color: dropDragging ? "#00c851" : "#888", cursor:"pointer", fontSize:"13px", marginBottom:"12px", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"6px", transition:"all 0.15s", boxSizing:"border-box" }}
+              >
+                <span style={{ fontSize:"28px" }}>{dropDragging ? "🟢" : "📁"}</span>
+                <span style={{ fontWeight:600 }}>{dropDragging ? "Drop to upload" : "Drop photos here, or click to select"}</span>
+                <span style={{ fontSize:"11px", color:"#555" }}>Supports multiple files at once</span>
+              </div>
               <input ref={storePhotoRef} type="file" accept="image/*" multiple style={{ display:"none" }} onChange={handleStorePhotoUpload} />
               <Btn onClick={() => saveStore({...storeCfg})}>Save Store Photos</Btn>
             </div>
