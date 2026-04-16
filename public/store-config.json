@@ -51,9 +51,7 @@
     }
   ],
   "storePhoto": "",
-  "storePhotos": [
-    "blob:https://www.apexmobile.in/58309afe-3787-456c-879c-dda2f28ac8b7"
-  ],
+  "storePhotos": [],
   "categories": [
     {
       "label": "iPhones & iPads",
@@ -121,5 +119,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-16T10:51:04.392Z"
+  "_savedAt": "2026-04-16T10:51:04.982Z"
 }
