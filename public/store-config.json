@@ -51,9 +51,7 @@
     }
   ],
   "storePhoto": "",
-  "storePhotos": [
-    "/store/storefront-1776336694447.HEIC"
-  ],
+  "storePhotos": [],
   "categories": [
     {
       "label": "iPhones & iPads",
@@ -121,5 +119,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-16T10:52:20.194Z"
+  "_savedAt": "2026-04-16T10:52:21.640Z"
 }
