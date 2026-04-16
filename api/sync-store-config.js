@@ -39,7 +39,7 @@ export default async function handler(req, res) {
         method: "PUT",
         headers: GH,
         body: JSON.stringify({
-          message: "feat: sync store config from admin",
+          message: "feat: sync store config from admin [skip ci]",
           content,
           ...(existingSha && { sha: existingSha }),
         }),

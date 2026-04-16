@@ -51,7 +51,7 @@ export default async function handler(req, res) {
         method: "PUT",
         headers: GH,
         body: JSON.stringify({
-          message: `feat: update product image paths`,
+          message: `feat: update product image paths [skip ci]`,
           content,
           ...(existingSha && { sha: existingSha }),
         }),

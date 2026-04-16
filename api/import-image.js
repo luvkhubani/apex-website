@@ -55,7 +55,7 @@ export default async function handler(req, res) {
         method: "PUT",
         headers: GH_HEADERS,
         body: JSON.stringify({
-          message: `feat: add product image ${imagePath}`,
+          message: `feat: add product image ${imagePath} [skip ci]`,
           content: base64,
           ...(existingSha && { sha: existingSha }),
         }),

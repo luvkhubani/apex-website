@@ -33,7 +33,7 @@ export default async function handler(req, res) {
       method: "PUT",
       headers: GH,
       body: JSON.stringify({
-        message: `feat: upload product image ${imagePath}`,
+        message: `feat: upload product image ${imagePath} [skip ci]`,
         content: base64,
         ...(existingSha && { sha: existingSha }),
       }),

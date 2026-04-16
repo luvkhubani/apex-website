@@ -45,7 +45,7 @@ export default async function handler(req, res) {
         method: "PUT",
         headers: GH,
         body: JSON.stringify({
-          message: `feat: upload store image ${safe}`,
+          message: `feat: upload store image ${safe} [skip ci]`,
           content: base64,
           ...(existingSha && { sha: existingSha }),
         }),
