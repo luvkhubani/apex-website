@@ -475,6 +475,31 @@ export default function AdminDashboard() {
   };
 
   /**
+   * Compress & resize an image file using Canvas before uploading.
+   * Converts any format (including HEIC on supported browsers) to JPEG.
+   * Keeps file well under Vercel's 4.5 MB body limit.
+   */
+  const compressImage = (file, maxDim = 1800, quality = 0.82) =>
+    new Promise((resolve) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width >= height) { height = Math.round(height * maxDim / width); width = maxDim; }
+          else                 { width  = Math.round(width  * maxDim / height); height = maxDim; }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width; canvas.height = height;
+        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+        canvas.toBlob(blob => resolve(blob || file), "image/jpeg", quality);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+      img.src = url;
+    });
+
+  /**
    * Upload a store image (logo, store photo, category image) to public/store/
    * so it's served at /store/<filename> — a stable public URL that requires
    * no Vite rebuild. The blob preview URL is stored immediately so the image
@@ -487,7 +512,11 @@ export default function AdminDashboard() {
     const blobUrl = URL.createObjectURL(file);
     onCommitted(blobUrl);
 
-    // 2. Read file as base64 and commit to public/store/ via the new API
+    // 2. Compress to JPEG (keeps under Vercel's 4.5 MB body limit)
+    const compressed = await compressImage(file);
+    const safeFilename = filename.replace(/\.[^.]+$/, ".jpg");
+
+    // 3. Read compressed file as base64 and commit to public/store/ via API
     const reader = new FileReader();
     reader.onload = async (ev) => {
       const base64 = ev.target.result.split(",")[1];
@@ -495,18 +524,18 @@ export default function AdminDashboard() {
         const res  = await fetch("/api/upload-store-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ base64, filename }),
+          body: JSON.stringify({ base64, filename: safeFilename }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Upload failed");
-        // 3. Replace blob URL with the stable /store/ URL
+        // 4. Replace blob URL with the stable /store/ URL
         onCommitted(data.url);
-        showToast("Image saved! Will show everywhere after ~60s redeploy.");
+        showToast("Image saved! Will show everywhere after ~60s.");
       } catch (err) {
         showToast("Upload failed: " + err.message, "warn");
       }
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(compressed);
   };
 
   const handleLogoFileUpload = e => {
