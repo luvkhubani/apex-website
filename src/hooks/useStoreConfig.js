@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+
 const STORE_KEY = 'apex_store_config';
 
 export const STORE_DEFAULTS = {
@@ -111,7 +113,44 @@ export function saveStoreConfig(config) {
 }
 
 export function useStoreConfig() {
-  return loadStoreConfig();
+  const [cfg, setCfg] = useState(loadStoreConfig);
+
+  useEffect(() => {
+    // Fetch from repo (public/store-config.json) so all browsers stay in sync
+    fetch('/store-config.json?v=' + Date.now())
+      .then(r => r.ok ? r.json() : null)
+      .then(remote => {
+        if (!remote || typeof remote !== 'object') return;
+        const merged = {
+          ...STORE_DEFAULTS,
+          ...remote,
+          phoneNumbers:   remote.phoneNumbers   ?? STORE_DEFAULTS.phoneNumbers,
+          categories:     remote.categories     ?? STORE_DEFAULTS.categories,
+          trustStats:     remote.trustStats     ?? STORE_DEFAULTS.trustStats,
+          testimonials:   remote.testimonials   ?? STORE_DEFAULTS.testimonials,
+          aboutStory:     remote.aboutStory     ?? STORE_DEFAULTS.aboutStory,
+          aboutStatItems: remote.aboutStatItems ?? STORE_DEFAULTS.aboutStatItems,
+          aboutValues:    remote.aboutValues    ?? STORE_DEFAULTS.aboutValues,
+          aboutServices:  remote.aboutServices  ?? STORE_DEFAULTS.aboutServices,
+        };
+        saveStoreConfig(merged);
+        setCfg(merged);
+      })
+      .catch(() => {});
+  }, []);
+
+  // React to saves made in admin panel (same browser, different tab)
+  useEffect(() => {
+    const onStorage = e => {
+      if (e.key === STORE_KEY && e.newValue) {
+        try { setCfg(JSON.parse(e.newValue)); } catch (_) {}
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  return cfg;
 }
 
 // Helper: build a wa.me URL from a whatsappNumber + optional message text

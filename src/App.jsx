@@ -19,6 +19,7 @@ function useAdminAutoSync() {
       const heroConfig   = JSON.parse(localStorage.getItem('apex_hero_config')   || '[]');
       const bannerConfig = JSON.parse(localStorage.getItem('apex_banner_config') || 'null') || {};
       const products     = JSON.parse(localStorage.getItem('apex_products_override') || 'null');
+      const storeConfig  = JSON.parse(localStorage.getItem('apex_store_config')  || 'null');
 
       fetch('/api/sync-hero', {
         method: 'POST',
@@ -31,6 +32,14 @@ function useAdminAutoSync() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ products }),
+        }).catch(() => {});
+      }
+
+      if (storeConfig && typeof storeConfig === 'object') {
+        fetch('/api/sync-store-config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ storeConfig }),
         }).catch(() => {});
       }
     } catch (_) {}

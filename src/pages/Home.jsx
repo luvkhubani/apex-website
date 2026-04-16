@@ -352,15 +352,21 @@ export default function Home() {
           </div>
         </FadeUp>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {storeCfg.categories.map((cat, i) => (
+          {storeCfg.categories.map((cat, i) => {
+            const href    = cat.link || `/products?category=${cat.filter}`;
+            const isExt   = href.startsWith('http');
+            const cardCls = "group block bg-white rounded-[24px] overflow-hidden transition-all duration-300 hover:-translate-y-1";
+            const cardEvt = {
+              onMouseEnter: e => e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.12)',
+              onMouseLeave: e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)',
+              style: { boxShadow:'0 4px 20px rgba(0,0,0,0.06)' },
+            };
+            const CardWrap = ({ children }) => isExt
+              ? <a href={href} target="_blank" rel="noopener noreferrer" className={cardCls} {...cardEvt}>{children}</a>
+              : <Link to={href} className={cardCls} {...cardEvt}>{children}</Link>;
+            return (
             <FadeUp key={cat.label + i} delay={i * 80}>
-              <Link
-                to={cat.link || `/products?category=${cat.filter}`}
-                className="group block bg-white rounded-[24px] overflow-hidden transition-all duration-300 hover:-translate-y-1"
-                style={{ boxShadow:'0 4px 20px rgba(0,0,0,0.06)' }}
-                onMouseEnter={e => e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.12)'}
-                onMouseLeave={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)'}
-              >
+              <CardWrap>
                 {(() => {
                   const imgs = getCatImages(cat);
                   if (imgs.length === 0) {
@@ -396,9 +402,10 @@ export default function Home() {
                   </div>
                   <span className="text-[22px] text-apple-gray group-hover:translate-x-1 transition-transform duration-200">→</span>
                 </div>
-              </Link>
+              </CardWrap>
             </FadeUp>
-          ))}
+            );
+          })}
         </div>
       </Section>
 

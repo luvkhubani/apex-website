@@ -168,7 +168,18 @@ export default function AdminDashboard() {
   const storePhotoRef   = useRef(null);
   const catImgRefs      = useRef([null, null, null, null]);
   const Fs = k => v => setStoreCfg(c => ({ ...c, [k]: v }));
-  const saveStore = (next) => { saveStoreConfig(next); showToast("Saved!"); };
+  const saveStore = (next) => {
+    saveStoreConfig(next);
+    showToast("Saving…");
+    fetch("/api/sync-store-config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ storeConfig: next }),
+    })
+      .then(r => r.json())
+      .then(d => showToast(d.success ? "Saved & synced to repo!" : "Saved locally (sync failed)"))
+      .catch(() => showToast("Saved locally (offline)"));
+  };
 
   useEffect(() => { if (!localStorage.getItem(AUTH_KEY)) navigate("/admin"); }, []);
 
