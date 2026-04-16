@@ -68,6 +68,21 @@ const EMPTY      = { name:"", brand:"Apple", category:"Mobiles", ram:"", storage
 
 const iStyle = { width:"100%", padding:"10px 12px", background:"#1a1a1a", border:"1px solid #2a2a2a", borderRadius:"8px", color:"#fff", fontSize:"13px", outline:"none", boxSizing:"border-box", fontFamily:"inherit" };
 
+class TabErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(e) { return { error: e }; }
+  render() {
+    if (this.state.error) return (
+      <div style={{ background:"#1a0a0a", border:"1px solid #ff4444", borderRadius:"14px", padding:"24px", color:"#ff4444" }}>
+        <strong>⚠️ Error in this section:</strong>
+        <pre style={{ marginTop:"12px", fontSize:"12px", whiteSpace:"pre-wrap", color:"#ff8888" }}>{this.state.error.message}</pre>
+        <pre style={{ marginTop:"8px", fontSize:"11px", whiteSpace:"pre-wrap", color:"#884444" }}>{this.state.error.stack}</pre>
+      </div>
+    );
+    return this.props.children;
+  }
+}
+
 const Btn = ({ children, onClick, color="#00c851", small, danger, disabled, style:s }) => (
   <button onClick={onClick} disabled={disabled} style={{ background:danger?"#ff444422":color==="ghost"?"transparent":color+"22", color:danger?"#ff4444":color==="ghost"?"#888":color, border:`1px solid ${danger?"#ff444444":color==="ghost"?"#333":color+"44"}`, borderRadius:"8px", padding:small?"6px 12px":"10px 18px", fontSize:small?"12px":"13px", fontWeight:600, cursor:disabled?"not-allowed":"pointer", opacity:disabled?0.5:1, transition:"all 0.15s", whiteSpace:"nowrap", ...s }}>
     {children}
@@ -1037,6 +1052,7 @@ export default function AdminDashboard() {
 
         {/* ═══════════════════════════════ STORE ═══════════════════════════════ */}
         {tab === "store" && (
+          <TabErrorBoundary>
           <div style={{ maxWidth:"680px" }}>
             <h2 style={{ fontSize:"20px", fontWeight:700, marginBottom:"6px" }}>🏪 Store Settings</h2>
             <p style={{ color:"#555", fontSize:"13px", margin:"0 0 28px" }}>Manage your logo, contact details, social links, category cards, and Maps info.</p>
@@ -1439,6 +1455,7 @@ export default function AdminDashboard() {
             {/* ── Change Password ── */}
             <ChangePasswordSection />
           </div>
+          </TabErrorBoundary>
         )}
 
         {/* ═══════════════════════════════ ABOUT ═══════════════════════════════ */}
