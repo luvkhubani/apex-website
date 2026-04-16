@@ -54,7 +54,8 @@
   "storePhotos": [
     "blob:https://www.apexmobile.in/c8c85638-0d9b-4ccd-804e-1cab3bc993a9",
     "blob:https://www.apexmobile.in/5d3ba9ca-20ab-45ed-85cf-429353ba3c7e",
-    "/store/storefront-1776335261895.jpg"
+    "/store/storefront-1776335261895.jpg",
+    "/store/storefront-1776335267534.JPEG"
   ],
   "categories": [
     {
@@ -123,5 +124,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-16T10:27:49.404Z"
+  "_savedAt": "2026-04-16T10:27:54.257Z"
 }
