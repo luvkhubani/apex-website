@@ -213,9 +213,12 @@ export default function AdminDashboard() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ storeConfig: next }),
     })
-      .then(r => r.json())
-      .then(d => showToast(d.success ? "Saved & synced to repo!" : "Saved locally (sync failed)"))
-      .catch(() => showToast("Saved locally (offline)"));
+      .then(async r => {
+        const d = await r.json();
+        if (d.success) { showToast("Saved & synced to repo!"); }
+        else { showToast("Sync error: " + (d.error || r.status)); console.error("sync-store-config error:", d); }
+      })
+      .catch(e => showToast("Sync failed: " + e.message));
   };
 
   useEffect(() => { if (!localStorage.getItem(AUTH_KEY)) navigate("/admin"); }, []);

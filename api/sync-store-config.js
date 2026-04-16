@@ -48,7 +48,7 @@ export default async function handler(req, res) {
 
     if (!commitRes.ok) {
       const err = await commitRes.json();
-      return res.status(500).json({ error: err.message || "GitHub commit failed" });
+      return res.status(500).json({ error: err.message || "GitHub commit failed", github_status: commitRes.status, github_error: err });
     }
 
     return res.status(200).json({ success: true });
