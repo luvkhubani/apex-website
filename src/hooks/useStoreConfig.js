@@ -119,7 +119,7 @@ export function useStoreConfig() {
 
   useEffect(() => {
     // Fetch from repo (public/store-config.json) so all browsers stay in sync
-    fetch('/store-config.json?v=' + Date.now())
+    fetch('/api/store-config')
       .then(r => r.ok ? r.json() : null)
       .then(remote => {
         if (!remote || typeof remote !== 'object') return;
