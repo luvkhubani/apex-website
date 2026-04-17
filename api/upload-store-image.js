@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   try {
     const safe = filename.replace(/\.\./g, "").replace(/^\/+/, "");
     const buffer = Buffer.from(base64, "base64");
-    const blob = await put(`store/${safe}`, buffer, { access: "public", addRandomSuffix: false });
+    const blob = await put(`store/${safe}`, buffer, { access: "public", addRandomSuffix: false, allowOverwrite: true });
     return res.status(200).json({ success: true, url: blob.url });
   } catch (err) {
     return res.status(500).json({ error: err.message });

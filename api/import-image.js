@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     if (!imgRes.ok) return res.status(400).json({ error: `Could not download image (${imgRes.status})` });
 
     const buffer = Buffer.from(await imgRes.arrayBuffer());
-    const blob = await put(`products/${imagePath}`, buffer, { access: "public", addRandomSuffix: false });
+    const blob = await put(`products/${imagePath}`, buffer, { access: "public", addRandomSuffix: false, allowOverwrite: true });
 
     return res.status(200).json({ success: true, url: blob.url });
   } catch (err) {
