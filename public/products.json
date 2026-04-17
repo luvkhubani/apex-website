@@ -200,24 +200,28 @@
     "name": "iPhone 17 Pro",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "8GB",
+    "ram": "",
     "storage": "256GB",
-    "color": "Orange",
+    "color": "Cosmic Orange",
     "price": 130400,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 130400,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17-pro/cosmic-orange.webp"
   },
   {
     "id": 16,
     "name": "iPhone 17 Pro",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "8GB",
+    "ram": "",
     "storage": "256GB",
     "color": "Silver",
     "price": 133000,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 133000,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17-pro/silver.webp"
   },
   {
     "id": 17,
