@@ -130,12 +130,14 @@
     "name": "iPhone 17",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "8GB",
+    "ram": "",
     "storage": "256GB",
     "color": "Black",
     "price": 83500,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 83500,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17/black.webp"
   },
   {
     "id": 11,
