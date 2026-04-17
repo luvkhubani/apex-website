@@ -68,6 +68,9 @@ function StorePhotoSlider({ photos }) {
             alt={`Store ${i + 1}`}
             className="w-full h-full object-cover"
             draggable={false}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : 'auto'}
+            decoding="async"
           />
         </div>
       ))}
@@ -498,7 +501,7 @@ export default function Home() {
                   if (imgs.length === 1) {
                     return (
                       <div className="bg-apple-light h-52 overflow-hidden">
-                        <img src={getStoreImage(imgs[0])} alt={cat.label} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                        <img src={getStoreImage(imgs[0])} alt={cat.label} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                       </div>
                     );
                   }
@@ -507,7 +510,7 @@ export default function Home() {
                     <div className="h-52 flex overflow-hidden">
                       {imgs.slice(0, 2).map((img, idx) => (
                         <div key={idx} className="flex-1 overflow-hidden relative">
-                          <img src={getStoreImage(img)} alt={`${cat.label} ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                          <img src={getStoreImage(img)} alt={`${cat.label} ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                           {idx === 0 && <div className="absolute inset-y-0 right-0 w-px bg-white/40" />}
                         </div>
                       ))}

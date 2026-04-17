@@ -86,6 +86,8 @@ export default function ProductCard({ group, onClick }) {
             src={imgSrc}
             alt={name}
             className="w-full h-full object-contain p-8 transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="flex flex-col items-center justify-center p-8">

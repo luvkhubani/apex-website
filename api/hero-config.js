@@ -21,7 +21,7 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
 
-  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Cache-Control", "s-maxage=30, stale-while-revalidate=86400");
 
   const TOKEN = process.env.GITHUB_TOKEN;
   if (!TOKEN) {
