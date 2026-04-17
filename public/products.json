@@ -22,7 +22,9 @@
     "color": "Green",
     "price": 58000,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 58000,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-15/green.webp"
   },
   {
     "id": 3,
