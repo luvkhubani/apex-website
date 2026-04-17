@@ -1,13 +1,13 @@
 {
   "heroConfig": [],
   "bannerConfig": {
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/hero/banner.webp",
+    "image": "",
     "label": "Highlight of the Day",
-    "title": "IPHONE 17 PRO 256GB",
-    "subtitle": "FRESH | SEALED PACK | 1 YEAR APPLE WARRANTY",
-    "price": "118999",
+    "title": "",
+    "subtitle": "",
+    "price": "",
     "ctaText": "Order on WhatsApp",
     "ctaLink": ""
   },
-  "_savedAt": "2026-04-17T10:25:53.031Z"
+  "_savedAt": "2026-04-17T10:29:50.543Z"
 }
