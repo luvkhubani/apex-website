@@ -76,12 +76,10 @@
     "category": "Mobiles",
     "ram": "8GB",
     "storage": "128GB",
-    "color": "Ultramarine",
+    "color": "Blue",
     "price": 67500,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 67500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/ultramarine.webp"
+    "inStock": true
   },
   {
     "id": 7,
