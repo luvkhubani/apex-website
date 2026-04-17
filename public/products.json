@@ -540,18 +540,6 @@
     "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-s26-ultra/white.webp"
   },
   {
-    "id": 46,
-    "name": "Galaxy S26 Ultra",
-    "brand": "Samsung",
-    "category": "Mobiles",
-    "ram": "12GB",
-    "storage": "512GB",
-    "color": "White Fresh",
-    "price": 124500,
-    "badge": "New",
-    "inStock": true
-  },
-  {
     "id": 47,
     "name": "Galaxy Fold 7",
     "brand": "Samsung",
