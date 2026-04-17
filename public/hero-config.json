@@ -11,12 +11,6 @@
       "name": "iPhone 17",
       "description": "",
       "layout": "left"
-    },
-    {
-      "brand": "DYSON",
-      "name": "DYSON AIRWRAP ID ( BLUETOOTH )",
-      "description": "",
-      "layout": "left"
     }
   ],
   "bannerConfig": {
@@ -28,5 +22,5 @@
     "ctaText": "Order on WhatsApp",
     "ctaLink": ""
   },
-  "_savedAt": "2026-04-17T15:33:05.927Z"
+  "_savedAt": "2026-04-17T15:33:14.588Z"
 }
