@@ -319,54 +319,6 @@
     "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Computers%20Peripherals/Tablets%20and%20iPads/Images/314069_0_whwnwa.png?tr=w-1000"
   },
   {
-    "id": 24,
-    "name": "MacBook Neo",
-    "brand": "Apple",
-    "category": "Laptops",
-    "ram": "16GB",
-    "storage": "256GB",
-    "color": "Indigo",
-    "price": 0,
-    "badge": "New",
-    "inStock": true
-  },
-  {
-    "id": 25,
-    "name": "MacBook Neo",
-    "brand": "Apple",
-    "category": "Laptops",
-    "ram": "16GB",
-    "storage": "512GB",
-    "color": "Silver",
-    "price": 0,
-    "badge": "New",
-    "inStock": true
-  },
-  {
-    "id": 26,
-    "name": "MacBook Neo",
-    "brand": "Apple",
-    "category": "Laptops",
-    "ram": "16GB",
-    "storage": "512GB",
-    "color": "Blush",
-    "price": 0,
-    "badge": "New",
-    "inStock": true
-  },
-  {
-    "id": 27,
-    "name": "MacBook Neo",
-    "brand": "Apple",
-    "category": "Laptops",
-    "ram": "16GB",
-    "storage": "512GB",
-    "color": "Indigo",
-    "price": 0,
-    "badge": "New",
-    "inStock": true
-  },
-  {
     "id": 28,
     "name": "AirPods 3 Pro",
     "brand": "Apple",
