@@ -310,15 +310,24 @@ export default function AdminDashboard() {
     return () => clearInterval(id);
   }, [editId, tab]);
 
-  // On first load: pull from GitHub (source of truth) and hydrate local state
+  // On first load: pull from GitHub and merge with local state
   useEffect(() => {
     fetch("/api/products-data")
       .then(r => r.ok ? r.json() : null)
       .then(remote => {
-        if (Array.isArray(remote) && remote.length > 0) {
-          setProducts(remote);
-          saveProducts(remote);
-        }
+        if (!Array.isArray(remote) || remote.length === 0) return;
+        setProducts(local => {
+          // Never overwrite if the user just made a local write
+          if (Date.now() - lastWriteRef.current < 60000) return local;
+          // Merge: remote is authoritative for existing IDs,
+          // but keep local-only products not yet written to GitHub
+          const remoteIds = new Set(remote.map(p => p.id));
+          const localOnly = local.filter(p => !remoteIds.has(p.id));
+          const merged = [...remote, ...localOnly];
+          if (JSON.stringify(merged) === JSON.stringify(local)) return local;
+          saveProducts(merged);
+          return merged;
+        });
       })
       .catch(() => {});
     fetch("/api/hero-config")
