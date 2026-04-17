@@ -247,7 +247,9 @@
     "color": "Silver",
     "price": 145400,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 145400,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17-pro-max/silver.webp"
   },
   {
     "id": 19,
@@ -271,7 +273,9 @@
     "color": "Blue",
     "price": 32000,
     "badge": "WiFi",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 32000,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/ipad-a16/blue.webp"
   },
   {
     "id": 21,
