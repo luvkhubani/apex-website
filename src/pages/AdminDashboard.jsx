@@ -161,7 +161,7 @@ function ChangePasswordSection() {
   return (
     <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"14px" }}>
       <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🔐 Change Admin Password</h3>
-      <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Saved to the repo — takes effect on all browsers and devices immediately.</p>
+      <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Password change takes effect immediately.</p>
       <input type="password" value={cur}  onChange={e=>{setCur(e.target.value);setMsg(null);}}  placeholder="Current password" style={{ ...iStyle, marginBottom:"10px" }} />
       <input type="password" value={next} onChange={e=>{setNext(e.target.value);setMsg(null);}} placeholder="New password (min 8 chars)" style={{ ...iStyle, marginBottom:"10px" }} />
       <input type="password" value={conf} onChange={e=>{setConf(e.target.value);setMsg(null);}} placeholder="Confirm new password" style={{ ...iStyle, marginBottom:"14px" }} />
