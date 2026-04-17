@@ -22,9 +22,7 @@
     "color": "Green",
     "price": 58000,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 58000,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/300665_0_zblaql.png?tr=w-1000"
+    "inStock": true
   },
   {
     "id": 3,
@@ -62,9 +60,7 @@
     "color": "Black",
     "price": 67500,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 67500,
-    "image": "apple/iphone-16/black.webp"
+    "inStock": true
   },
   {
     "id": 6,
@@ -73,12 +69,10 @@
     "category": "Mobiles",
     "ram": "8GB",
     "storage": "128GB",
-    "color": "Ultramarine",
+    "color": "Blue",
     "price": 67500,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 67500,
-    "image": "apple/iphone-16/ultramarine.webp"
+    "inStock": true
   },
   {
     "id": 7,
@@ -90,9 +84,7 @@
     "color": "Pink",
     "price": 67500,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 67500,
-    "image": "apple/iphone-16/pink.webp"
+    "inStock": true
   },
   {
     "id": 8,
@@ -101,12 +93,10 @@
     "category": "Mobiles",
     "ram": "8GB",
     "storage": "128GB",
-    "color": "Teal",
+    "color": "Green",
     "price": 67500,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 67500,
-    "image": "apple/iphone-16/teal.webp"
+    "inStock": true
   },
   {
     "id": 9,
@@ -118,9 +108,7 @@
     "color": "White",
     "price": 67500,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 67500,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/309692_0_ois5su.png?tr=w-1000"
+    "inStock": true
   },
   {
     "id": 10,
@@ -132,9 +120,7 @@
     "color": "Black",
     "price": 83500,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 83500,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317396_0_Hd1wKDBH9.png?updatedAt=1757527018080?tr=w-1000"
+    "inStock": true
   },
   {
     "id": 11,
@@ -146,9 +132,7 @@
     "color": "White",
     "price": 83500,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 83500,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317398_0_m-WVpWSKl.png?updatedAt=1757527159495?tr=w-1000"
+    "inStock": true
   },
   {
     "id": 12,
@@ -157,12 +141,10 @@
     "category": "Mobiles",
     "ram": "8GB",
     "storage": "256GB",
-    "color": "Mist Blue",
+    "color": "Blue",
     "price": 83500,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 83500,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317400_0_p0ITeCKS3.png?updatedAt=1757527089010?tr=w-1000"
+    "inStock": true
   },
   {
     "id": 13,
@@ -171,12 +153,10 @@
     "category": "Mobiles",
     "ram": "8GB",
     "storage": "256GB",
-    "color": "Lavender",
+    "color": "Pink",
     "price": 83500,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 83500,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317401_0_4W1uManyDD.png?updatedAt=1757527304654?tr=w-1000"
+    "inStock": true
   },
   {
     "id": 14,
@@ -185,12 +165,10 @@
     "category": "Mobiles",
     "ram": "8GB",
     "storage": "256GB",
-    "color": "Sage",
+    "color": "Desert",
     "price": 83500,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 83500,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317403_0_Bt7N_CF2f.png?updatedAt=1757529455765?tr=w-1000"
+    "inStock": true
   },
   {
     "id": 15,
@@ -202,9 +180,7 @@
     "color": "Orange",
     "price": 130400,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 130400,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317417_0_7ISiBcc4Y.png?updatedAt=1757529273198?tr=w-1000"
+    "inStock": true
   },
   {
     "id": 16,
@@ -216,9 +192,7 @@
     "color": "Silver",
     "price": 133000,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 133000,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317421_0_pwBpx4eNx.png?updatedAt=1757529346352?tr=w-1000"
+    "inStock": true
   },
   {
     "id": 17,
@@ -230,9 +204,7 @@
     "color": "Orange",
     "price": 144499,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 144499,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317422_0_vRsXiJmW0.png?updatedAt=1757529309657?tr=w-1000"
+    "inStock": true
   },
   {
     "id": 18,
@@ -244,9 +216,7 @@
     "color": "Silver",
     "price": 145400,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 145400,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317421_0_pwBpx4eNx.png?updatedAt=1757529346352?tr=w-1000"
+    "inStock": true
   },
   {
     "id": 19,
@@ -255,12 +225,34 @@
     "category": "Mobiles",
     "ram": "8GB",
     "storage": "512GB",
-    "color": "Blue",
+    "color": "Orange",
     "price": 165000,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 165000,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317423_0_vDtcGjcMr.png?updatedAt=1757529529237?tr=w-1000"
+    "inStock": true
+  },
+  {
+    "id": 20,
+    "name": "iPad A16",
+    "brand": "Apple",
+    "category": "Tablets",
+    "ram": "8GB",
+    "storage": "128GB",
+    "color": "Blue",
+    "price": 32000,
+    "badge": "WiFi",
+    "inStock": true
+  },
+  {
+    "id": 21,
+    "name": "iPad A16",
+    "brand": "Apple",
+    "category": "Tablets",
+    "ram": "8GB",
+    "storage": "128GB",
+    "color": "Silver",
+    "price": 31700,
+    "badge": "WiFi",
+    "inStock": true
   },
   {
     "id": 22,
@@ -272,9 +264,7 @@
     "color": "Blue",
     "price": 31500,
     "badge": "WiFi",
-    "inStock": true,
-    "originalPrice": 31500,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Computers%20Peripherals/Tablets%20and%20iPads/Images/314071_0_tn5yfm.png?tr=w-1000"
+    "inStock": true
   },
   {
     "id": 23,
@@ -286,9 +276,55 @@
     "color": "White",
     "price": 32000,
     "badge": "WiFi",
-    "inStock": true,
-    "originalPrice": 32000,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Computers%20Peripherals/Tablets%20and%20iPads/Images/314069_0_whwnwa.png?tr=w-1000"
+    "inStock": true
+  },
+  {
+    "id": 24,
+    "name": "MacBook Neo",
+    "brand": "Apple",
+    "category": "Laptops",
+    "ram": "16GB",
+    "storage": "256GB",
+    "color": "Indigo",
+    "price": 0,
+    "badge": "New",
+    "inStock": true
+  },
+  {
+    "id": 25,
+    "name": "MacBook Neo",
+    "brand": "Apple",
+    "category": "Laptops",
+    "ram": "16GB",
+    "storage": "512GB",
+    "color": "Silver",
+    "price": 0,
+    "badge": "New",
+    "inStock": true
+  },
+  {
+    "id": 26,
+    "name": "MacBook Neo",
+    "brand": "Apple",
+    "category": "Laptops",
+    "ram": "16GB",
+    "storage": "512GB",
+    "color": "Blush",
+    "price": 0,
+    "badge": "New",
+    "inStock": true
+  },
+  {
+    "id": 27,
+    "name": "MacBook Neo",
+    "brand": "Apple",
+    "category": "Laptops",
+    "ram": "16GB",
+    "storage": "512GB",
+    "color": "Indigo",
+    "price": 0,
+    "badge": "New",
+    "inStock": true
   },
   {
     "id": 28,
@@ -300,9 +336,7 @@
     "color": "White",
     "price": 21000,
     "badge": "",
-    "inStock": true,
-    "originalPrice": 21000,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/airpods-3-pro/white.webp"
+    "inStock": true
   },
   {
     "id": 29,
@@ -326,9 +360,7 @@
     "color": "White",
     "price": 10900,
     "badge": "",
-    "inStock": true,
-    "originalPrice": 10900,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/airpods-4/white.webp"
+    "inStock": true
   },
   {
     "id": 31,
@@ -2081,35 +2113,5 @@
     "price": 1520,
     "badge": "",
     "inStock": true
-  },
-  {
-    "name": "iPhone 17 Pro",
-    "brand": "Apple",
-    "category": "Mobiles",
-    "ram": "",
-    "storage": "256GB",
-    "color": "Deep Blue",
-    "price": 118997,
-    "originalPrice": 134999,
-    "badge": "Hot",
-    "inStock": true,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317418_0_meob1I3_T.png?updatedAt=1757529236662?tr=w-1000",
-    "description": "",
-    "id": 177
-  },
-  {
-    "name": "APPLE MACBOOK NEO",
-    "brand": "Apple",
-    "category": "Laptops",
-    "ram": "",
-    "storage": "256GB",
-    "color": "SILVER",
-    "price": 63990,
-    "originalPrice": 69990,
-    "badge": "Hot",
-    "inStock": true,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/apple-macbook-neo/silver.webp",
-    "description": "",
-    "id": 178
   }
 ]
