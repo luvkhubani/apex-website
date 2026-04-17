@@ -310,7 +310,9 @@
     "color": "White",
     "price": 32000,
     "badge": "WiFi",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 32000,
+    "image": ""
   },
   {
     "id": 24,
