@@ -528,10 +528,12 @@
     "category": "Mobiles",
     "ram": "12GB",
     "storage": "512GB",
-    "color": "Blue",
+    "color": "Sky Blue",
     "price": 120000,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 120000,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-s26-ultra/sky-blue.webp"
   },
   {
     "id": 45,
