@@ -584,10 +584,12 @@
     "category": "Mobiles",
     "ram": "12GB",
     "storage": "256GB",
-    "color": "Silver Active",
+    "color": "Silver Shadow  Active",
     "price": 142400,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 142400,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-fold-7/silver-shadow-active.webp"
   },
   {
     "id": 49,
