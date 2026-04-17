@@ -2097,5 +2097,20 @@
     "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/airpods-4/white.webp",
     "description": "",
     "id": 179
+  },
+  {
+    "name": "SONY PLAYSTATION 5 SLIM",
+    "brand": "SONY",
+    "category": "CONSOLE",
+    "ram": "",
+    "storage": "1TB",
+    "color": "WHITE",
+    "price": 89990,
+    "originalPrice": 99990,
+    "badge": "HOT",
+    "inStock": true,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/sony/sony-playstation-5-slim/white.webp",
+    "description": "",
+    "id": 180
   }
 ]
