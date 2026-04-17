@@ -355,7 +355,9 @@
     "color": "White",
     "price": 10900,
     "badge": "",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 10900,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/airpods-4/white.webp"
   },
   {
     "id": 31,
