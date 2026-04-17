@@ -76,22 +76,26 @@
     "category": "Mobiles",
     "ram": "8GB",
     "storage": "128GB",
-    "color": "Blue",
+    "color": "Ultramarine",
     "price": 67500,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 67500,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/ultramarine.webp"
   },
   {
     "id": 7,
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "8GB",
+    "ram": "",
     "storage": "128GB",
     "color": "Pink",
     "price": 67500,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 67500,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/pink.webp"
   },
   {
     "id": 8,
