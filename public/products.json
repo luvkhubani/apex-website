@@ -263,34 +263,6 @@
     "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317423_0_vDtcGjcMr.png?updatedAt=1757529529237?tr=w-1000"
   },
   {
-    "id": 20,
-    "name": "iPad A16",
-    "brand": "Apple",
-    "category": "Tablets",
-    "ram": "8GB",
-    "storage": "128GB",
-    "color": "Blue",
-    "price": 32000,
-    "badge": "WiFi",
-    "inStock": true,
-    "originalPrice": 32000,
-    "image": "apple/ipad-a16/blue.webp"
-  },
-  {
-    "id": 21,
-    "name": "iPad A16",
-    "brand": "Apple",
-    "category": "Tablets",
-    "ram": "8GB",
-    "storage": "128GB",
-    "color": "Silver",
-    "price": 31700,
-    "badge": "WiFi",
-    "inStock": true,
-    "originalPrice": 31700,
-    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Computers%20Peripherals/Tablets%20and%20iPads/Images/314069_0_whwnwa.png?tr=w-1000"
-  },
-  {
     "id": 22,
     "name": "iPad 11th Gen",
     "brand": "Apple",
