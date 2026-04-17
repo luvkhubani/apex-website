@@ -2094,5 +2094,20 @@
     "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317418_0_meob1I3_T.png?updatedAt=1757529236662?tr=w-1000",
     "description": "",
     "id": 177
+  },
+  {
+    "name": "APPLE MACBOOK NEO",
+    "brand": "Apple",
+    "category": "Laptops",
+    "ram": "",
+    "storage": "256GB",
+    "color": "SILVER",
+    "price": 63990,
+    "originalPrice": 69990,
+    "badge": "Hot",
+    "inStock": true,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/apple-macbook-neo/silver.webp",
+    "description": "",
+    "id": 178
   }
 ]
