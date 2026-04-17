@@ -300,7 +300,9 @@
     "color": "White",
     "price": 21000,
     "badge": "",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 21000,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/airpods-3-pro/white.webp"
   },
   {
     "id": 29,
