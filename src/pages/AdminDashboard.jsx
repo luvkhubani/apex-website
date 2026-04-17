@@ -178,6 +178,7 @@ export default function AdminDashboard() {
   const csvInputRef    = useRef(null);
   const productImgRef  = useRef(null);
   const bannerImgRef   = useRef(null);
+  const lastWriteRef   = useRef(0); // timestamp of last local write — poll skips if too recent
 
   const [products,      setProducts]      = useState(loadProducts);
   const [search,        setSearch]        = useState("");
@@ -282,6 +283,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const poll = async () => {
       if (editId || tab === "add") return; // don't disrupt active editing
+      if (Date.now() - lastWriteRef.current < 60000) return; // wait 60s after any local write
       try {
         const [pRes, hRes] = await Promise.all([
           fetch("/api/products-data"),
@@ -291,7 +293,6 @@ export default function AdminDashboard() {
           const remote = await pRes.json();
           if (Array.isArray(remote) && remote.length > 0) {
             setProducts(local => {
-              // Only update if remote is actually different
               if (JSON.stringify(remote) === JSON.stringify(local)) return local;
               saveProducts(remote);
               return remote;
@@ -309,27 +310,26 @@ export default function AdminDashboard() {
     return () => clearInterval(id);
   }, [editId, tab]);
 
-  // On first load: push everything from localStorage to GitHub so all browsers stay in sync
+  // On first load: pull from GitHub (source of truth) and hydrate local state
   useEffect(() => {
-    const currentProducts = loadProducts();
-    // Sync products
-    fetch("/api/sync-products", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ products: currentProducts }),
-    }).catch(() => {});
-    // Sync hero + banner
-    const currentHero   = loadHero();
-    const currentBanner = (() => {
-      try { const s = localStorage.getItem("apex_banner_config"); if (s) return JSON.parse(s); } catch (_) {}
-      return BANNER_EMPTY;
-    })();
-    fetch("/api/sync-hero", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ heroConfig: currentHero, bannerConfig: currentBanner }),
-    }).catch(() => {});
-  }, []); // runs once on mount
+    fetch("/api/products-data")
+      .then(r => r.ok ? r.json() : null)
+      .then(remote => {
+        if (Array.isArray(remote) && remote.length > 0) {
+          setProducts(remote);
+          saveProducts(remote);
+        }
+      })
+      .catch(() => {});
+    fetch("/api/hero-config")
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (!d) return;
+        if (Array.isArray(d.heroConfig)) setHeroConfig(d.heroConfig);
+        if (d.bannerConfig) setBanner(b => ({ ...b, ...d.bannerConfig }));
+      })
+      .catch(() => {});
+  }, []);
 
   // Auto-save hero config whenever it changes and sync to GitHub
   useEffect(() => {
@@ -343,9 +343,9 @@ export default function AdminDashboard() {
 
   const showToast = (msg, type="ok") => { setToast({ msg, type }); setTimeout(() => setToast(null), type==="ok" && !msg.startsWith("Sync error") && !msg.startsWith("Sync failed") ? 3500 : 12000); };
   const persist   = (p) => {
+    lastWriteRef.current = Date.now(); // prevent poll from overwriting this write for 60s
     setProducts(p);
     saveProducts(p);
-    // Sync full catalog to GitHub so all browsers see changes instantly
     fetch("/api/sync-products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
