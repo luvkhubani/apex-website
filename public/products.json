@@ -10,8 +10,7 @@
     "price": 58000,
     "badge": "5G",
     "inStock": true,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-15/black.webp",
-    "originalPrice": 58000
+    "image": "apple/iphone-15/IPHONE 15 BLACK.webp"
   },
   {
     "id": 2,
@@ -38,8 +37,7 @@
     "price": 58000,
     "badge": "5G",
     "inStock": true,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-15/blue.webp",
-    "originalPrice": 58000
+    "image": "apple/iphone-15/IPHONE 15 BLUE.webp"
   },
   {
     "id": 4,
@@ -52,50 +50,43 @@
     "price": 58000,
     "badge": "5G",
     "inStock": true,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-15/pink.webp",
-    "originalPrice": 58000
+    "image": "apple/iphone-15/IPHONE 15 PINK.webp"
   },
   {
     "id": 5,
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "128GB",
     "color": "Black",
     "price": 67500,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 67500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/black.webp"
+    "inStock": true
   },
   {
     "id": 6,
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "128GB",
-    "color": "Ultramarine",
+    "color": "Blue",
     "price": 67500,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 67500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/ultramarine.webp"
+    "inStock": true
   },
   {
     "id": 7,
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "128GB",
     "color": "Pink",
     "price": 67500,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 67500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/pink.webp"
+    "inStock": true
   },
   {
     "id": 8,
