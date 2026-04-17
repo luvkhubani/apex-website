@@ -502,10 +502,12 @@
     "category": "Mobiles",
     "ram": "12GB",
     "storage": "512GB",
-    "color": "Violet",
+    "color": "Cobalt Violet",
     "price": 120000,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 120000,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-s26-ultra/cobalt-violet.webp"
   },
   {
     "id": 43,
