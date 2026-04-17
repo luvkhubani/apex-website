@@ -484,18 +484,6 @@
     "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-s26-ultra/cobalt-violet-active.webp"
   },
   {
-    "id": 41,
-    "name": "Galaxy S26 Ultra",
-    "brand": "Samsung",
-    "category": "Mobiles",
-    "ram": "12GB",
-    "storage": "256GB",
-    "color": "Fresh",
-    "price": 113500,
-    "badge": "New",
-    "inStock": true
-  },
-  {
     "id": 42,
     "name": "Galaxy S26 Ultra",
     "brand": "Samsung",
