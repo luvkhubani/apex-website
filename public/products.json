@@ -10,7 +10,8 @@
     "price": 58000,
     "badge": "5G",
     "inStock": true,
-    "image": "apple/iphone-15/IPHONE 15 BLACK.webp"
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-15/black.webp",
+    "originalPrice": 58000
   },
   {
     "id": 2,
@@ -37,7 +38,8 @@
     "price": 58000,
     "badge": "5G",
     "inStock": true,
-    "image": "apple/iphone-15/IPHONE 15 BLUE.webp"
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-15/blue.webp",
+    "originalPrice": 58000
   },
   {
     "id": 4,
@@ -50,67 +52,78 @@
     "price": 58000,
     "badge": "5G",
     "inStock": true,
-    "image": "apple/iphone-15/IPHONE 15 PINK.webp"
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-15/pink.webp",
+    "originalPrice": 58000
   },
   {
     "id": 5,
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "8GB",
+    "ram": "",
     "storage": "128GB",
     "color": "Black",
     "price": 67500,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 67500,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/black.webp"
   },
   {
     "id": 6,
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "8GB",
+    "ram": "",
     "storage": "128GB",
-    "color": "Blue",
+    "color": "Ultramarine",
     "price": 67500,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 67500,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/ultramarine.webp"
   },
   {
     "id": 7,
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "8GB",
+    "ram": "",
     "storage": "128GB",
     "color": "Pink",
     "price": 67500,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 67500,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/pink.webp"
   },
   {
     "id": 8,
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "8GB",
+    "ram": "",
     "storage": "128GB",
-    "color": "Green",
+    "color": "Teal",
     "price": 67500,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 67500,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/teal.webp"
   },
   {
     "id": 9,
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "8GB",
+    "ram": "",
     "storage": "128GB",
     "color": "White",
     "price": 67500,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 67500,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/white.webp"
   },
   {
     "id": 10,
