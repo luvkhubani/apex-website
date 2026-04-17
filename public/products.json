@@ -228,12 +228,14 @@
     "name": "iPhone 17 Pro Max",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "8GB",
+    "ram": "",
     "storage": "256GB",
-    "color": "Orange",
+    "color": "Cosmic Orange",
     "price": 144499,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 144499,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17-pro-max/cosmic-orange.webp"
   },
   {
     "id": 18,
