@@ -476,10 +476,12 @@
     "category": "Mobiles",
     "ram": "12GB",
     "storage": "256GB",
-    "color": "Violet Active",
+    "color": "Cobalt Violet Active",
     "price": 110500,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 110500,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-s26-ultra/cobalt-violet-active.webp"
   },
   {
     "id": 41,
