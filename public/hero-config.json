@@ -1,5 +1,12 @@
 {
-  "heroConfig": [],
+  "heroConfig": [
+    {
+      "brand": "SONY",
+      "name": "SONY PlayStation 5 Slim SSD Gaming Console (White)",
+      "description": "",
+      "layout": "left"
+    }
+  ],
   "bannerConfig": {
     "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/hero/banner.webp",
     "label": "Highlight of the Day",
@@ -9,5 +16,5 @@
     "ctaText": "Order on WhatsApp",
     "ctaLink": ""
   },
-  "_savedAt": "2026-04-17T15:25:34.677Z"
+  "_savedAt": "2026-04-17T15:28:58.326Z"
 }
