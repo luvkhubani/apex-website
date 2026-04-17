@@ -286,7 +286,9 @@
     "color": "Silver",
     "price": 31700,
     "badge": "WiFi",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 31700,
+    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Computers%20Peripherals/Tablets%20and%20iPads/Images/314069_0_whwnwa.png?tr=w-1000"
   },
   {
     "id": 22,
