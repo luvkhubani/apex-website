@@ -598,10 +598,12 @@
     "category": "Mobiles",
     "ram": "12GB",
     "storage": "512GB",
-    "color": "Black Fresh",
+    "color": "JetBlack Fresh",
     "price": 158000,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 158000,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-fold-7/jetblack-fresh.webp"
   },
   {
     "id": 50,
