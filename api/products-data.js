@@ -13,8 +13,7 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
 
-  // Cache at Vercel edge for 30 seconds
-  res.setHeader("Cache-Control", "s-maxage=30, stale-while-revalidate=10");
+  res.setHeader("Cache-Control", "no-store");
 
   const TOKEN = process.env.GITHUB_TOKEN;
   if (!TOKEN) return res.status(200).json([]);

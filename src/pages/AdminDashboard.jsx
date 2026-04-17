@@ -270,7 +270,7 @@ export default function AdminDashboard() {
     })
       .then(async r => {
         const d = await r.json();
-        if (d.success) { showToast("Saved & synced to repo!"); }
+        if (d.success) { showToast("Saved & synced!"); }
         else { showToast("Sync error: " + (d.error || r.status)); console.error("sync-store-config error:", d); }
       })
       .catch(e => showToast("Sync failed: " + e.message));
@@ -314,7 +314,7 @@ export default function AdminDashboard() {
   const persist   = (p) => {
     setProducts(p);
     saveProducts(p);
-    // Sync full catalog to GitHub so all browsers see the changes after redeploy
+    // Sync full catalog to GitHub so all browsers see changes instantly
     fetch("/api/sync-products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -351,7 +351,7 @@ export default function AdminDashboard() {
         try {
           const res  = await fetch("/api/import-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:imagePath, imagePath:path }) });
           const data = await res.json();
-          if (res.ok) { imagePath = path; showToast("Image auto-saved to repo!"); }
+          if (res.ok) { imagePath = data.url; showToast("Image uploaded! Live instantly."); }
           else showToast("Image import failed: " + data.error, "warn");
         } catch (err) {
           showToast("Image import error: " + err.message, "warn");
@@ -377,8 +377,7 @@ export default function AdminDashboard() {
       }
       persist(updated);
 
-      // Persist image path to GitHub so all browsers see it after redeploy
-      if (imagePath && !imagePath.startsWith("http")) {
+      if (imagePath) {
         fetch("/api/update-product-images", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -420,16 +419,15 @@ export default function AdminDashboard() {
       const res  = await fetch("/api/import-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:url, imagePath:path }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Unknown error");
-      setForm(f => ({ ...f, image:path }));
-      // Persist path to GitHub so all browsers see it
+      setForm(f => ({ ...f, image: data.url }));
       if (editId) {
         fetch("/api/update-product-images", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ updates: [{ id: editId, imagePath: path }] }),
+          body: JSON.stringify({ updates: [{ id: editId, imagePath: data.url }] }),
         }).catch(() => {});
       }
-      showToast("Image saved to repo! Redeploy in ~60s.");
+      showToast("Image uploaded! Live instantly.");
     } catch (err) {
       showToast("Import failed: " + err.message, "warn");
     } finally {
@@ -495,8 +493,8 @@ export default function AdminDashboard() {
         const res  = await fetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ base64, imagePath }) });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Upload failed");
-        onSuccess(imagePath, false); // false = committed path
-        showToast("Image uploaded to repo! Redeploy in ~60s.");
+        onSuccess(data.url, false); // false = stable CDN URL
+        showToast("Image uploaded! Live instantly.");
       } catch (err) {
         showToast("Upload failed: " + err.message, "warn");
       }
@@ -558,8 +556,7 @@ export default function AdminDashboard() {
    * Upload a store image (logo, store photo, category image) to public/store/
    * so it's served at /store/<filename> — a stable public URL that requires
    * no Vite rebuild. The blob preview URL is stored immediately so the image
-   * shows right away in this tab; after Vercel redeploys (~60 s) the /store/
-   * URL works in every browser.
+   * shows right away in this tab; Vercel Blob CDN URL works instantly in every browser.
    */
   const uploadStoreImage = async (file, filename, onCommitted) => {
     if (!file) return;
@@ -585,7 +582,7 @@ export default function AdminDashboard() {
         if (!res.ok) throw new Error(data.error || "Upload failed");
         // 4. Replace blob URL with the stable /store/ URL
         onCommitted(data.url);
-        showToast("Image saved! Will show everywhere after ~60s.");
+        showToast("Image saved! Live instantly.");
       } catch (err) {
         showToast("Upload failed: " + err.message, "warn");
       }
@@ -600,7 +597,7 @@ export default function AdminDashboard() {
       setStoreCfg(c => {
         const n = { ...c, logoImage: url };
         saveStoreConfig(n);
-        if (!url.startsWith('blob:')) { showToast("Logo synced to repo!"); syncStoreConfig(n); }
+        if (!url.startsWith('blob:')) { showToast("Logo saved! Live instantly."); syncStoreConfig(n); }
         return n;
       });
     });
@@ -687,8 +684,8 @@ export default function AdminDashboard() {
       const res  = await fetch("/api/import-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:banner.image, imagePath:"hero/banner.webp" }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Unknown error");
-      setBanner(b => ({ ...b, image:"hero/banner.webp" }));
-      showToast("Banner image saved to repo! Redeploy in ~60s.");
+      setBanner(b => ({ ...b, image: data.url }));
+      showToast("Banner image uploaded! Live instantly.");
     } catch (err) {
       showToast("Import failed: " + err.message, "warn");
     } finally {
@@ -1100,7 +1097,7 @@ export default function AdminDashboard() {
                 {/* CTA Text */}
                 <div>
                   <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Button Text</label>
-                  <input value={banner.ctaText} onChange={e => Fb("ctaText")(e.target.value)} placeholder="e.g. Enquire on WhatsApp" style={{ ...iStyle, marginBottom:"14px" }} />
+                  <input value={banner.ctaText} onChange={e => Fb("ctaText")(e.target.value)} placeholder="e.g. Order on WhatsApp" style={{ ...iStyle, marginBottom:"14px" }} />
                 </div>
 
                 {/* CTA Link */}
@@ -1144,7 +1141,7 @@ export default function AdminDashboard() {
                     <div style={{ color:"#fff", fontWeight:700, fontSize:"16px", marginBottom:"4px" }}>{banner.title || "Product Name"}</div>
                     {banner.subtitle && <div style={{ color:"#888", fontSize:"11px", marginBottom:"6px", lineHeight:1.4 }}>{banner.subtitle}</div>}
                     {banner.price && <div style={{ color:"#fff", fontWeight:700, fontSize:"18px", marginBottom:"8px" }}>{isNaN(Number(banner.price)) ? banner.price : `₹${Number(banner.price).toLocaleString("en-IN")}`}</div>}
-                    <div style={{ background:"#222", color:"#aaa", borderRadius:"20px", padding:"5px 14px", fontSize:"11px", width:"fit-content" }}>{banner.ctaText || "Enquire on WhatsApp"} →</div>
+                    <div style={{ background:"#222", color:"#aaa", borderRadius:"20px", padding:"5px 14px", fontSize:"11px", width:"fit-content" }}>{banner.ctaText || "Order on WhatsApp"} →</div>
                   </div>
                 </div>
               )}

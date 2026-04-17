@@ -11,7 +11,7 @@ const EMPTY = {
   heroConfig: [],
   bannerConfig: {
     image: "", label: "Highlight of the Day", title: "",
-    subtitle: "", price: "", ctaText: "Enquire on WhatsApp", ctaLink: "",
+    subtitle: "", price: "", ctaText: "Order on WhatsApp", ctaLink: "",
   },
 };
 
@@ -21,8 +21,7 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
 
-  // Cache at Vercel edge for 30 seconds — fast for users, near-live for admin changes
-  res.setHeader("Cache-Control", "s-maxage=30, stale-while-revalidate=10");
+  res.setHeader("Cache-Control", "no-store");
 
   const TOKEN = process.env.GITHUB_TOKEN;
   if (!TOKEN) {

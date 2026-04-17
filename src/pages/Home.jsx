@@ -194,7 +194,7 @@ function HeroProductSection({ item, products, index, waN }) {
       )}
       {priceStr && <p className="text-[28px] font-semibold text-apple-black mb-6">From {priceStr}</p>}
       <PillBlack href={waUrl(waN, waMsg)}>
-        Enquire on WhatsApp
+        Order on WhatsApp
       </PillBlack>
       <p className="text-[12px] font-semibold text-emerald-600 mt-4">
         ⚡ 2-Hour COD Delivery · All Indore
@@ -217,7 +217,7 @@ function HeroProductSection({ item, products, index, waN }) {
               </p>
             )}
             {priceStr && <p className="text-[28px] font-semibold text-apple-black mb-8">From {priceStr}</p>}
-            <PillBlack href={waUrl(waN, waMsg)}>Enquire on WhatsApp</PillBlack>
+            <PillBlack href={waUrl(waN, waMsg)}>Order on WhatsApp</PillBlack>
           </div>
           <div className="bg-apple-light rounded-[32px] aspect-square sm:aspect-[4/3] md:aspect-[16/9] max-w-[860px] mx-auto overflow-hidden flex items-center justify-center">
             {imgSrc
@@ -361,7 +361,7 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 text-[15px] font-medium text-white bg-[#0071e3] px-7 py-3 rounded-full hover:bg-[#0077ed] active:scale-[0.98] transition-all shadow-sm"
               >
-                {banner.ctaText || 'Enquire on WhatsApp'}
+                {banner.ctaText || 'Order on WhatsApp'}
               </a>
               <Link
                 to="/products"

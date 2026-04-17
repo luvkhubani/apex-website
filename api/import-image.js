@@ -1,5 +1,4 @@
-const OWNER = "luvkhubani";
-const REPO  = "apex-website";
+import { put } from '@vercel/blob';
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -11,19 +10,11 @@ export default async function handler(req, res) {
   const { imageUrl, imagePath } = req.body;
   if (!imageUrl || !imagePath) return res.status(400).json({ error: "imageUrl and imagePath are required" });
 
-  const TOKEN = process.env.GITHUB_TOKEN;
-  if (!TOKEN) return res.status(500).json({ error: "GITHUB_TOKEN not configured on server" });
-
-  const FILE_PATH = `src/assets/products/${imagePath}`;
-  const GH_HEADERS = {
-    Authorization: `token ${TOKEN}`,
-    "User-Agent":  "apex-admin",
-    Accept:        "application/vnd.github.v3+json",
-    "Content-Type":"application/json",
-  };
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return res.status(500).json({ error: "BLOB_READ_WRITE_TOKEN not configured" });
+  }
 
   try {
-    // 1 — Download the image (browser-like headers to bypass bot protection)
     const imgRes = await fetch(imageUrl, {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -33,42 +24,12 @@ export default async function handler(req, res) {
       },
       redirect: "follow",
     });
-    if (!imgRes.ok) return res.status(400).json({ error: `Could not download image (${imgRes.status}): ${imgRes.statusText}` });
-    const buffer     = await imgRes.arrayBuffer();
-    const base64     = Buffer.from(buffer).toString("base64");
+    if (!imgRes.ok) return res.status(400).json({ error: `Could not download image (${imgRes.status})` });
 
-    // 2 — Check if file already exists (need its SHA to overwrite)
-    let existingSha;
-    const checkRes = await fetch(
-      `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`,
-      { headers: GH_HEADERS }
-    );
-    if (checkRes.ok) {
-      const existing = await checkRes.json();
-      existingSha = existing.sha;
-    }
+    const buffer = Buffer.from(await imgRes.arrayBuffer());
+    const blob = await put(`products/${imagePath}`, buffer, { access: "public", addRandomSuffix: false });
 
-    // 3 — Commit to GitHub
-    const commitRes = await fetch(
-      `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`,
-      {
-        method: "PUT",
-        headers: GH_HEADERS,
-        body: JSON.stringify({
-          message: `feat: add product image ${imagePath} [skip ci]`,
-          content: base64,
-          ...(existingSha && { sha: existingSha }),
-        }),
-      }
-    );
-
-    if (!commitRes.ok) {
-      const err = await commitRes.json();
-      return res.status(500).json({ error: err.message || "GitHub commit failed" });
-    }
-
-    return res.status(200).json({ success: true, path: imagePath });
-
+    return res.status(200).json({ success: true, url: blob.url });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
