@@ -1,14 +1,20 @@
 {
   "heroConfig": [
     {
-      "brand": "DYSON",
-      "name": "DYSON AIRWRAP ID",
+      "brand": "SONY",
+      "name": "SONY PlayStation 5 Slim SSD Gaming Console (White)",
       "description": "",
       "layout": "left"
     },
     {
       "brand": "Apple",
       "name": "iPhone 17",
+      "description": "",
+      "layout": "left"
+    },
+    {
+      "brand": "DYSON",
+      "name": "DYSON AIRWRAP ID ( BLUETOOTH )",
       "description": "",
       "layout": "left"
     }
@@ -22,5 +28,5 @@
     "ctaText": "Order on WhatsApp",
     "ctaLink": ""
   },
-  "_savedAt": "2026-04-17T15:33:35.780Z"
+  "_savedAt": "2026-04-17T15:33:37.263Z"
 }
