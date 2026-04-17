@@ -158,24 +158,28 @@
     "name": "iPhone 17",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "8GB",
+    "ram": "",
     "storage": "256GB",
-    "color": "Blue",
+    "color": "Mist Blue",
     "price": 83500,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 83500,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17/mist-blue.webp"
   },
   {
     "id": 13,
     "name": "iPhone 17",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "8GB",
+    "ram": "",
     "storage": "256GB",
-    "color": "Pink",
+    "color": "Lavender",
     "price": 83500,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 83500,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17/lavender.webp"
   },
   {
     "id": 14,
