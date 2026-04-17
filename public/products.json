@@ -2082,5 +2082,20 @@
     "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/dyson/dyson-airwrap-id-/vinca-blue-and-topaz.webp",
     "description": "",
     "id": 178
+  },
+  {
+    "name": "AirPods 4",
+    "brand": "Apple",
+    "category": "Mobiles",
+    "ram": "",
+    "storage": "ANC",
+    "color": "WHITE",
+    "price": 15990,
+    "originalPrice": 16900,
+    "badge": "",
+    "inStock": true,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/airpods-4/white.webp",
+    "description": "",
+    "id": 179
   }
 ]
