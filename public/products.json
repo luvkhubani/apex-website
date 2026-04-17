@@ -60,12 +60,14 @@
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "8GB",
+    "ram": "",
     "storage": "128GB",
     "color": "Black",
     "price": 67500,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 67500,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/black.webp"
   },
   {
     "id": 6,
