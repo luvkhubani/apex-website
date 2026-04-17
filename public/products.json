@@ -294,18 +294,6 @@
     "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/airpods-3-pro/white.webp"
   },
   {
-    "id": 29,
-    "name": "AirPods 4 ANC",
-    "brand": "Apple",
-    "category": "Earphones",
-    "ram": "",
-    "storage": "",
-    "color": "White",
-    "price": 0,
-    "badge": "New",
-    "inStock": true
-  },
-  {
     "id": 30,
     "name": "AirPods 4",
     "brand": "Apple",
