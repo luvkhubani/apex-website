@@ -15,8 +15,10 @@ const COLOR_HEX = {
 
 function colorHex(colorStr) {
   if (!colorStr) return '#999';
-  const base = colorStr.split(' ')[0];
-  return COLOR_HEX[base] || '#999';
+  if (COLOR_HEX[colorStr]) return COLOR_HEX[colorStr];
+  const words = colorStr.split(/\s+/);
+  for (const w of words) if (COLOR_HEX[w]) return COLOR_HEX[w];
+  return '#999';
 }
 
 const BRAND_EMOJI = {

@@ -278,6 +278,37 @@ export default function AdminDashboard() {
 
   useEffect(() => { if (!localStorage.getItem(AUTH_KEY)) navigate("/admin"); }, []);
 
+  // Poll for remote changes every 30s — silently merge when no form is open
+  useEffect(() => {
+    const poll = async () => {
+      if (editId || tab === "add") return; // don't disrupt active editing
+      try {
+        const [pRes, hRes] = await Promise.all([
+          fetch("/api/products-data"),
+          fetch("/api/hero-config"),
+        ]);
+        if (pRes.ok) {
+          const remote = await pRes.json();
+          if (Array.isArray(remote) && remote.length > 0) {
+            setProducts(local => {
+              // Only update if remote is actually different
+              if (JSON.stringify(remote) === JSON.stringify(local)) return local;
+              saveProducts(remote);
+              return remote;
+            });
+          }
+        }
+        if (hRes.ok) {
+          const { heroConfig: rHero, bannerConfig: rBanner } = await hRes.json();
+          if (Array.isArray(rHero)) setHeroConfig(rHero);
+          if (rBanner) setBanner(b => ({ ...b, ...rBanner }));
+        }
+      } catch (_) {}
+    };
+    const id = setInterval(poll, 30000);
+    return () => clearInterval(id);
+  }, [editId, tab]);
+
   // On first load: push everything from localStorage to GitHub so all browsers stay in sync
   useEffect(() => {
     const currentProducts = loadProducts();
@@ -337,6 +368,22 @@ export default function AdminDashboard() {
     return acc;
   }, {});
 
+  // Strip storage/RAM patterns from a product name and return { name, storage, ram }
+  const normaliseProductName = (rawName, rawStorage, rawRam) => {
+    // Patterns like "256GB", "512 GB", "1TB", "8GB RAM", "12GB RAM"
+    const storageRx = /\b(\d+\s*(?:GB|TB))\s*(?:ROM|Storage)?\b/gi;
+    const ramRx     = /\b(\d+\s*GB)\s*RAM\b/gi;
+    let name    = rawName || "";
+    let storage = rawStorage || "";
+    let ram     = rawRam || "";
+    // Extract RAM first (must come before storage so "8GB RAM" isn't captured as storage)
+    name = name.replace(ramRx, (_, r) => { if (!ram) ram = r.replace(/\s+/g, ""); return ""; });
+    // Extract storage
+    name = name.replace(storageRx, (_, s) => { if (!storage) storage = s.replace(/\s+/g, ""); return ""; });
+    name = name.replace(/\s{2,}/g, " ").trim();
+    return { name, storage, ram };
+  };
+
   // ── Product CRUD ──────────────────────────────────────
   const handleSave = async () => {
     setSaving(true);
@@ -358,7 +405,10 @@ export default function AdminDashboard() {
         }
       }
 
-      const finalForm = { ...form, image: imagePath };
+      // Auto-extract storage/RAM embedded in the product name
+      const { name: cleanName, storage: cleanStorage, ram: cleanRam } =
+        normaliseProductName(form.name, form.storage, form.ram);
+      const finalForm = { ...form, name: cleanName, storage: cleanStorage, ram: cleanRam, image: imagePath };
       let updated;
       let savedId;
       if (editId) {
@@ -648,14 +698,23 @@ export default function AdminDashboard() {
   const handleCategoryImageUpload = (catIndex, e) => {
     const file = e.target.files[0]; if (!file) return;
     const ext = file.name.split(".").pop() || "jpg";
-    // Use timestamp so multiple uploads don't overwrite each other
     const filename = `cat-${catIndex}-${Date.now()}.${ext}`;
+    // Track the blob preview URL so we can replace it once the real URL arrives
+    let previewUrl = null;
     uploadStoreImage(file, filename, (url) => {
       setStoreCfg(c => {
         const cat = c.categories[catIndex];
-        // Migrate legacy single image → array
-        const existing = Array.isArray(cat.images) ? cat.images : (cat.image ? [cat.image] : []);
-        const cats = c.categories.map((c2, i) => i === catIndex ? { ...c2, images: [...existing, url], image: '' } : c2);
+        let existing = Array.isArray(cat.images) ? [...cat.images] : (cat.image ? [cat.image] : []);
+        if (url.startsWith('blob:')) {
+          // First call: add preview
+          previewUrl = url;
+          existing = [...existing, url];
+        } else {
+          // Second call: replace the preview with the real URL
+          existing = existing.map(img => img === previewUrl ? url : img);
+          previewUrl = null;
+        }
+        const cats = c.categories.map((c2, i) => i === catIndex ? { ...c2, images: existing, image: '' } : c2);
         const n = { ...c, categories: cats };
         saveStoreConfig(n);
         if (!url.startsWith('blob:')) { showToast("Category image synced!"); syncStoreConfig(n); }

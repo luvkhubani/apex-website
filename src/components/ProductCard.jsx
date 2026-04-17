@@ -13,7 +13,11 @@ const COLOR_HEX = {
 
 function colorHex(c) {
   if (!c) return '#999';
-  return COLOR_HEX[c.split(' ')[0]] || '#999';
+  // Exact match first, then check each word (handles "Cosmic Orange" → Orange)
+  if (COLOR_HEX[c]) return COLOR_HEX[c];
+  const words = c.split(/\s+/);
+  for (const w of words) if (COLOR_HEX[w]) return COLOR_HEX[w];
+  return '#999';
 }
 
 const BRAND_EMOJI = {
