@@ -252,18 +252,6 @@
     "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17-pro-max/silver.webp"
   },
   {
-    "id": 19,
-    "name": "iPhone 17 Pro Max",
-    "brand": "Apple",
-    "category": "Mobiles",
-    "ram": "8GB",
-    "storage": "512GB",
-    "color": "Orange",
-    "price": 165000,
-    "badge": "New",
-    "inStock": true
-  },
-  {
     "id": 20,
     "name": "iPad A16",
     "brand": "Apple",
