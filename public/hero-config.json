@@ -1,14 +1,14 @@
 {
   "heroConfig": [
     {
-      "brand": "Apple",
-      "name": "iPhone 17",
+      "brand": "DYSON",
+      "name": "DYSON AIRWRAP ID",
       "description": "",
       "layout": "left"
     },
     {
-      "brand": "DYSON",
-      "name": "DYSON AIRWRAP ID",
+      "brand": "Apple",
+      "name": "iPhone 17",
       "description": "",
       "layout": "left"
     }
@@ -22,5 +22,5 @@
     "ctaText": "Order on WhatsApp",
     "ctaLink": ""
   },
-  "_savedAt": "2026-04-17T15:33:19.494Z"
+  "_savedAt": "2026-04-17T15:33:21.101Z"
 }
