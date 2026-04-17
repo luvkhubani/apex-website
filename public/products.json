@@ -22,7 +22,9 @@
     "color": "Green",
     "price": 58000,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 58000,
+    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/300665_0_zblaql.png?tr=w-1000"
   },
   {
     "id": 3,
@@ -60,7 +62,9 @@
     "color": "Black",
     "price": 67500,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 67500,
+    "image": "apple/iphone-16/black.webp"
   },
   {
     "id": 6,
@@ -69,10 +73,12 @@
     "category": "Mobiles",
     "ram": "8GB",
     "storage": "128GB",
-    "color": "Blue",
+    "color": "Ultramarine",
     "price": 67500,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 67500,
+    "image": "apple/iphone-16/ultramarine.webp"
   },
   {
     "id": 7,
@@ -84,7 +90,9 @@
     "color": "Pink",
     "price": 67500,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 67500,
+    "image": "apple/iphone-16/pink.webp"
   },
   {
     "id": 8,
@@ -93,10 +101,12 @@
     "category": "Mobiles",
     "ram": "8GB",
     "storage": "128GB",
-    "color": "Green",
+    "color": "Teal",
     "price": 67500,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 67500,
+    "image": "apple/iphone-16/teal.webp"
   },
   {
     "id": 9,
@@ -108,7 +118,9 @@
     "color": "White",
     "price": 67500,
     "badge": "5G",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 67500,
+    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/309692_0_ois5su.png?tr=w-1000"
   },
   {
     "id": 10,
@@ -120,7 +132,9 @@
     "color": "Black",
     "price": 83500,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 83500,
+    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317396_0_Hd1wKDBH9.png?updatedAt=1757527018080?tr=w-1000"
   },
   {
     "id": 11,
@@ -132,7 +146,9 @@
     "color": "White",
     "price": 83500,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 83500,
+    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317398_0_m-WVpWSKl.png?updatedAt=1757527159495?tr=w-1000"
   },
   {
     "id": 12,
@@ -141,10 +157,12 @@
     "category": "Mobiles",
     "ram": "8GB",
     "storage": "256GB",
-    "color": "Blue",
+    "color": "Mist Blue",
     "price": 83500,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 83500,
+    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317400_0_p0ITeCKS3.png?updatedAt=1757527089010?tr=w-1000"
   },
   {
     "id": 13,
@@ -153,10 +171,12 @@
     "category": "Mobiles",
     "ram": "8GB",
     "storage": "256GB",
-    "color": "Pink",
+    "color": "Lavender",
     "price": 83500,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 83500,
+    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317401_0_4W1uManyDD.png?updatedAt=1757527304654?tr=w-1000"
   },
   {
     "id": 14,
@@ -165,10 +185,12 @@
     "category": "Mobiles",
     "ram": "8GB",
     "storage": "256GB",
-    "color": "Desert",
+    "color": "Sage",
     "price": 83500,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 83500,
+    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317403_0_Bt7N_CF2f.png?updatedAt=1757529455765?tr=w-1000"
   },
   {
     "id": 15,
@@ -180,7 +202,9 @@
     "color": "Orange",
     "price": 130400,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 130400,
+    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317417_0_7ISiBcc4Y.png?updatedAt=1757529273198?tr=w-1000"
   },
   {
     "id": 16,
@@ -192,7 +216,9 @@
     "color": "Silver",
     "price": 133000,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 133000,
+    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317421_0_pwBpx4eNx.png?updatedAt=1757529346352?tr=w-1000"
   },
   {
     "id": 17,
@@ -204,7 +230,9 @@
     "color": "Orange",
     "price": 144499,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 144499,
+    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317422_0_vRsXiJmW0.png?updatedAt=1757529309657?tr=w-1000"
   },
   {
     "id": 18,
@@ -216,7 +244,9 @@
     "color": "Silver",
     "price": 145400,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 145400,
+    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317421_0_pwBpx4eNx.png?updatedAt=1757529346352?tr=w-1000"
   },
   {
     "id": 19,
@@ -225,10 +255,12 @@
     "category": "Mobiles",
     "ram": "8GB",
     "storage": "512GB",
-    "color": "Orange",
+    "color": "Blue",
     "price": 165000,
     "badge": "New",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 165000,
+    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317423_0_vDtcGjcMr.png?updatedAt=1757529529237?tr=w-1000"
   },
   {
     "id": 20,
@@ -240,7 +272,9 @@
     "color": "Blue",
     "price": 32000,
     "badge": "WiFi",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 32000,
+    "image": "apple/ipad-a16/blue.webp"
   },
   {
     "id": 21,
@@ -2113,5 +2147,20 @@
     "price": 1520,
     "badge": "",
     "inStock": true
+  },
+  {
+    "name": "iPhone 17 Pro",
+    "brand": "Apple",
+    "category": "Mobiles",
+    "ram": "",
+    "storage": "256GB",
+    "color": "Deep Blue",
+    "price": 118997,
+    "originalPrice": 134999,
+    "badge": "Hot",
+    "inStock": true,
+    "image": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317418_0_meob1I3_T.png?updatedAt=1757529236662?tr=w-1000",
+    "description": "",
+    "id": 177
   }
 ]
