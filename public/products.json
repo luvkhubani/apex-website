@@ -2067,5 +2067,20 @@
     "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/macbook-neo/silver.webp",
     "description": "",
     "id": 177
+  },
+  {
+    "name": "DYSON AIRWRAP ID",
+    "brand": "DYSON",
+    "category": "CONSOLE",
+    "ram": "",
+    "storage": "",
+    "color": "Vinca Blue and Topaz",
+    "price": 43990,
+    "originalPrice": 49990,
+    "badge": "",
+    "inStock": true,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/dyson/dyson-airwrap-id-/vinca-blue-and-topaz.webp",
+    "description": "",
+    "id": 178
   }
 ]
