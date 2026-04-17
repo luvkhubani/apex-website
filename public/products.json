@@ -287,7 +287,9 @@
     "color": "Silver",
     "price": 31700,
     "badge": "WiFi",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 31700,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/ipad-a16/silver.webp"
   },
   {
     "id": 22,
@@ -299,7 +301,9 @@
     "color": "Blue",
     "price": 31500,
     "badge": "WiFi",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 31500,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/ipad-11th-gen/blue.webp"
   },
   {
     "id": 23,
@@ -308,10 +312,12 @@
     "category": "Tablets",
     "ram": "8GB",
     "storage": "128GB",
-    "color": "White",
+    "color": "Silver",
     "price": 32000,
     "badge": "WiFi",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 32000,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/ipad-11th-gen/silver.webp"
   },
   {
     "id": 28,
@@ -323,7 +329,9 @@
     "color": "White",
     "price": 21000,
     "badge": "",
-    "inStock": true
+    "inStock": true,
+    "originalPrice": 21000,
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/airpods-3-pro/white.webp"
   },
   {
     "id": 29,
