@@ -1,13 +1,5 @@
 {
   "heroConfig": [],
-  "bannerConfig": {
-    "image": "",
-    "label": "Highlight of the Day",
-    "title": "",
-    "subtitle": "",
-    "price": "",
-    "ctaText": "Order on WhatsApp",
-    "ctaLink": ""
-  },
-  "_savedAt": "2026-04-17T09:52:18.261Z"
+  "bannerConfig": {},
+  "_savedAt": "2026-04-17T09:53:28.033Z"
 }
