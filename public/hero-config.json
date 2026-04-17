@@ -5,6 +5,12 @@
       "name": "SONY PlayStation 5 Slim SSD Gaming Console (White)",
       "description": "",
       "layout": "left"
+    },
+    {
+      "brand": "Apple",
+      "name": "iPhone 17",
+      "description": "",
+      "layout": "left"
     }
   ],
   "bannerConfig": {
@@ -16,5 +22,5 @@
     "ctaText": "Order on WhatsApp",
     "ctaLink": ""
   },
-  "_savedAt": "2026-04-17T15:28:58.326Z"
+  "_savedAt": "2026-04-17T15:29:03.423Z"
 }
