@@ -1,13 +1,32 @@
 {
-  "heroConfig": [],
+  "heroConfig": [
+    {
+      "brand": "Apple",
+      "name": "iPhone 17",
+      "description": "",
+      "layout": "center"
+    },
+    {
+      "brand": "Apple",
+      "name": "iPhone 16",
+      "description": "",
+      "layout": "center"
+    },
+    {
+      "brand": "Apple",
+      "name": "iPhone 15",
+      "description": "POWERED BY CRAZY TECHNOLOGY",
+      "layout": "center"
+    }
+  ],
   "bannerConfig": {
-    "image": "",
+    "image": "hero/banner.webp",
     "label": "Highlight of the Day",
-    "title": "",
-    "subtitle": "",
-    "price": "",
+    "title": "IPHONE 17 PRO 256GB",
+    "subtitle": "SEALED PACK | ONE YEAR APPLE WARANTY",
+    "price": "118999",
     "ctaText": "Order on WhatsApp",
     "ctaLink": ""
   },
-  "_savedAt": "2026-04-17T10:22:56.962Z"
+  "_savedAt": "2026-04-17T10:23:58.634Z"
 }
