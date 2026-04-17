@@ -270,7 +270,7 @@
     "name": "iPad A16",
     "brand": "Apple",
     "category": "Tablets",
-    "ram": "8GB",
+    "ram": "",
     "storage": "128GB",
     "color": "Silver",
     "price": 31700,
@@ -278,34 +278,6 @@
     "inStock": true,
     "originalPrice": 31700,
     "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/ipad-a16/silver.webp"
-  },
-  {
-    "id": 22,
-    "name": "iPad 11th Gen",
-    "brand": "Apple",
-    "category": "Tablets",
-    "ram": "8GB",
-    "storage": "128GB",
-    "color": "Blue",
-    "price": 31500,
-    "badge": "WiFi",
-    "inStock": true,
-    "originalPrice": 31500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/ipad-11th-gen/blue.webp"
-  },
-  {
-    "id": 23,
-    "name": "iPad 11th Gen",
-    "brand": "Apple",
-    "category": "Tablets",
-    "ram": "8GB",
-    "storage": "128GB",
-    "color": "Silver",
-    "price": 32000,
-    "badge": "WiFi",
-    "inStock": true,
-    "originalPrice": 32000,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/ipad-11th-gen/silver.webp"
   },
   {
     "id": 28,
