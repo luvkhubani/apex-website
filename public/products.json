@@ -10,8 +10,7 @@
     "price": 58000,
     "badge": "5G",
     "inStock": true,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-15/black.webp",
-    "originalPrice": 58000
+    "image": "apple/iphone-15/IPHONE 15 BLACK.webp"
   },
   {
     "id": 2,
@@ -38,8 +37,7 @@
     "price": 58000,
     "badge": "5G",
     "inStock": true,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-15/blue.webp",
-    "originalPrice": 58000
+    "image": "apple/iphone-15/IPHONE 15 BLUE.webp"
   },
   {
     "id": 4,
@@ -52,232 +50,235 @@
     "price": 58000,
     "badge": "5G",
     "inStock": true,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-15/pink.webp",
-    "originalPrice": 58000
+    "image": "apple/iphone-15/IPHONE 15 PINK.webp"
   },
   {
     "id": 5,
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "128GB",
     "color": "Black",
     "price": 67500,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 67500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/black.webp"
+    "inStock": true
   },
   {
     "id": 6,
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "128GB",
-    "color": "Ultramarine",
+    "color": "Blue",
     "price": 67500,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 67500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/ultramarine.webp"
+    "inStock": true
   },
   {
     "id": 7,
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "128GB",
     "color": "Pink",
     "price": 67500,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 67500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/pink.webp"
+    "inStock": true
   },
   {
     "id": 8,
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "128GB",
-    "color": "Teal",
+    "color": "Green",
     "price": 67500,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 67500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/teal.webp"
+    "inStock": true
   },
   {
     "id": 9,
     "name": "iPhone 16",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "128GB",
     "color": "White",
     "price": 67500,
     "badge": "5G",
-    "inStock": true,
-    "originalPrice": 67500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-16/white.webp"
+    "inStock": true
   },
   {
     "id": 10,
     "name": "iPhone 17",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "256GB",
     "color": "Black",
     "price": 83500,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 83500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17/black.webp"
+    "inStock": true
   },
   {
     "id": 11,
     "name": "iPhone 17",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "256GB",
     "color": "White",
     "price": 83500,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 83500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17/white.webp"
+    "inStock": true
   },
   {
     "id": 12,
     "name": "iPhone 17",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "256GB",
-    "color": "Mist Blue",
+    "color": "Blue",
     "price": 83500,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 83500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17/mist-blue.webp"
+    "inStock": true
   },
   {
     "id": 13,
     "name": "iPhone 17",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "256GB",
-    "color": "Lavender",
+    "color": "Pink",
     "price": 83500,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 83500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17/lavender.webp"
+    "inStock": true
   },
   {
     "id": 14,
     "name": "iPhone 17",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "256GB",
-    "color": "Sage",
+    "color": "Desert",
     "price": 83500,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 83500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17/sage.webp"
+    "inStock": true
   },
   {
     "id": 15,
     "name": "iPhone 17 Pro",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "256GB",
-    "color": "Cosmic Orange",
+    "color": "Orange",
     "price": 130400,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 130400,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17-pro/cosmic-orange.webp"
+    "inStock": true
   },
   {
     "id": 16,
     "name": "iPhone 17 Pro",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "256GB",
     "color": "Silver",
     "price": 133000,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 133000,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17-pro/silver.webp"
+    "inStock": true
   },
   {
     "id": 17,
     "name": "iPhone 17 Pro Max",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "256GB",
-    "color": "Cosmic Orange",
+    "color": "Orange",
     "price": 144499,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 144499,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17-pro-max/cosmic-orange.webp"
+    "inStock": true
   },
   {
     "id": 18,
     "name": "iPhone 17 Pro Max",
     "brand": "Apple",
     "category": "Mobiles",
-    "ram": "",
+    "ram": "8GB",
     "storage": "256GB",
     "color": "Silver",
     "price": 145400,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 145400,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/iphone-17-pro-max/silver.webp"
+    "inStock": true
+  },
+  {
+    "id": 19,
+    "name": "iPhone 17 Pro Max",
+    "brand": "Apple",
+    "category": "Mobiles",
+    "ram": "8GB",
+    "storage": "512GB",
+    "color": "Orange",
+    "price": 165000,
+    "badge": "New",
+    "inStock": true
   },
   {
     "id": 20,
     "name": "iPad A16",
     "brand": "Apple",
     "category": "Tablets",
-    "ram": "",
+    "ram": "8GB",
     "storage": "128GB",
     "color": "Blue",
     "price": 32000,
     "badge": "WiFi",
-    "inStock": true,
-    "originalPrice": 32000,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/ipad-a16/blue.webp"
+    "inStock": true
   },
   {
     "id": 21,
     "name": "iPad A16",
     "brand": "Apple",
     "category": "Tablets",
-    "ram": "",
+    "ram": "8GB",
     "storage": "128GB",
     "color": "Silver",
     "price": 31700,
     "badge": "WiFi",
-    "inStock": true,
-    "originalPrice": 31700,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/ipad-a16/silver.webp"
+    "inStock": true
+  },
+  {
+    "id": 22,
+    "name": "iPad 11th Gen",
+    "brand": "Apple",
+    "category": "Tablets",
+    "ram": "8GB",
+    "storage": "128GB",
+    "color": "Blue",
+    "price": 31500,
+    "badge": "WiFi",
+    "inStock": true
+  },
+  {
+    "id": 23,
+    "name": "iPad 11th Gen",
+    "brand": "Apple",
+    "category": "Tablets",
+    "ram": "8GB",
+    "storage": "128GB",
+    "color": "White",
+    "price": 32000,
+    "badge": "WiFi",
+    "inStock": true
   },
   {
     "id": 28,
@@ -289,9 +290,19 @@
     "color": "White",
     "price": 21000,
     "badge": "",
-    "inStock": true,
-    "originalPrice": 21000,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/airpods-3-pro/white.webp"
+    "inStock": true
+  },
+  {
+    "id": 29,
+    "name": "AirPods 4 ANC",
+    "brand": "Apple",
+    "category": "Earphones",
+    "ram": "",
+    "storage": "",
+    "color": "White",
+    "price": 0,
+    "badge": "New",
+    "inStock": true
   },
   {
     "id": 30,
@@ -299,13 +310,11 @@
     "brand": "Apple",
     "category": "Earphones",
     "ram": "",
-    "storage": "NON ANC",
+    "storage": "",
     "color": "White",
-    "price": 11900,
+    "price": 10900,
     "badge": "",
-    "inStock": true,
-    "originalPrice": 12990,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/airpods-4/white.webp"
+    "inStock": true
   },
   {
     "id": 31,
@@ -413,9 +422,7 @@
     "color": "Black Active",
     "price": 110500,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 110500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-s26-ultra/black-active.webp"
+    "inStock": true
   },
   {
     "id": 40,
@@ -424,12 +431,22 @@
     "category": "Mobiles",
     "ram": "12GB",
     "storage": "256GB",
-    "color": "Cobalt Violet Active",
+    "color": "Violet Active",
     "price": 110500,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 110500,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-s26-ultra/cobalt-violet-active.webp"
+    "inStock": true
+  },
+  {
+    "id": 41,
+    "name": "Galaxy S26 Ultra",
+    "brand": "Samsung",
+    "category": "Mobiles",
+    "ram": "12GB",
+    "storage": "256GB",
+    "color": "Fresh",
+    "price": 113500,
+    "badge": "New",
+    "inStock": true
   },
   {
     "id": 42,
@@ -438,12 +455,10 @@
     "category": "Mobiles",
     "ram": "12GB",
     "storage": "512GB",
-    "color": "Cobalt Violet",
+    "color": "Violet",
     "price": 120000,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 120000,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-s26-ultra/cobalt-violet.webp"
+    "inStock": true
   },
   {
     "id": 43,
@@ -455,9 +470,7 @@
     "color": "Black",
     "price": 120000,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 120000,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-s26-ultra/black.webp"
+    "inStock": true
   },
   {
     "id": 44,
@@ -466,12 +479,10 @@
     "category": "Mobiles",
     "ram": "12GB",
     "storage": "512GB",
-    "color": "Sky Blue",
+    "color": "Blue",
     "price": 120000,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 120000,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-s26-ultra/sky-blue.webp"
+    "inStock": true
   },
   {
     "id": 45,
@@ -480,12 +491,22 @@
     "category": "Mobiles",
     "ram": "12GB",
     "storage": "512GB",
-    "color": "White",
+    "color": "Silver",
     "price": 120000,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 120000,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-s26-ultra/white.webp"
+    "inStock": true
+  },
+  {
+    "id": 46,
+    "name": "Galaxy S26 Ultra",
+    "brand": "Samsung",
+    "category": "Mobiles",
+    "ram": "12GB",
+    "storage": "512GB",
+    "color": "White Fresh",
+    "price": 124500,
+    "badge": "New",
+    "inStock": true
   },
   {
     "id": 47,
@@ -494,12 +515,10 @@
     "category": "Mobiles",
     "ram": "12GB",
     "storage": "256GB",
-    "color": "Blue Shadow  Active",
+    "color": "Blue Active",
     "price": 140000,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 140000,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-fold-7/blue-shadow-active.webp"
+    "inStock": true
   },
   {
     "id": 48,
@@ -508,12 +527,10 @@
     "category": "Mobiles",
     "ram": "12GB",
     "storage": "256GB",
-    "color": "Silver Shadow  Active",
+    "color": "Silver Active",
     "price": 142400,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 142400,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-fold-7/silver-shadow-active.webp"
+    "inStock": true
   },
   {
     "id": 49,
@@ -522,12 +539,10 @@
     "category": "Mobiles",
     "ram": "12GB",
     "storage": "512GB",
-    "color": "JetBlack Fresh",
+    "color": "Black Fresh",
     "price": 158000,
     "badge": "New",
-    "inStock": true,
-    "originalPrice": 158000,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/samsung/galaxy-fold-7/jetblack-fresh.webp"
+    "inStock": true
   },
   {
     "id": 50,
@@ -2067,50 +2082,5 @@
     "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/macbook-neo/silver.webp",
     "description": "",
     "id": 177
-  },
-  {
-    "name": "DYSON AIRWRAP ID",
-    "brand": "DYSON",
-    "category": "CONSOLE",
-    "ram": "",
-    "storage": "",
-    "color": "Vinca Blue and Topaz",
-    "price": 43990,
-    "originalPrice": 49990,
-    "badge": "",
-    "inStock": true,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/dyson/dyson-airwrap-id-/vinca-blue-and-topaz.webp",
-    "description": "",
-    "id": 178
-  },
-  {
-    "name": "AirPods 4",
-    "brand": "Apple",
-    "category": "Mobiles",
-    "ram": "",
-    "storage": "ANC",
-    "color": "WHITE",
-    "price": 15990,
-    "originalPrice": 16900,
-    "badge": "",
-    "inStock": true,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/apple/airpods-4/white.webp",
-    "description": "",
-    "id": 179
-  },
-  {
-    "name": "SONY PLAYSTATION 5 SLIM",
-    "brand": "SONY",
-    "category": "CONSOLE",
-    "ram": "",
-    "storage": "1TB",
-    "color": "WHITE",
-    "price": 89990,
-    "originalPrice": 99990,
-    "badge": "HOT",
-    "inStock": true,
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/sony/sony-playstation-5-slim/white.webp",
-    "description": "",
-    "id": 180
   }
 ]
