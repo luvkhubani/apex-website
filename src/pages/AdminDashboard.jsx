@@ -187,6 +187,7 @@ export default function AdminDashboard() {
   const [editId,        setEditId]        = useState(null);
   const [form,          setForm]          = useState(EMPTY);
   const [saving,        setSaving]        = useState(false);
+  const [uploading,     setUploading]     = useState(false);
   const [importing,     setImporting]     = useState(false);
   const [toast,         setToast]         = useState(null);
   const [editingModel,  setEditingModel]  = useState(null);
@@ -355,10 +356,14 @@ export default function AdminDashboard() {
     lastWriteRef.current = Date.now(); // prevent poll from overwriting this write for 60s
     setProducts(p);
     saveProducts(p);
+    // Strip blob: URLs before syncing — they are temporary browser-only preview URLs
+    const syncReady = p.map(prod =>
+      prod.image?.startsWith('blob:') ? { ...prod, image: undefined } : prod
+    );
     fetch("/api/sync-products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ products: p }),
+      body: JSON.stringify({ products: syncReady }),
     }).catch(() => {});
   };
   const F         = (k) => (v) => setForm(f => ({ ...f, [k]: v }));
@@ -401,7 +406,7 @@ export default function AdminDashboard() {
       const origNum  = Number(form.originalPrice) || priceNum;
 
       // Auto-import URL image before saving so it lands in the repo
-      let imagePath = form.image;
+      let imagePath = form.image?.startsWith('blob:') ? '' : (form.image || '');
       if (imagePath?.startsWith("http")) {
         const path = autoPath(form.brand, form.name, form.color);
         try {
@@ -561,22 +566,48 @@ export default function AdminDashboard() {
     reader.readAsDataURL(file);
   };
 
-  const handleProductFileUpload = e => {
+  const handleProductFileUpload = async (e) => {
     const file = e.target.files[0]; if (!file) return;
-    const ext  = file.name.split(".").pop() || "webp";
-    const path = autoPath(form.brand, form.name, form.color).replace(".webp", `.${ext}`);
-    uploadFile(file, path, (result, isPreview) => {
-      setForm(f => ({ ...f, image: result }));
-      // Once committed (not preview), persist path to GitHub for all browsers
-      if (!isPreview && editId) {
-        fetch("/api/update-product-images", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ updates: [{ id: editId, imagePath: result }] }),
-        }).catch(() => {});
-      }
-    });
     e.target.value = "";
+
+    // Show local preview immediately for instant feedback
+    const previewUrl = URL.createObjectURL(file);
+    setForm(f => ({ ...f, image: previewUrl }));
+    setUploading(true);
+
+    try {
+      // Compress to JPEG before uploading (prevents Vercel 4.5 MB body limit errors)
+      const compressed = await compressImage(file);
+      const path = autoPath(form.brand, form.name, form.color).replace(".webp", ".jpg");
+
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const base64 = ev.target.result.split(",")[1];
+        try {
+          const res  = await fetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ base64, imagePath:path }) });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "Upload failed");
+          setForm(f => ({ ...f, image: data.url }));
+          if (editId) {
+            fetch("/api/update-product-images", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ updates: [{ id: editId, imagePath: data.url }] }),
+            }).catch(() => {});
+          }
+          showToast("Image uploaded! Live instantly.");
+        } catch (err) {
+          showToast("Upload failed: " + err.message, "warn");
+          setForm(f => ({ ...f, image: "" })); // clear blob: URL so it doesn't get saved
+        } finally {
+          setUploading(false);
+        }
+      };
+      reader.readAsDataURL(compressed);
+    } catch (err) {
+      showToast("Compression failed: " + err.message, "warn");
+      setUploading(false);
+    }
   };
 
   const handleBannerFileUpload = e => {
@@ -1026,8 +1057,8 @@ export default function AdminDashboard() {
               </div>
 
               <div style={{ display:"flex", gap:"10px" }}>
-                <Btn onClick={handleSave} disabled={saving||!form.name||!form.price||!form.color} style={{ flex:1 }}>
-                  {saving?"Saving…":editId?"Update Variant":"Add Product"}
+                <Btn onClick={handleSave} disabled={saving||uploading||!form.name||!form.price||!form.color} style={{ flex:1 }}>
+                  {saving?"Saving…":uploading?"Uploading image…":editId?"Update Variant":"Add Product"}
                 </Btn>
                 <Btn color="ghost" onClick={() => { setTab("products"); setEditId(null); setForm(EMPTY); }}>Cancel</Btn>
               </div>
