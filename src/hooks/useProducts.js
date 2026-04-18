@@ -26,17 +26,7 @@ export function useProducts() {
         setProducts(remote);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(remote));
       })
-      .catch(() => {
-        // API unavailable (local dev) — fall back to static file
-        return fetch("/products.json?v=" + Date.now())
-          .then(r => r.ok ? r.json() : null)
-          .then(remote => {
-            if (!Array.isArray(remote) || remote.length === 0) return;
-            setProducts(remote);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(remote));
-          })
-          .catch(() => {});
-      });
+      .catch(() => {});
   }, []);
 
   // React to localStorage changes (admin panel saving in same browser)

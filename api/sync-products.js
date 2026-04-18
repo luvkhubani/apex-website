@@ -1,6 +1,4 @@
-const OWNER     = "luvkhubani";
-const REPO      = "apex-website";
-const FILE_PATH = "public/products.json";
+import { supabase, toRow } from './lib/supabase.js';
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -13,48 +11,26 @@ export default async function handler(req, res) {
   if (!Array.isArray(products))
     return res.status(400).json({ error: "products array is required" });
 
-  const TOKEN = process.env.GITHUB_TOKEN;
-  if (!TOKEN) return res.status(500).json({ error: "GITHUB_TOKEN not configured" });
-
-  const GH = {
-    Authorization: `token ${TOKEN}`,
-    "User-Agent":  "apex-admin",
-    Accept:        "application/vnd.github.v3+json",
-    "Content-Type":"application/json",
-  };
-
   try {
-    // Check if file already exists (need SHA to overwrite)
-    let existingSha;
-    const checkRes = await fetch(
-      `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`,
-      { headers: GH }
-    );
-    if (checkRes.ok) {
-      const data = await checkRes.json();
-      existingSha = data.sha;
+    const rows = products.map(toRow);
+    const incomingIds = rows.map(r => r.id).filter(Boolean);
+
+    // Upsert all incoming products
+    const { error: upsertErr } = await supabase
+      .from('products')
+      .upsert(rows, { onConflict: 'id' });
+    if (upsertErr) throw upsertErr;
+
+    // Delete any products that were removed (present in DB but not in incoming list)
+    if (incomingIds.length > 0) {
+      const { error: deleteErr } = await supabase
+        .from('products')
+        .delete()
+        .not('id', 'in', `(${incomingIds.join(',')})`);
+      if (deleteErr) throw deleteErr;
     }
 
-    const content = Buffer.from(JSON.stringify(products, null, 2)).toString("base64");
-    const commitRes = await fetch(
-      `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`,
-      {
-        method: "PUT",
-        headers: GH,
-        body: JSON.stringify({
-          message: "feat: sync product catalog from admin [skip ci]",
-          content,
-          ...(existingSha && { sha: existingSha }),
-        }),
-      }
-    );
-
-    if (!commitRes.ok) {
-      const err = await commitRes.json();
-      return res.status(500).json({ error: err.message || "GitHub commit failed" });
-    }
-
-    return res.status(200).json({ success: true, count: products.length });
+    return res.status(200).json({ success: true, count: rows.length });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

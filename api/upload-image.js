@@ -1,4 +1,4 @@
-import { put } from '@vercel/blob';
+import { uploadBase64 } from './lib/cloudinary.js';
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -10,14 +10,13 @@ export default async function handler(req, res) {
   const { base64, imagePath } = req.body;
   if (!base64 || !imagePath) return res.status(400).json({ error: "base64 and imagePath are required" });
 
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return res.status(500).json({ error: "BLOB_READ_WRITE_TOKEN not configured" });
+  if (!process.env.CLOUDINARY_CLOUD_NAME) {
+    return res.status(500).json({ error: "Cloudinary credentials not configured" });
   }
 
   try {
-    const buffer = Buffer.from(base64, "base64");
-    const blob = await put(`products/${imagePath}`, buffer, { access: "public", addRandomSuffix: false, allowOverwrite: true });
-    return res.status(200).json({ success: true, url: blob.url });
+    const url = await uploadBase64(base64, 'products', imagePath);
+    return res.status(200).json({ success: true, url });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

@@ -1,6 +1,4 @@
-const OWNER     = "luvkhubani";
-const REPO      = "apex-website";
-const FILE_PATH = "public/product-images.json";
+import { supabase } from './lib/supabase.js';
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -13,57 +11,16 @@ export default async function handler(req, res) {
   if (!Array.isArray(updates) || updates.length === 0)
     return res.status(400).json({ error: "updates array is required" });
 
-  const TOKEN = process.env.GITHUB_TOKEN;
-  if (!TOKEN) return res.status(500).json({ error: "GITHUB_TOKEN not configured" });
-
-  const GH = {
-    Authorization: `token ${TOKEN}`,
-    "User-Agent":  "apex-admin",
-    Accept:        "application/vnd.github.v3+json",
-    "Content-Type":"application/json",
-  };
-
   try {
-    // 1 — Read existing file (if it exists)
-    let existing = {};
-    let existingSha;
-    const checkRes = await fetch(
-      `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`,
-      { headers: GH }
+    // Update each product's image column directly in Supabase
+    await Promise.all(
+      updates
+        .filter(u => u.id != null && u.imagePath && !u.imagePath.startsWith('blob:'))
+        .map(u =>
+          supabase.from('products').update({ image: u.imagePath }).eq('id', u.id)
+        )
     );
-    if (checkRes.ok) {
-      const data = await checkRes.json();
-      existingSha = data.sha;
-      existing = JSON.parse(Buffer.from(data.content, "base64").toString("utf-8"));
-    }
-
-    // 2 — Merge updates (id → imagePath)
-    const merged = { ...existing };
-    for (const { id, imagePath } of updates) {
-      if (id != null && imagePath) merged[String(id)] = imagePath;
-    }
-
-    // 3 — Commit back
-    const content = Buffer.from(JSON.stringify(merged, null, 2)).toString("base64");
-    const commitRes = await fetch(
-      `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`,
-      {
-        method: "PUT",
-        headers: GH,
-        body: JSON.stringify({
-          message: `feat: update product image paths [skip ci]`,
-          content,
-          ...(existingSha && { sha: existingSha }),
-        }),
-      }
-    );
-
-    if (!commitRes.ok) {
-      const err = await commitRes.json();
-      return res.status(500).json({ error: err.message || "GitHub commit failed" });
-    }
-
-    return res.status(200).json({ success: true, updated: Object.keys(merged).length });
+    return res.status(200).json({ success: true, updated: updates.length });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

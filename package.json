@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.103.3",
     "@vercel/blob": "^2.3.3",
     "autoprefixer": "^10.4.27",
+    "cloudinary": "^2.9.0",
     "postcss": "^8.5.9",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
