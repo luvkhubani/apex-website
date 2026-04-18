@@ -1,4 +1,4 @@
-import { uploadFromUrl } from './lib/cloudinary.js';
+import { uploadFromUrl } from '../lib/cloudinary.js';
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
