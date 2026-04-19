@@ -16,7 +16,7 @@
       "brand": "Apple",
       "name": "MACBOOK NEO",
       "description": "",
-      "layout": "left"
+      "layout": "center"
     }
   ],
   "bannerConfig": {
@@ -28,5 +28,5 @@
     "ctaText": "Order on WhatsApp",
     "ctaLink": ""
   },
-  "_savedAt": "2026-04-19T11:46:11.510Z"
+  "_savedAt": "2026-04-19T11:46:14.604Z"
 }
