@@ -177,8 +177,10 @@ export default function AdminDashboard() {
   const navigate    = useNavigate();
   const csvInputRef    = useRef(null);
   const productImgRef  = useRef(null);
-  const bannerImgRef   = useRef(null);
-  const lastWriteRef   = useRef(0); // timestamp of last local write — poll skips if too recent
+  const bannerImgRef       = useRef(null);
+  const lastWriteRef       = useRef(0);   // timestamp of last local write — poll skips if too recent
+  const heroFromRemoteRef  = useRef(false); // set before remote-sourced setHeroConfig calls
+  const lastHeroSyncRef    = useRef(null);  // serialized last-synced payload for dedup
 
   const [products,      setProducts]      = useState(loadProducts);
   const [search,        setSearch]        = useState("");
@@ -302,7 +304,7 @@ export default function AdminDashboard() {
         }
         if (hRes.ok) {
           const { heroConfig: rHero, bannerConfig: rBanner } = await hRes.json();
-          if (Array.isArray(rHero)) setHeroConfig(rHero);
+          if (Array.isArray(rHero)) { heroFromRemoteRef.current = true; setHeroConfig(rHero); }
           if (rBanner) setBanner(b => ({ ...b, ...rBanner }));
         }
       } catch (_) {}
@@ -335,20 +337,32 @@ export default function AdminDashboard() {
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (!d) return;
-        if (Array.isArray(d.heroConfig)) setHeroConfig(d.heroConfig);
+        if (Array.isArray(d.heroConfig)) { heroFromRemoteRef.current = true; setHeroConfig(d.heroConfig); }
         if (d.bannerConfig) setBanner(b => ({ ...b, ...d.bannerConfig }));
       })
       .catch(() => {});
   }, []);
 
-  // Auto-save hero config whenever it changes and sync to GitHub
+  // Auto-save locally and debounce GitHub sync (3s after last change).
+  // Skip if the update came from a remote poll (would create a redundant commit).
+  // Skip if content hasn't changed since the last sync.
   useEffect(() => {
     saveHeroConfig(heroConfig);
-    fetch("/api/sync-hero", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ heroConfig, bannerConfig: banner }),
-    }).catch(() => {});
+    if (heroFromRemoteRef.current) {
+      heroFromRemoteRef.current = false;
+      return;
+    }
+    const payload = JSON.stringify({ heroConfig, bannerConfig: banner });
+    const timer = setTimeout(() => {
+      if (payload === lastHeroSyncRef.current) return;
+      lastHeroSyncRef.current = payload;
+      fetch("/api/sync-hero", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ heroConfig, bannerConfig: banner }),
+      }).catch(() => {});
+    }, 3000);
+    return () => clearTimeout(timer);
   }, [heroConfig]);
 
   const showToast = (msg, type="ok") => { setToast({ msg, type }); setTimeout(() => setToast(null), type==="ok" && !msg.startsWith("Sync error") && !msg.startsWith("Sync failed") ? 3500 : 12000); };
