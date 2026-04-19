@@ -19,6 +19,14 @@
       "layout": "center"
     }
   ],
-  "bannerConfig": {},
-  "_savedAt": "2026-04-19T20:25:38.708Z"
+  "bannerConfig": {
+    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/hero/banner.webp",
+    "label": "Highlight of the Day",
+    "title": "IPHONE 17 PRO 256GB",
+    "subtitle": "FRESH | SEALED PACK | 1 YEAR APPLE WARRANTY",
+    "price": "118999",
+    "ctaText": "Order on WhatsApp",
+    "ctaLink": ""
+  },
+  "_savedAt": "2026-04-19T20:27:23.938Z"
 }
