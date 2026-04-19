@@ -1,4 +1,5 @@
 {
+  "ignoreCommand": "git log -1 --pretty=%s | grep -vqF '[skip ci]'",
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
