@@ -708,6 +708,21 @@ export default function AdminDashboard() {
     e.target.value = "";
   };
 
+  const faviconImgRef = useRef(null);
+  const handleFaviconFileUpload = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const ext = file.name.split(".").pop() || "png";
+    uploadStoreImage(file, `favicon.${ext}`, (url) => {
+      setStoreCfg(c => {
+        const n = { ...c, faviconUrl: url };
+        saveStoreConfig(n);
+        if (!url.startsWith('blob:')) { showToast("Favicon saved!"); syncStoreConfig(n); }
+        return n;
+      });
+    });
+    e.target.value = "";
+  };
+
   const handleStorePhotoUpload = async e => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
@@ -1298,7 +1313,24 @@ export default function AdminDashboard() {
               <input ref={logoImgRef} type="file" accept="image/*" style={{ display:"none" }} onChange={handleLogoFileUpload} />
 
               <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Fallback Text</label>
-              <input value={storeCfg.logoText} onChange={e => Fs("logoText")(e.target.value)} placeholder="APEX" style={{ ...iStyle, marginBottom:"16px" }} />
+              <input value={storeCfg.logoText} onChange={e => Fs("logoText")(e.target.value)} placeholder="APEX" style={{ ...iStyle, marginBottom:"20px" }} />
+
+              <div style={{ borderTop:"1px solid #1e1e1e", paddingTop:"20px", marginBottom:"16px" }}>
+                <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"4px" }}>Favicon</label>
+                <p style={{ color:"#555", fontSize:"11px", margin:"0 0 10px" }}>Shown in browser tabs. Recommended: square image, 64×64px or larger.</p>
+                {storeCfg.faviconUrl && (
+                  <div style={{ marginBottom:"10px", display:"flex", alignItems:"center", gap:"10px" }}>
+                    <img src={getStoreImage(storeCfg.faviconUrl)} alt="Favicon" style={{ width:"32px", height:"32px", objectFit:"contain", borderRadius:"4px", border:"1px solid #2a2a2a", background:"#1a1a1a" }} onError={e=>{e.target.style.display="none";}} />
+                    <span style={{ color:"#555", fontSize:"11px" }}>Current favicon</span>
+                    <button onClick={() => { const n={...storeCfg,faviconUrl:''}; setStoreCfg(n); saveStoreConfig(n); syncStoreConfig(n); }} style={{ color:"#ff4444", background:"none", border:"none", fontSize:"12px", cursor:"pointer" }}>Remove</button>
+                  </div>
+                )}
+                <input value={storeCfg.faviconUrl||''} onChange={e => Fs("faviconUrl")(e.target.value)} placeholder="Paste URL, or upload →" style={{ ...iStyle, marginBottom:"8px" }} />
+                <button onClick={() => faviconImgRef.current?.click()} style={{ width:"100%", padding:"10px", background:"#1a1a1a", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"13px", display:"flex", alignItems:"center", justifyContent:"center", gap:"8px" }}>
+                  📁 Upload Favicon from Device
+                </button>
+                <input ref={faviconImgRef} type="file" accept="image/*" style={{ display:"none" }} onChange={handleFaviconFileUpload} />
+              </div>
 
               <Btn onClick={() => saveStore({...storeCfg})}>Save Branding</Btn>
             </div>
@@ -1311,20 +1343,31 @@ export default function AdminDashboard() {
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0 16px" }}>
                 <div style={{ gridColumn:"1 / -1" }}>
                   <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>
-                    WhatsApp Number <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(for wa.me links — include country code, no + or spaces)</span>
+                    Primary WhatsApp Number <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(used for all WhatsApp links — country code, no + or spaces)</span>
                   </label>
                   <input value={storeCfg.whatsappNumber} onChange={e => Fs("whatsappNumber")(e.target.value.replace(/\D/g,""))} placeholder="918349570000" style={{ ...iStyle, marginBottom:"14px" }} />
                 </div>
                 <div style={{ gridColumn:"1 / -1" }}>
                   <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>
-                    Phone Numbers <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(all numbers shown on contact page and footer)</span>
+                    Contact Numbers <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(shown in footer and contact page)</span>
                   </label>
+                  {/* Quick-add preset labels */}
+                  <div style={{ display:"flex", gap:"6px", flexWrap:"wrap", marginBottom:"10px" }}>
+                    {["Office","After Sales","Delivery Team","WhatsApp"].map(preset => (
+                      <button key={preset} onClick={() => {
+                        const arr = [...(storeCfg.phoneNumbers||[]), {label:preset, number:''}];
+                        setStoreCfg(s => ({...s, phoneNumbers:arr}));
+                      }} style={{ padding:"4px 10px", background:"#0d0d0d", border:"1px solid #2a2a2a", borderRadius:"20px", color:"#888", cursor:"pointer", fontSize:"11px" }}>
+                        + {preset}
+                      </button>
+                    ))}
+                  </div>
                   {(storeCfg.phoneNumbers || []).map((ph, i) => (
                     <div key={i} style={{ display:"flex", gap:"8px", marginBottom:"8px", alignItems:"center" }}>
                       <input value={ph.label||''} onChange={e => {
                         const arr = storeCfg.phoneNumbers.map((p,j) => j===i?{...p,label:e.target.value}:p);
                         setStoreCfg(s => ({...s, phoneNumbers:arr}));
-                      }} placeholder="Label (e.g. Main, Sales)" style={{ ...iStyle, width:"130px", flexShrink:0 }} />
+                      }} placeholder="Label" style={{ ...iStyle, width:"130px", flexShrink:0 }} />
                       <input value={ph.number||''} onChange={e => {
                         const arr = storeCfg.phoneNumbers.map((p,j) => j===i?{...p,number:e.target.value}:p);
                         setStoreCfg(s => ({...s, phoneNumbers:arr}));
@@ -1340,7 +1383,7 @@ export default function AdminDashboard() {
                     const arr = [...(storeCfg.phoneNumbers||[]), {label:'',number:''}];
                     setStoreCfg(s => ({...s, phoneNumbers:arr}));
                   }} style={{ width:"100%", padding:"8px", background:"#0d0d0d", border:"1px dashed #2a2a2a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"12px", marginBottom:"14px" }}>
-                    ＋ Add Phone Number
+                    ＋ Add Number
                   </button>
                 </div>
                 <div>

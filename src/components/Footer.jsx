@@ -53,10 +53,20 @@ export default function Footer() {
           {/* Brands */}
           <div>
             <p className="text-[12px] font-semibold text-apple-black mb-4">Brands</p>
-            <ul className="space-y-2.5">
-              {['Apple', 'Samsung', 'OnePlus', 'Sony', 'Xiaomi', 'Lenovo', 'HP', 'boAt'].map(brand => (
+            <ul className="flex flex-wrap gap-x-4 gap-y-2.5">
+              {[
+                'Apple','Samsung','OnePlus','Nothing','Motorola',
+                'Xiaomi','Realme','Vivo','OPPO','Poco',
+                'Infinix','Tecno','Nokia','Sony','Lenovo',
+                'HP','boAt','AI Plus','Jio',
+              ].map(brand => (
                 <li key={brand}>
-                  <span className="text-[12px] text-apple-gray">{brand}</span>
+                  <Link
+                    to={`/products?brand=${encodeURIComponent(brand)}`}
+                    className="text-[12px] text-apple-gray hover:text-apple-black transition-colors duration-200"
+                  >
+                    {brand}
+                  </Link>
                 </li>
               ))}
             </ul>

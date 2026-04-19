@@ -67,9 +67,9 @@ export default function Products() {
   const storeCfg       = useStoreConfig();
   const [searchParams] = useSearchParams();
   const [search,     setSearch]     = useState('');
-  const [brand,      setBrand]      = useState(() => {
+  const [brands,     setBrands]     = useState(() => {
     const b = searchParams.get('brand');
-    return b && BRANDS.includes(b) ? b : 'All';
+    return b && BRANDS.includes(b) ? new Set([b]) : new Set();
   });
   const [category,   setCategory]   = useState(() => {
     const c = searchParams.get('category');
@@ -82,7 +82,7 @@ export default function Products() {
   // Sync if URL params change (e.g. back/forward navigation)
   useEffect(() => {
     const b = searchParams.get('brand');
-    if (b && BRANDS.includes(b)) setBrand(b);
+    if (b && BRANDS.includes(b)) setBrands(new Set([b]));
     const c = searchParams.get('category');
     if (c && CATEGORIES.includes(c)) setCategory(c);
   }, [searchParams]);
@@ -103,8 +103,8 @@ export default function Products() {
       );
     }
 
-    // Brand
-    if (brand !== 'All') list = list.filter(p => p.brand === brand);
+    // Brand (multi-select — empty set = all)
+    if (brands.size > 0) list = list.filter(p => brands.has(p.brand));
 
     // Category
     if (category !== 'All') list = list.filter(p => p.category === category);
@@ -135,7 +135,7 @@ export default function Products() {
     // 'newest' keeps insertion order
 
     return g;
-  }, [products, search, brand, category, priceRange, sort]);
+  }, [products, search, brands, category, priceRange, sort]);
 
   const totalModels   = useMemo(() => groupProducts(products).length, [products]);
   const totalVariants = products.length;
@@ -146,12 +146,12 @@ export default function Products() {
       {/* ── WhatsApp banner ───────────────────────────────── */}
       <div className="bg-[#25D366] text-white text-center py-2.5 px-4">
         <a
-          href={waUrl(storeCfg.whatsappNumber, 'Hi Apex! Please share your complete price list.')}
+          href={waUrl(storeCfg.whatsappNumber, 'Hi Apex! I am looking for:\nModel: \nColour: \nStorage / Variant: \nBudget: \nBrands preferred: ')}
           target="_blank"
           rel="noopener noreferrer"
           className="text-[13px] font-medium hover:underline"
         >
-          Can&apos;t find your model? WhatsApp us for the complete price list →
+          Can&apos;t find your model? WhatsApp us for your required model →
         </a>
       </div>
 
@@ -162,9 +162,6 @@ export default function Products() {
             <p className="text-[12px] font-semibold tracking-[0.15em] text-apple-gray uppercase mb-3">
               Our Collection
             </p>
-            <h1 className="font-sans font-bold text-[34px] md:text-[50px] text-apple-black leading-[1.07] tracking-[-0.02em] mb-3">
-              Our Complete Price List — {totalVariants}+ Models
-            </h1>
             <p className="text-[15px] text-apple-gray">
               Store hours: <strong className="text-apple-black">{storeCfg.storeHoursShort}</strong>, Monday to Sunday
               &nbsp;·&nbsp; {storeCfg.addressLine1}
@@ -197,10 +194,19 @@ export default function Products() {
             </select>
           </div>
 
-          {/* Brand pills */}
+          {/* Brand pills — multi-select, "All" clears selection */}
           <div className="flex gap-2 overflow-x-auto no-scrollbar">
-            {BRANDS.map(b => (
-              <Pill key={b} active={brand === b} onClick={() => setBrand(b)}>{b}</Pill>
+            <Pill active={brands.size === 0} onClick={() => setBrands(new Set())}>All</Pill>
+            {BRANDS.filter(b => b !== 'All').map(b => (
+              <Pill
+                key={b}
+                active={brands.has(b)}
+                onClick={() => setBrands(prev => {
+                  const next = new Set(prev);
+                  next.has(b) ? next.delete(b) : next.add(b);
+                  return next;
+                })}
+              >{b}</Pill>
             ))}
           </div>
 
@@ -245,7 +251,7 @@ export default function Products() {
               <p className="font-sans font-bold text-[24px] text-apple-black mb-2">No products found.</p>
               <p className="text-[15px] text-apple-gray mb-6">Try a different search or clear your filters.</p>
               <button
-                onClick={() => { setSearch(''); setBrand('All'); setCategory('All'); setPriceRange('All Prices'); }}
+                onClick={() => { setSearch(''); setBrands(new Set()); setCategory('All'); setPriceRange('All Prices'); }}
                 className="text-[14px] font-medium text-white bg-apple-black px-6 py-3 rounded-pill hover:scale-[1.02] transition-transform"
               >
                 Clear All Filters

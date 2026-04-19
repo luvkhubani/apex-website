@@ -3,9 +3,10 @@ import { useState, useEffect } from 'react';
 const STORE_KEY = 'apex_store_config';
 
 export const STORE_DEFAULTS = {
-  // ── Logo ──────────────────────────────────────────────
+  // ── Logo & Branding ───────────────────────────────────
   logoImage: '',
   logoText: 'APEX',
+  faviconUrl: '',
 
   // ── Contact details ───────────────────────────────────
   whatsappNumber: '918349570000',   // used in wa.me URLs — no + prefix

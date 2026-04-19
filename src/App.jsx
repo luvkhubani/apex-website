@@ -9,6 +9,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
+import { useStoreConfig, getStoreImage } from './hooks/useStoreConfig';
 
 // Silently push admin localStorage data to GitHub once per browser session.
 // Runs on first page load only — avoids a GitHub commit (and Vercel webhook) on
@@ -63,8 +64,25 @@ function useAdminAutoSync() {
   }, []);
 }
 
+function useDynamicFavicon() {
+  const cfg = useStoreConfig();
+  useEffect(() => {
+    if (!cfg.faviconUrl) return;
+    const url = getStoreImage(cfg.faviconUrl);
+    if (!url) return;
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.href = url;
+  }, [cfg.faviconUrl]);
+}
+
 export default function App() {
   useAdminAutoSync();
+  useDynamicFavicon();
   return (
     <BrowserRouter>
       <Routes>
