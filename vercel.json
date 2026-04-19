@@ -1,5 +1,5 @@
 {
-  "ignoreCommand": "echo \"$VERCEL_GIT_COMMIT_MESSAGE\" | grep -qF '[skip ci]' && exit 1 || exit 0",
+  "ignoreCommand": "node -e \"const m=process.env.VERCEL_GIT_COMMIT_MESSAGE||require('child_process').execSync('git log -1 --pretty=%s 2>/dev/null').toString();process.exit(m.includes('[skip ci]')?1:0)\"",
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
