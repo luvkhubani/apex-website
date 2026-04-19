@@ -1,5 +1,5 @@
 {
-  "logoImage": "/store/logo.png",
+  "logoImage": "https://res.cloudinary.com/dz489r0qy/image/upload/v1776630435/store/logo.jpg",
   "logoText": "APEX",
   "whatsappNumber": "918349570000",
   "phoneDisplay": "+91 83495 70000",
@@ -10,18 +10,18 @@
     }
   ],
   "addressLine1": "Jail Road, Indore",
-  "addressLine2": "Madhya Pradesh — 452001",
+  "addressLine2": "Madhya Pradesh — 452 001",
   "storeHours": "Monday – Sunday, 10:00 AM – 8:00 PM",
   "storeHoursShort": "10AM – 8PM",
-  "instagramHandle": "apexmobile_indore",
-  "instagramUrl": "https://instagram.com/apexmobile_indore",
+  "instagramHandle": "apexmobileindia",
+  "instagramUrl": "https://instagram.com/apexmobileindia",
   "trustStats": [
     {
       "num": "30+",
       "label": "Years of trust"
     },
     {
-      "num": "5L+",
+      "num": "1L+",
       "label": "Happy customers"
     },
     {
@@ -58,33 +58,36 @@
       "emoji": "🍎",
       "filter": "Mobiles",
       "sub": "Latest Apple lineup",
-      "link": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317415_6_SGB-RnikO.png?updatedAt=1757529439070?tr=w-1000",
-      "images": []
+      "images": [],
+      "link": ""
     },
     {
       "label": "Samsung & Android",
       "emoji": "📱",
       "filter": "Mobiles",
       "sub": "Galaxy S series & more",
-      "images": []
+      "images": [],
+      "link": ""
     },
     {
       "label": "MacBooks & Laptops",
       "emoji": "💻",
       "filter": "Laptops",
       "sub": "Power your work",
-      "images": []
+      "images": [],
+      "link": ""
     },
     {
       "label": "Accessories",
       "emoji": "🎧",
       "filter": "Accessories",
       "sub": "Complete your setup",
-      "images": []
+      "images": [],
+      "link": ""
     }
   ],
-  "googleMapsEmbed": "https://share.google/COjQTrz41gegF0ueE",
-  "googleMapsLink": "https://www.google.com/maps/dir//Apex+Mobile,+Indore,+8,+Jail+Rd,+Nagar+Nigam,+Indore,+Madhya+Pradesh+452007,+India/@22.7124622,75.8650143,15z/data=!3m1!4b1!4m8!4m7!1m0!1m5!1m1!1s0x3962fd0cf8cd3125:0x76b71664f43c32f4!2m2!1d75.861609!2d22.720964?entry=ttu&g_ep=EgoyMDI2MDQxMy4wIKXMDSoASAFQAw%3D%3D",
+  "googleMapsEmbed": "",
+  "googleMapsLink": "https://maps.google.com/?q=Apex+The+Mobile+Shoppe+Jail+Road+Indore",
   "aboutHeadline": "Three decades.\nOne promise.",
   "aboutSub": "Honest advice, genuine products, and the best prices in Indore — since 1996.",
   "aboutStory": [
@@ -123,5 +126,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-19T19:30:34.145Z"
+  "_savedAt": "2026-04-19T20:27:17.222Z"
 }
