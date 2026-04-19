@@ -424,7 +424,7 @@ export default function AdminDashboard() {
       if (imagePath?.startsWith("http")) {
         const path = autoPath(form.brand, form.name, form.color);
         try {
-          const res  = await fetch("/api/import-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:imagePath, imagePath:path }) });
+          const res  = await fetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:imagePath, imagePath:path }) });
           const data = await res.json();
           if (res.ok) { imagePath = data.url; showToast("Image uploaded! Live instantly."); }
           else showToast("Image import failed: " + data.error, "warn");
@@ -494,7 +494,7 @@ export default function AdminDashboard() {
     const path = autoPath(form.brand, form.name, form.color);
     setImporting(true);
     try {
-      const res  = await fetch("/api/import-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:url, imagePath:path }) });
+      const res  = await fetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:url, imagePath:path }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Unknown error");
       setForm(f => ({ ...f, image: data.url }));
@@ -677,10 +677,10 @@ export default function AdminDashboard() {
     reader.onload = async (ev) => {
       const base64 = ev.target.result.split(",")[1];
       try {
-        const res  = await fetch("/api/upload-store-image", {
+        const res  = await fetch("/api/upload-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ base64, filename: safeFilename }),
+          body: JSON.stringify({ base64, filename: safeFilename, folder: 'store' }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Upload failed");
@@ -744,10 +744,10 @@ export default function AdminDashboard() {
           r.readAsDataURL(compressed);
         });
 
-        const resp = await fetch("/api/upload-store-image", {
+        const resp = await fetch("/api/upload-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ base64, filename }),
+          body: JSON.stringify({ base64, filename, folder: 'store' }),
         });
         const data = await resp.json();
         if (!resp.ok) throw new Error(data.error || "Upload failed");
@@ -809,7 +809,7 @@ export default function AdminDashboard() {
     if (!banner.image?.startsWith("http")) { showToast("Paste a full https:// URL in the image field.", "warn"); return; }
     setBannerImporting(true);
     try {
-      const res  = await fetch("/api/import-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:banner.image, imagePath:"hero/banner.webp" }) });
+      const res  = await fetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:banner.image, imagePath:"hero/banner.webp" }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Unknown error");
       setBanner(b => ({ ...b, image: data.url }));
