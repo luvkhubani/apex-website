@@ -1,26 +1,13 @@
 {
-  "heroConfig": [
-    {
-      "brand": "DYSON",
-      "name": "DYSON AIRWRAP ID",
-      "description": "",
-      "layout": "left"
-    },
-    {
-      "brand": "Apple",
-      "name": "iPhone 17",
-      "description": "",
-      "layout": "left"
-    }
-  ],
+  "heroConfig": [],
   "bannerConfig": {
-    "image": "https://u0dxz1dc8noc88qn.public.blob.vercel-storage.com/products/hero/banner.webp",
+    "image": "",
     "label": "Highlight of the Day",
-    "title": "IPHONE 17 PRO 256GB",
-    "subtitle": "FRESH | SEALED PACK | 1 YEAR APPLE WARRANTY",
-    "price": "118999",
+    "title": "",
+    "subtitle": "",
+    "price": "",
     "ctaText": "Order on WhatsApp",
     "ctaLink": ""
   },
-  "_savedAt": "2026-04-19T08:10:06.227Z"
+  "_savedAt": "2026-04-19T08:11:06.713Z"
 }
