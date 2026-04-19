@@ -57,7 +57,7 @@ export default async function handler(req, res) {
         method: "PUT",
         headers: GH,
         body: JSON.stringify({
-          message: "chore: update admin password",
+          message: "chore: update admin password [skip ci]",
           content,
           ...(existingSha && { sha: existingSha }),
         }),

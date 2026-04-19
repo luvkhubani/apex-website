@@ -10,11 +10,14 @@ import Contact from './pages/Contact';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 
-// Silently push admin localStorage data to GitHub whenever the admin visits
-// any page — so other browsers stay in sync without admin having to open the panel.
+// Silently push admin localStorage data to GitHub once per browser session.
+// Runs on first page load only — avoids a GitHub commit (and Vercel webhook) on
+// every navigation within the same tab.
 function useAdminAutoSync() {
   useEffect(() => {
     if (!localStorage.getItem('apex_admin_auth')) return;
+    if (sessionStorage.getItem('apex_synced')) return;
+    sessionStorage.setItem('apex_synced', '1');
     try {
       const heroConfig   = JSON.parse(localStorage.getItem('apex_hero_config')   || '[]');
       const bannerConfig = JSON.parse(localStorage.getItem('apex_banner_config') || 'null') || {};

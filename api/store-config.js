@@ -4,6 +4,10 @@ const FILE  = "public/store-config.json";
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  if (req.method === "OPTIONS") return res.status(200).end();
+  if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
+
   res.setHeader("Cache-Control", "s-maxage=30, stale-while-revalidate=86400");
 
   try {
@@ -16,11 +20,11 @@ export default async function handler(req, res) {
         }
       }
     );
-    if (!r.ok) return res.status(502).json({ error: "GitHub fetch failed" });
+    if (!r.ok) return res.status(200).json({});
     const { content } = await r.json();
     const json = JSON.parse(Buffer.from(content, "base64").toString("utf8"));
     return res.status(200).json(json);
-  } catch (e) {
-    return res.status(500).json({ error: e.message });
+  } catch (_) {
+    return res.status(200).json({});
   }
 }
