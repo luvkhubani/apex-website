@@ -70,10 +70,8 @@
       "emoji": "📦",
       "filter": "",
       "sub": "CRAZY | FAST | ANDROID",
-      "images": [
-        "https://res.cloudinary.com/dz489r0qy/image/upload/v1776692394/store/categories/samsung--android.jpg"
-      ],
-      "link": "",
+      "images": [],
+      "link": "https://res.cloudinary.com/dz489r0qy/image/upload/v1776692525/kv_group_Tablet_v2-Photoroom_x3idfb.png",
       "image": ""
     }
   ],
@@ -117,5 +115,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-20T13:39:59.042Z"
+  "_savedAt": "2026-04-20T13:42:32.498Z"
 }
