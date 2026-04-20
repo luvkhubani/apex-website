@@ -152,24 +152,30 @@ export default function ProductModal({ group, onClose }) {
             ) : null; })()}
 
             {/* Storage / RAM selector */}
-            {storageOptions.length > 1 && (
+            {storageOptions.length > 0 && (
               <div className="mb-5">
                 <p className="text-[11px] font-semibold tracking-[0.12em] text-apple-gray uppercase mb-2">Variant</p>
-                <div className="flex flex-wrap gap-2">
-                  {storageOptions.map(opt => (
-                    <button
-                      key={opt}
-                      onClick={() => setSelectedStorage(opt)}
-                      className={`text-[13px] font-medium px-4 py-1.5 rounded-pill border-2 transition-all duration-150 ${
-                        selectedStorage === opt
-                          ? 'bg-apple-black text-white border-apple-black'
-                          : 'bg-white text-apple-black border-apple-border hover:border-apple-black'
-                      }`}
-                    >
-                      {opt}
-                    </button>
-                  ))}
-                </div>
+                {storageOptions.length === 1 ? (
+                  <span className="inline-block text-[13px] font-medium px-4 py-1.5 rounded-pill border-2 bg-apple-black text-white border-apple-black">
+                    {storageOptions[0]}
+                  </span>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {storageOptions.map(opt => (
+                      <button
+                        key={opt}
+                        onClick={() => setSelectedStorage(opt)}
+                        className={`text-[13px] font-medium px-4 py-1.5 rounded-pill border-2 transition-all duration-150 ${
+                          selectedStorage === opt
+                            ? 'bg-apple-black text-white border-apple-black'
+                            : 'bg-white text-apple-black border-apple-border hover:border-apple-black'
+                        }`}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
