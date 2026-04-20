@@ -1660,24 +1660,22 @@ export default function AdminDashboard() {
                           </div>
                         ) : null;
                       })()}
-                      {/* URL paste input */}
-                      <input
-                        placeholder="Paste image URL here, or upload from device →"
-                        style={{ ...iStyle, marginBottom:"8px" }}
-                        onKeyDown={async e => {
-                          if (e.key !== 'Enter') return;
-                          const url = e.target.value.trim();
+                      {/* URL paste input + Save button */}
+                      {(() => {
+                        const urlRef = React.createRef();
+                        const handleUrlSave = async () => {
+                          const url = urlRef.current?.value?.trim();
                           if (!url) return;
-                          e.target.value = '';
-                          // Import URL to Cloudinary
+                          urlRef.current.value = '';
+                          showToast("Uploading image…");
                           const slug = s => (s||'').toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
-                          const path = `categories/${slug(cat.label)}`;
+                          const path = `categories/${slug(cat.label) || 'card-' + i}`;
                           try {
                             const res = await fetch('/api/upload-image', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ imageUrl: url, imagePath: path, folder: 'store' }) });
                             const data = await res.json();
                             const finalUrl = res.ok ? data.url : url;
                             setStoreCfg(c => {
-                              const existing = Array.isArray(c.categories[i].images) && c.categories[i].images.length ? [...c.categories[i].images] : (c.categories[i].image ? [c.categories[i].image] : []);
+                              const existing = Array.isArray(c.categories[i]?.images) && c.categories[i].images.length ? [...c.categories[i].images] : (c.categories[i]?.image ? [c.categories[i].image] : []);
                               const cats = c.categories.map((c2,j) => j===i ? {...c2, images:[...existing, finalUrl], image:''} : c2);
                               const n = {...c, categories:cats};
                               saveStoreConfig(n); syncStoreConfig(n);
@@ -1685,10 +1683,21 @@ export default function AdminDashboard() {
                             });
                             showToast("Image saved!");
                           } catch { showToast("Failed to import image", "warn"); }
-                        }}
-                      />
-                      <p style={{ color:"#555", fontSize:"11px", marginBottom:"8px" }}>Press Enter after pasting URL — or upload from device:</p>
-                      <button onClick={() => catImgRefs.current[i]?.click()} style={{ width:"100%", padding:"8px", background:"#1a1a1a", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"12px", display:"flex", alignItems:"center", justifyContent:"center", gap:"6px" }}>
+                        };
+                        return (
+                          <div style={{ display:"flex", gap:"8px", marginBottom:"8px" }}>
+                            <input
+                              ref={urlRef}
+                              placeholder="Paste image URL here…"
+                              style={{ ...iStyle, flex:1, marginBottom:0 }}
+                            />
+                            <button onClick={handleUrlSave} style={{ padding:"10px 14px", background:"#25D366", border:"none", borderRadius:"8px", color:"#fff", fontSize:"12px", fontWeight:600, cursor:"pointer", whiteSpace:"nowrap" }}>
+                              Save URL
+                            </button>
+                          </div>
+                        );
+                      })()}
+                      <button onClick={() => catImgRefs.current[i]?.click()} style={{ width:"100%", padding:"8px", background:"#1a1a1a", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"12px", display:"flex", alignItems:"center", justifyContent:"center", gap:"6px", marginBottom:"0" }}>
                         📁 Upload from Device
                       </button>
                       <input ref={el => catImgRefs.current[i] = el} type="file" accept="image/*" style={{ display:"none" }} onChange={e => { handleCategoryImageUpload(i, e); }} />
