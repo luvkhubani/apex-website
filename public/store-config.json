@@ -58,7 +58,7 @@
       "label": "iPhones & iPads",
       "emoji": "🍎",
       "filter": "Mobiles",
-      "sub": "LATEST APPLE LINEUP",
+      "sub": "Latest Apple lineup",
       "images": [
         "https://res.cloudinary.com/dz489r0qy/image/upload/v1776691167/store/categories/iphones--ipads.png"
       ],
@@ -67,14 +67,11 @@
     },
     {
       "label": "SAMSUNG & ANDROID",
-      "emoji": "📦",
-      "filter": "",
-      "sub": "CRAZY | FAST | ANDROID",
-      "images": [
-        "https://res.cloudinary.com/dz489r0qy/image/upload/v1776692612/store/categories/samsung--android.png"
-      ],
-      "link": "",
-      "image": ""
+      "emoji": "🎧",
+      "filter": "Accessories",
+      "sub": "Complete your setup",
+      "images": [],
+      "link": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/321497_15_S6lluQ3MM.png?updatedAt=1772297753746?tr=w-1000"
     }
   ],
   "googleMapsEmbed": "",
@@ -117,5 +114,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-20T13:44:18.500Z"
+  "_savedAt": "2026-04-20T14:38:16.881Z"
 }
