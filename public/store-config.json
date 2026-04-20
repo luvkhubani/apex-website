@@ -1,5 +1,5 @@
 {
-  "logoImage": "",
+  "logoImage": "https://res.cloudinary.com/dz489r0qy/image/upload/v1776630634/store/logo.jpg",
   "logoText": "APEX",
   "faviconUrl": "",
   "whatsappNumber": "918349570000",
@@ -127,5 +127,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-20T09:22:03.368Z"
+  "_savedAt": "2026-04-20T11:08:41.967Z"
 }
