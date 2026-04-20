@@ -674,6 +674,7 @@ export default function AdminDashboard() {
    */
   const compressImage = (file, maxDim = 1800, quality = 0.82) =>
     new Promise((resolve) => {
+      const isPng = file.type === 'image/png';
       const url = URL.createObjectURL(file);
       const img = new Image();
       img.onload = () => {
@@ -685,8 +686,14 @@ export default function AdminDashboard() {
         }
         const canvas = document.createElement("canvas");
         canvas.width = width; canvas.height = height;
-        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
-        canvas.toBlob(blob => resolve(blob || file), "image/jpeg", quality);
+        const ctx = canvas.getContext("2d");
+        if (isPng) {
+          ctx.clearRect(0, 0, width, height); // preserve transparency
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+        // PNGs keep their format (preserves transparency); everything else becomes JPEG
+        const mimeType = isPng ? 'image/png' : 'image/jpeg';
+        canvas.toBlob(blob => resolve(blob || file), mimeType, isPng ? undefined : quality);
       };
       img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
       img.src = url;
@@ -704,9 +711,10 @@ export default function AdminDashboard() {
     const blobUrl = URL.createObjectURL(file);
     onCommitted(blobUrl);
 
-    // 2. Compress to JPEG (keeps under Vercel's 4.5 MB body limit)
+    // 2. Compress — PNG stays PNG (preserves transparency), others become JPEG
     const compressed = await compressImage(file);
-    const safeFilename = filename.replace(/\.[^.]+$/, ".jpg");
+    const isPng = file.type === 'image/png';
+    const safeFilename = isPng ? filename.replace(/\.[^.]+$/, ".png") : filename.replace(/\.[^.]+$/, ".jpg");
 
     // 3. Read compressed file as base64 and commit to public/store/ via API
     const reader = new FileReader();
