@@ -59,8 +59,11 @@
       "emoji": "🍎",
       "filter": "Mobiles",
       "sub": "Latest Apple lineup",
-      "images": [],
-      "link": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317415_0_RAQxc4oHU.png?updatedAt=1757529418433?tr=w-1000"
+      "images": [
+        "https://res.cloudinary.com/dz489r0qy/image/upload/v1776690519/store/cat-0-1776690518060.jpg"
+      ],
+      "link": "",
+      "image": ""
     },
     {
       "label": "Samsung & Android",
@@ -127,5 +130,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-20T13:07:06.896Z"
+  "_savedAt": "2026-04-20T13:08:41.191Z"
 }
