@@ -13,18 +13,20 @@ const BRANDS = [
   'AI Plus','Jio','Nokia',
 ];
 const CATEGORIES = ['All','Mobiles','Laptops','Tablets','Earphones'];
-const PRICE_RANGES = [
-  { label:'All Prices',         min:0,     max:Infinity },
-  { label:'Under ₹15,000',      min:0,     max:15000 },
-  { label:'₹15,000 – ₹30,000',  min:15000, max:30000 },
-  { label:'₹30,000 – ₹60,000',  min:30000, max:60000 },
-  { label:'Above ₹60,000',      min:60000, max:Infinity },
-];
 const SORT_OPTIONS = [
-  { label:'Newest First',        value:'newest' },
-  { label:'Price: Low to High',  value:'price_asc' },
-  { label:'Price: High to Low',  value:'price_desc' },
+  { label:'Newest',    value:'newest' },
+  { label:'Price ↑',  value:'price_asc' },
+  { label:'Price ↓',  value:'price_desc' },
+  { label:'Popular',  value:'popular' },
 ];
+
+function recordClick(key) {
+  fetch('/api/product-clicks', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key }),
+  }).catch(() => {});
+}
 
 // ── Group variants into models ───────────────────────────────
 function groupProducts(list) {
@@ -75,9 +77,25 @@ export default function Products() {
     const c = searchParams.get('category');
     return c && CATEGORIES.includes(c) ? c : 'All';
   });
-  const [priceRange, setPriceRange] = useState('All Prices');
+  const [priceMin,   setPriceMin]   = useState('');
+  const [priceMax,   setPriceMax]   = useState('');
   const [sort,       setSort]       = useState('newest');
-  const [openGroup,  setOpenGroup]  = useState(null);   // modal state
+  const [clicks,     setClicks]     = useState({});
+  const [openGroup,  setOpenGroup]  = useState(null);
+
+  // Fetch backend click counts on mount
+  useEffect(() => {
+    fetch('/api/product-clicks')
+      .then(r => r.ok ? r.json() : {})
+      .then(data => setClicks(data))
+      .catch(() => {});
+  }, []);
+
+  const handleGroupClick = (group) => {
+    recordClick(group.key);
+    setClicks(prev => ({ ...prev, [group.key]: (prev[group.key] || 0) + 1 }));
+    setOpenGroup(group);
+  };
 
   // Sync if URL params change (e.g. back/forward navigation)
   useEffect(() => {
@@ -109,33 +127,26 @@ export default function Products() {
     // Category
     if (category !== 'All') list = list.filter(p => p.category === category);
 
-    // Price — keeps variant if ANY price in the range; filter per-variant here
-    const range = PRICE_RANGES.find(r => r.label === priceRange);
-    if (range && priceRange !== 'All Prices') {
-      list = list.filter(p => p.price > 0 && p.price >= range.min && p.price < range.max);
+    // Price — manual min/max inputs
+    const minP = priceMin !== '' ? Number(priceMin) : 0;
+    const maxP = priceMax !== '' ? Number(priceMax) : Infinity;
+    if (priceMin !== '' || priceMax !== '') {
+      list = list.filter(p => p.price > 0 && p.price >= minP && p.price <= maxP);
     }
 
     // Group
     let g = groupProducts(list);
 
-    // Sort groups by representative price
     if (sort === 'price_asc') {
-      g.sort((a, b) => {
-        const pa = Math.min(...a.variants.map(v => v.price || 0));
-        const pb = Math.min(...b.variants.map(v => v.price || 0));
-        return pa - pb;
-      });
+      g.sort((a, b) => Math.min(...a.variants.map(v => v.price || 0)) - Math.min(...b.variants.map(v => v.price || 0)));
     } else if (sort === 'price_desc') {
-      g.sort((a, b) => {
-        const pa = Math.max(...a.variants.map(v => v.price || 0));
-        const pb = Math.max(...b.variants.map(v => v.price || 0));
-        return pb - pa;
-      });
+      g.sort((a, b) => Math.max(...b.variants.map(v => v.price || 0)) - Math.max(...a.variants.map(v => v.price || 0)));
+    } else if (sort === 'popular') {
+      g.sort((a, b) => (clicks[b.key] || 0) - (clicks[a.key] || 0));
     }
-    // 'newest' keeps insertion order
 
     return g;
-  }, [products, search, brands, category, priceRange, sort]);
+  }, [products, search, brands, category, priceMin, priceMax, sort, clicks]);
 
   const totalModels   = useMemo(() => groupProducts(products).length, [products]);
   const totalVariants = products.length;
@@ -174,24 +185,23 @@ export default function Products() {
       <div className="sticky top-12 z-40 bg-white/95 backdrop-blur-xl border-b border-apple-border shadow-sm">
         <div className="max-w-[1200px] mx-auto px-6 py-3 space-y-2.5">
 
-          {/* Search + Sort */}
-          <div className="flex flex-col sm:flex-row gap-2">
-            <input
-              type="text"
-              placeholder="Search by name, brand, RAM, storage, colour…"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="flex-1 text-[14px] px-4 py-2 rounded-pill border border-apple-border bg-apple-light text-apple-black placeholder-apple-gray focus:outline-none focus:ring-2 focus:ring-apple-black/20"
-            />
-            <select
-              value={sort}
-              onChange={e => setSort(e.target.value)}
-              className="text-[13px] px-4 py-2 rounded-pill border border-apple-border bg-apple-light text-apple-black focus:outline-none cursor-pointer"
-            >
-              {SORT_OPTIONS.map(o => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
+          {/* Search */}
+          <input
+            type="text"
+            placeholder="Search by name, brand, RAM, storage, colour…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full text-[14px] px-4 py-2 rounded-pill border border-apple-border bg-apple-light text-apple-black placeholder-apple-gray focus:outline-none focus:ring-2 focus:ring-apple-black/20"
+          />
+
+          {/* Sort pills */}
+          <div className="flex gap-2 overflow-x-auto no-scrollbar items-center">
+            <span className="text-[12px] text-apple-gray font-medium flex-shrink-0">Sort:</span>
+            {SORT_OPTIONS.map(o => (
+              <Pill key={o.value} active={sort === o.value} onClick={() => setSort(o.value)}>
+                {o.label}
+              </Pill>
+            ))}
           </div>
 
           {/* Brand pills — multi-select, "All" clears selection */}
@@ -210,17 +220,41 @@ export default function Products() {
             ))}
           </div>
 
-          {/* Category + Price pills */}
-          <div className="flex gap-2 overflow-x-auto no-scrollbar">
-            {CATEGORIES.map(c => (
-              <Pill key={c} active={category === c} onClick={() => setCategory(c)}>{c}</Pill>
-            ))}
-            <span className="text-apple-border self-center mx-1 text-lg">|</span>
-            {PRICE_RANGES.map(r => (
-              <Pill key={r.label} active={priceRange === r.label} onClick={() => setPriceRange(r.label)}>
-                {r.label}
-              </Pill>
-            ))}
+          {/* Category + Price range */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar">
+              {CATEGORIES.map(c => (
+                <Pill key={c} active={category === c} onClick={() => setCategory(c)}>{c}</Pill>
+              ))}
+            </div>
+            <span className="text-apple-border self-center mx-1 text-lg hidden sm:inline">|</span>
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              <span className="text-[12px] text-apple-gray font-medium">₹</span>
+              <input
+                type="number"
+                min="0"
+                placeholder="Min"
+                value={priceMin}
+                onChange={e => setPriceMin(e.target.value)}
+                className="w-24 text-[13px] px-3 py-1.5 rounded-pill border border-apple-border bg-apple-light text-apple-black placeholder-apple-gray focus:outline-none focus:ring-2 focus:ring-apple-black/20"
+              />
+              <span className="text-[12px] text-apple-gray">–</span>
+              <span className="text-[12px] text-apple-gray font-medium">₹</span>
+              <input
+                type="number"
+                min="0"
+                placeholder="Max"
+                value={priceMax}
+                onChange={e => setPriceMax(e.target.value)}
+                className="w-24 text-[13px] px-3 py-1.5 rounded-pill border border-apple-border bg-apple-light text-apple-black placeholder-apple-gray focus:outline-none focus:ring-2 focus:ring-apple-black/20"
+              />
+              {(priceMin !== '' || priceMax !== '') && (
+                <button
+                  onClick={() => { setPriceMin(''); setPriceMax(''); }}
+                  className="text-[12px] text-apple-gray hover:text-apple-black transition-colors px-1"
+                >✕</button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -241,7 +275,7 @@ export default function Products() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {groups.map((group, i) => (
                 <FadeUp key={group.key} delay={Math.min(i * 30, 300)}>
-                  <ProductCard group={group} onClick={() => setOpenGroup(group)} />
+                  <ProductCard group={group} onClick={() => handleGroupClick(group)} />
                 </FadeUp>
               ))}
             </div>
@@ -251,7 +285,7 @@ export default function Products() {
               <p className="font-sans font-bold text-[24px] text-apple-black mb-2">No products found.</p>
               <p className="text-[15px] text-apple-gray mb-6">Try a different search or clear your filters.</p>
               <button
-                onClick={() => { setSearch(''); setBrands(new Set()); setCategory('All'); setPriceRange('All Prices'); }}
+                onClick={() => { setSearch(''); setBrands(new Set()); setCategory('All'); setPriceMin(''); setPriceMax(''); }}
                 className="text-[14px] font-medium text-white bg-apple-black px-6 py-3 rounded-pill hover:scale-[1.02] transition-transform"
               >
                 Clear All Filters

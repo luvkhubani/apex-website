@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useStoreConfig, waUrl } from '../hooks/useStoreConfig';
 
+const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
 export default function Footer() {
   const cfg = useStoreConfig();
 
@@ -22,7 +24,7 @@ export default function Footer() {
                 ['/contact', 'Visit the Store'],
               ].map(([path, label]) => (
                 <li key={label}>
-                  <Link to={path} className="text-[12px] text-apple-gray hover:text-apple-black transition-colors duration-200">
+                  <Link to={path} onClick={scrollTop} className="text-[12px] text-apple-gray hover:text-apple-black transition-colors duration-200">
                     {label}
                   </Link>
                 </li>
@@ -42,7 +44,7 @@ export default function Footer() {
                 ['/products',                       'All Products'],
               ].map(([path, label]) => (
                 <li key={label}>
-                  <Link to={path} className="text-[12px] text-apple-gray hover:text-apple-black transition-colors duration-200">
+                  <Link to={path} onClick={scrollTop} className="text-[12px] text-apple-gray hover:text-apple-black transition-colors duration-200">
                     {label}
                   </Link>
                 </li>
@@ -63,6 +65,7 @@ export default function Footer() {
                 <li key={brand}>
                   <Link
                     to={`/products?brand=${encodeURIComponent(brand)}`}
+                    onClick={scrollTop}
                     className="text-[12px] text-apple-gray hover:text-apple-black transition-colors duration-200"
                   >
                     {brand}
@@ -107,9 +110,9 @@ export default function Footer() {
             Copyright © {new Date().getFullYear()} Apex The Mobile Shoppe. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-[12px] text-apple-gray">
-            <Link to="/about" className="hover:text-apple-black transition-colors">Privacy</Link>
+            <Link to="/about" onClick={scrollTop} className="hover:text-apple-black transition-colors">Privacy</Link>
             <span>|</span>
-            <Link to="/about" className="hover:text-apple-black transition-colors">Terms</Link>
+            <Link to="/about" onClick={scrollTop} className="hover:text-apple-black transition-colors">Terms</Link>
           </div>
         </div>
       </div>
