@@ -1,5 +1,5 @@
 {
-  "logoImage": "https://res.cloudinary.com/dz489r0qy/image/upload/v1776690415/store/logo.jpg",
+  "logoImage": "https://res.cloudinary.com/dz489r0qy/image/upload/v1776630634/store/logo.jpg",
   "logoText": "APEX",
   "faviconUrl": "https://res.cloudinary.com/dz489r0qy/image/upload/v1776684924/store/favicon.jpg",
   "whatsappNumber": "918349570000",
@@ -59,19 +59,32 @@
       "emoji": "🍎",
       "filter": "Mobiles",
       "sub": "Latest Apple lineup",
-      "images": [
-        "https://res.cloudinary.com/dz489r0qy/image/upload/v1776691167/store/categories/iphones--ipads.png"
-      ],
-      "link": "",
-      "image": ""
+      "images": [],
+      "link": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317415_0_RAQxc4oHU.png?updatedAt=1757529418433?tr=w-1000"
     },
     {
-      "label": "SAMSUNG & ANDROID",
+      "label": "Samsung & Android",
+      "emoji": "📱",
+      "filter": "Mobiles",
+      "sub": "Galaxy S series & more",
+      "images": [],
+      "link": ""
+    },
+    {
+      "label": "MacBooks & Laptops",
+      "emoji": "💻",
+      "filter": "Laptops",
+      "sub": "Power your work",
+      "images": [],
+      "link": ""
+    },
+    {
+      "label": "Accessories",
       "emoji": "🎧",
       "filter": "Accessories",
       "sub": "Complete your setup",
       "images": [],
-      "link": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/321497_15_S6lluQ3MM.png?updatedAt=1772297753746?tr=w-1000"
+      "link": ""
     }
   ],
   "googleMapsEmbed": "",
@@ -114,5 +127,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-20T13:26:46.660Z"
+  "_savedAt": "2026-04-20T13:30:12.663Z"
 }
