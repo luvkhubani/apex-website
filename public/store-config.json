@@ -58,7 +58,7 @@
       "label": "iPhones & iPads",
       "emoji": "🍎",
       "filter": "Mobiles",
-      "sub": "Latest Apple lineup",
+      "sub": "LATEST APPLE LINEUP",
       "images": [
         "https://res.cloudinary.com/dz489r0qy/image/upload/v1776691167/store/categories/iphones--ipads.png"
       ],
@@ -117,5 +117,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-20T13:43:36.704Z"
+  "_savedAt": "2026-04-20T13:44:18.500Z"
 }
