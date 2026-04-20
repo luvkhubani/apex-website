@@ -87,13 +87,55 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   // Guard: require the GitHub token as a shared secret
-  const { secret } = req.body || {};
+  const { secret, action } = req.body || {};
   if (!secret || secret !== process.env.GITHUB_TOKEN) {
     return res.status(401).json({ error: 'Invalid secret' });
   }
 
   if (!process.env.CLOUDINARY_CLOUD_NAME) {
     return res.status(500).json({ error: 'Cloudinary credentials not configured' });
+  }
+
+  // ── action: 'sync' — push all Cloudinary image URLs back into Supabase ──
+  if (action === 'sync') {
+    const { v2: cld } = await import('cloudinary');
+    cld.config({ cloud_name: process.env.CLOUDINARY_CLOUD_NAME, api_key: process.env.CLOUDINARY_API_KEY, api_secret: process.env.CLOUDINARY_API_SECRET });
+    const slugify = s => (s || '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const { data: rows, error: dbErr } = await supabase.from('products').select('*');
+    if (dbErr) return res.status(500).json({ error: dbErr.message });
+    const byFullSlug = {}, byNameSlug = {};
+    for (const row of rows) {
+      const b = slugify(row.brand), n = slugify(row.name), c = slugify(row.color);
+      const fk = [b, n, c].filter(Boolean).join('/');
+      const nk = [b, n].filter(Boolean).join('/');
+      if (!byFullSlug[fk]) byFullSlug[fk] = []; byFullSlug[fk].push(row.id);
+      if (!byNameSlug[nk]) byNameSlug[nk] = []; byNameSlug[nk].push(row.id);
+    }
+    let resources = [], nextCursor;
+    do {
+      const result = await cld.api.resources({ type: 'upload', prefix: 'products/', max_results: 500, ...(nextCursor ? { next_cursor: nextCursor } : {}) });
+      resources = resources.concat(result.resources || []);
+      nextCursor = result.next_cursor;
+    } while (nextCursor);
+    const updated = [], skipped = [], unmatched = [];
+    for (const r of resources) {
+      const sub = r.public_id.replace(/^products\//, '');
+      const url = r.secure_url;
+      const parts = sub.split('/');
+      const leaf = parts[parts.length - 1];
+      let ids = /^\d+$/.test(leaf)
+        ? (() => { const row = rows.find(p => p.id === parseInt(leaf, 10)); return row ? [row.id] : []; })()
+        : (byFullSlug[sub] || byNameSlug[parts.slice(0, 2).join('/')] || []);
+      if (!ids.length) { unmatched.push(r.public_id); continue; }
+      for (const id of ids) {
+        const row = rows.find(p => p.id === id);
+        if (row?.image === url) { skipped.push(id); continue; }
+        const { error } = await supabase.from('products').update({ image: url }).eq('id', id);
+        if (error) unmatched.push(`id=${id}: ${error.message}`);
+        else updated.push({ id, public_id: r.public_id, url });
+      }
+    }
+    return res.status(200).json({ success: true, cloudinaryTotal: resources.length, updated: updated.length, skipped: skipped.length, unmatched: unmatched.length, updatedList: updated, unmatchedList: unmatched });
   }
 
   const report = { storePhotos: [], logo: null, products: [], errors: [] };

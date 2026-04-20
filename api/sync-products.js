@@ -19,10 +19,18 @@ export default async function handler(req, res) {
     const rows = products.map(toRow);
     const incomingIds = rows.map(r => r.id).filter(Boolean);
 
+    // Fetch existing images to avoid overwriting populated Cloudinary URLs with empty
+    const { data: existing } = await supabase
+      .from('products')
+      .select('id, image')
+      .in('id', incomingIds.length ? incomingIds : [-1]);
+    const existingImg = Object.fromEntries((existing || []).map(r => [r.id, r.image]));
+    const safeRows = rows.map(r => ({ ...r, image: r.image || existingImg[r.id] || '' }));
+
     // Upsert all incoming products
     const { error: upsertErr } = await supabase
       .from('products')
-      .upsert(rows, { onConflict: 'id' });
+      .upsert(safeRows, { onConflict: 'id' });
     if (upsertErr) throw upsertErr;
 
     // Delete any products that were removed (present in DB but not in incoming list)
