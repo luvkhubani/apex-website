@@ -1639,32 +1639,57 @@ export default function AdminDashboard() {
                       }} placeholder="e.g. /products or https://..." style={{ ...iStyle, marginBottom:"10px" }} />
                     </div>
                     <div style={{ gridColumn:"1 / -1" }}>
-                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>
-                        Card Images <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>— 1 image: full cover · 2 images: side-by-side</span>
-                      </label>
-                      {/* Existing images */}
+                      <label style={{ color:"#888", fontSize:"10px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Card Image</label>
+                      {/* Current image preview */}
                       {(() => {
                         const imgs = Array.isArray(cat.images) && cat.images.length ? cat.images : (cat.image ? [cat.image] : []);
                         return imgs.length > 0 ? (
                           <div style={{ display:"flex", gap:"8px", marginBottom:"10px", flexWrap:"wrap" }}>
                             {imgs.map((img, imgIdx) => (
                               <div key={imgIdx} style={{ position:"relative", width:"88px", height:"62px", borderRadius:"8px", overflow:"hidden", border:"1px solid #2a2a2a", flexShrink:0 }}>
-                                <img src={getStoreImage(img)} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} onError={e=>{e.target.style.display="none";}} />
+                                <img src={getStoreImage(img)} alt="" style={{ width:"100%", height:"100%", objectFit:"contain" }} onError={e=>{e.target.style.display="none";}} />
                                 <button onClick={() => {
                                   const allImgs = Array.isArray(cat.images) && cat.images.length ? cat.images : (cat.image ? [cat.image] : []);
                                   const newImgs = allImgs.filter((_,k) => k !== imgIdx);
                                   const cats = storeCfg.categories.map((c,j) => j===i ? {...c, images:newImgs, image:''} : c);
                                   const n = {...storeCfg, categories:cats};
-                                  setStoreCfg(n); saveStoreConfig(n);
+                                  setStoreCfg(n); saveStoreConfig(n); syncStoreConfig(n);
                                 }} style={{ position:"absolute", top:"2px", right:"2px", width:"18px", height:"18px", borderRadius:"50%", background:"rgba(0,0,0,0.7)", border:"none", color:"#fff", fontSize:"10px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", lineHeight:1 }}>✕</button>
-                                <div style={{ position:"absolute", bottom:"2px", left:"4px", color:"#fff", fontSize:"9px", opacity:0.7 }}>{imgIdx + 1}</div>
                               </div>
                             ))}
                           </div>
                         ) : null;
                       })()}
+                      {/* URL paste input */}
+                      <input
+                        placeholder="Paste image URL here, or upload from device →"
+                        style={{ ...iStyle, marginBottom:"8px" }}
+                        onKeyDown={async e => {
+                          if (e.key !== 'Enter') return;
+                          const url = e.target.value.trim();
+                          if (!url) return;
+                          e.target.value = '';
+                          // Import URL to Cloudinary
+                          const slug = s => (s||'').toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+                          const path = `categories/${slug(cat.label)}`;
+                          try {
+                            const res = await fetch('/api/upload-image', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ imageUrl: url, imagePath: path, folder: 'store' }) });
+                            const data = await res.json();
+                            const finalUrl = res.ok ? data.url : url;
+                            setStoreCfg(c => {
+                              const existing = Array.isArray(c.categories[i].images) && c.categories[i].images.length ? [...c.categories[i].images] : (c.categories[i].image ? [c.categories[i].image] : []);
+                              const cats = c.categories.map((c2,j) => j===i ? {...c2, images:[...existing, finalUrl], image:''} : c2);
+                              const n = {...c, categories:cats};
+                              saveStoreConfig(n); syncStoreConfig(n);
+                              return n;
+                            });
+                            showToast("Image saved!");
+                          } catch { showToast("Failed to import image", "warn"); }
+                        }}
+                      />
+                      <p style={{ color:"#555", fontSize:"11px", marginBottom:"8px" }}>Press Enter after pasting URL — or upload from device:</p>
                       <button onClick={() => catImgRefs.current[i]?.click()} style={{ width:"100%", padding:"8px", background:"#1a1a1a", border:"1px dashed #3a3a3a", borderRadius:"8px", color:"#888", cursor:"pointer", fontSize:"12px", display:"flex", alignItems:"center", justifyContent:"center", gap:"6px" }}>
-                        📁 Add Image
+                        📁 Upload from Device
                       </button>
                       <input ref={el => catImgRefs.current[i] = el} type="file" accept="image/*" style={{ display:"none" }} onChange={e => { handleCategoryImageUpload(i, e); }} />
                     </div>

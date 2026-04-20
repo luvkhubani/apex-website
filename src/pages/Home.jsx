@@ -487,41 +487,24 @@ export default function Home() {
               ? <a href={href} target="_blank" rel="noopener noreferrer" className={cardCls} {...cardEvt}>{children}</a>
               : <Link to={href} className={cardCls} {...cardEvt}>{children}</Link>;
 
-            // Auto-pick product images when no manual image is configured
-            const autoImgs = (() => {
-              const manual = getCatImages(cat);
-              if (manual.length) return manual;
-              const filtered = products.filter(p =>
-                p.image &&
-                (!cat.filter || cat.filter === 'All' || p.category === cat.filter) &&
-                (!cat.brand || p.brand === cat.brand)
-              );
-              const seen = new Set();
-              const imgs = [];
-              for (const p of filtered) {
-                const src = getProductImage(p.image);
-                if (src && !seen.has(p.image)) { seen.add(p.image); imgs.push(src); }
-                if (imgs.length === 2) break;
-              }
-              return imgs;
-            })();
+            const catImgs = getCatImages(cat);
 
             return (
             <FadeUp key={cat.label + i} delay={i * 80}>
               <CardWrap>
-                {autoImgs.length === 0 ? (
+                {catImgs.length === 0 ? (
                   <div className="bg-apple-light h-52 flex items-center justify-center">
                     <span className="text-7xl transition-transform duration-300 group-hover:scale-110">{cat.emoji}</span>
                   </div>
-                ) : autoImgs.length === 1 ? (
+                ) : catImgs.length === 1 ? (
                   <div className="bg-apple-light h-52 overflow-hidden">
-                    <img src={autoImgs[0]} alt={cat.label} className="w-full h-full object-contain p-6 transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
+                    <img src={getStoreImage(catImgs[0])} alt={cat.label} className="w-full h-full object-contain p-6 transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                   </div>
                 ) : (
                   <div className="h-52 flex overflow-hidden bg-apple-light">
-                    {autoImgs.map((img, idx) => (
+                    {catImgs.slice(0, 2).map((img, idx) => (
                       <div key={idx} className="flex-1 flex items-center justify-center p-4 relative">
-                        <img src={img} alt={`${cat.label} ${idx + 1}`} className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
+                        <img src={getStoreImage(img)} alt={`${cat.label} ${idx + 1}`} className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105" loading="lazy" decoding="async" />
                         {idx === 0 && <div className="absolute inset-y-0 right-0 w-px bg-apple-border/40" />}
                       </div>
                     ))}
