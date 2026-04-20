@@ -11,7 +11,26 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Supabase credentials not configured" });
   }
 
-  const { products } = req.body;
+  const { products, action, product } = req.body;
+
+  // ── action: 'insert' — save a single new product, return Supabase-assigned id ──
+  if (action === 'insert') {
+    if (!product) return res.status(400).json({ error: 'product is required' });
+    try {
+      const row = toRow(product);
+      delete row.id; // let Supabase auto-assign
+      const { data, error } = await supabase
+        .from('products')
+        .insert(row)
+        .select('id')
+        .single();
+      if (error) throw error;
+      return res.status(200).json({ success: true, id: data.id });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
   if (!Array.isArray(products))
     return res.status(400).json({ error: "products array is required" });
 

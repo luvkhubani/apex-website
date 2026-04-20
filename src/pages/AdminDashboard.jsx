@@ -419,9 +419,9 @@ export default function AdminDashboard() {
       const priceNum = Number(form.price) || 0;
       const origNum  = Number(form.originalPrice) || priceNum;
 
-      // Auto-import URL image before saving so it lands in the repo
+      // For edits: auto-import URL image before saving. For new products, upload happens after Supabase ID is assigned.
       let imagePath = form.image?.startsWith('blob:') ? '' : (form.image || '');
-      if (imagePath?.startsWith("http")) {
+      if (editId && imagePath?.startsWith("http")) {
         const path = autoPath(form.brand, form.name, form.color);
         try {
           const res  = await fetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:imagePath, imagePath:path }) });
@@ -446,16 +446,52 @@ export default function AdminDashboard() {
           if (finalForm.description && p.brand === finalForm.brand && p.name === finalForm.name) return { ...p, description: finalForm.description };
           return p;
         });
+        persist(updated);
       } else {
-        savedId = Math.max(0, ...products.map(p => p.id || 0)) + 1;
+        // Save to Supabase first to get a guaranteed unique ID
+        showToast("Saving to database…");
+        const insertRes = await fetch("/api/sync-products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "insert", product: { ...finalForm, price: priceNum, originalPrice: origNum } }),
+        });
+        const insertData = await insertRes.json();
+        if (!insertRes.ok || !insertData.id) {
+          showToast("Failed to save: " + (insertData.error || "unknown error"), "warn");
+          return;
+        }
+        savedId = insertData.id;
+
+        // Upload image to Cloudinary using the real Supabase ID as path
+        if (imagePath) {
+          const slug = s => (s||"").toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");
+          const idPath = `${slug(finalForm.brand)}/${slug(finalForm.name)}/${savedId}`;
+          try {
+            const upRes = await fetch("/api/upload-image", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ imageUrl: imagePath, imagePath: idPath }),
+            });
+            const upData = await upRes.json();
+            if (upRes.ok) {
+              imagePath = upData.url;
+              await fetch("/api/update-product-images", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ updates: [{ id: savedId, imagePath: upData.url }] }),
+              });
+            }
+          } catch (_) {}
+        }
+
         updated = [
           ...products.map(p => finalForm.description && p.brand === finalForm.brand && p.name === finalForm.name ? { ...p, description: finalForm.description } : p),
-          { ...finalForm, id:savedId, price:priceNum, originalPrice:origNum },
+          { ...finalForm, id:savedId, price:priceNum, originalPrice:origNum, image:imagePath },
         ];
+        persist(updated);
       }
-      persist(updated);
 
-      if (imagePath) {
+      if (editId && imagePath) {
         fetch("/api/update-product-images", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
