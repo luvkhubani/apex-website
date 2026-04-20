@@ -59,7 +59,9 @@
       "emoji": "🍎",
       "filter": "Mobiles",
       "sub": "Latest Apple lineup",
-      "images": [],
+      "images": [
+        "https://res.cloudinary.com/dz489r0qy/image/upload/v1776690709/store/cat-0-1776690706687.jpg"
+      ],
       "link": "",
       "image": ""
     },
@@ -128,5 +130,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-20T13:11:49.792Z"
+  "_savedAt": "2026-04-20T13:11:50.683Z"
 }
