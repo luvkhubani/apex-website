@@ -1,7 +1,7 @@
 {
   "logoImage": "https://res.cloudinary.com/dz489r0qy/image/upload/v1776630634/store/logo.jpg",
   "logoText": "APEX",
-  "faviconUrl": "",
+  "faviconUrl": "https://res.cloudinary.com/dz489r0qy/image/upload/v1776683325/store/favicon.jpg",
   "whatsappNumber": "918349570000",
   "phoneDisplay": "+91 83495 70000",
   "phoneNumbers": [
@@ -127,5 +127,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-20T11:08:41.967Z"
+  "_savedAt": "2026-04-20T11:08:46.850Z"
 }
