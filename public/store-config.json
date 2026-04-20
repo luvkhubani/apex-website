@@ -66,28 +66,12 @@
       "image": ""
     },
     {
-      "label": "Samsung & Android",
-      "emoji": "📱",
-      "filter": "Mobiles",
-      "sub": "Galaxy S series & more",
-      "images": [],
-      "link": ""
-    },
-    {
-      "label": "MacBooks & Laptops",
-      "emoji": "💻",
-      "filter": "Laptops",
-      "sub": "Power your work",
-      "images": [],
-      "link": ""
-    },
-    {
-      "label": "Accessories",
+      "label": "SAMSUNG & ANDROID",
       "emoji": "🎧",
       "filter": "Accessories",
       "sub": "Complete your setup",
       "images": [],
-      "link": ""
+      "link": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/321497_15_S6lluQ3MM.png?updatedAt=1772297753746?tr=w-1000"
     }
   ],
   "googleMapsEmbed": "",
@@ -130,5 +114,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-20T13:23:19.190Z"
+  "_savedAt": "2026-04-20T13:26:46.660Z"
 }
