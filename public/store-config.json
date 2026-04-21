@@ -85,6 +85,7 @@
       "image": ""
     }
   ],
+  "hiddenProductIds": [],
   "productWaMessage": "Hi Apex! I am interested in {name} {specs} {color}. Kindly get it delivered to {contact details}",
   "googleMapsEmbed": "",
   "googleMapsLink": "https://maps.google.com/?q=Apex+The+Mobile+Shoppe+Jail+Road+Indore",
@@ -126,5 +127,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-21T14:02:54.476Z"
+  "_savedAt": "2026-04-21T14:09:46.356Z"
 }
