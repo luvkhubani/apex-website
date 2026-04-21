@@ -162,7 +162,7 @@ export default function Products() {
           rel="noopener noreferrer"
           className="text-[13px] font-medium hover:underline"
         >
-          Can&apos;t find your model? WhatsApp us for your required model →
+          Can&apos;t find your model? We stock thousands of products. Just whatsapp — our team will source it for you →
         </a>
       </div>
 
