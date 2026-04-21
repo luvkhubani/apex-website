@@ -591,11 +591,27 @@ export default function AdminDashboard() {
   const BULK_HEADERS = ["brand","name","category","storage","ram","color","price","originalPrice","inStock","badge","description"];
 
   const handleDownloadTemplate = () => {
+    const instructions = [
+      "# APEX BULK ADD TEMPLATE — Instructions",
+      "# -------------------------------------------------------",
+      "# 1. Do NOT edit or delete the header row (row with column names).",
+      "# 2. Delete these instruction rows (lines starting with #) before uploading.",
+      "# 3. Each ROW = one product variant (same name + different colour/storage = multiple rows).",
+      "# 4. REQUIRED columns: brand  name  price",
+      "# 5. brand     — Must match exactly: Apple / Samsung / OnePlus / Nothing / Motorola / Xiaomi / Realme / Vivo / OPPO / Poco / Infinix / Tecno / AI Plus / Jio / Nokia",
+      "# 6. category  — Mobiles / Tablets / Laptops / Accessories / Earphones  (default: Mobiles)",
+      "# 7. inStock   — true or false  (default: true)",
+      "# 8. badge     — 5G / New / Hot / Sale / Flagship / Best Seller / WiFi  (or leave blank)",
+      "# 9. originalPrice — crossed-out MRP; leave blank to use same as price",
+      "# 10. Images cannot be added via CSV — upload them individually after adding.",
+      "# -------------------------------------------------------",
+    ];
     const sample = [
       "Apple,iPhone 16,Mobiles,128GB,8GB,Black,67500,70000,true,5G,Latest iPhone",
+      "Apple,iPhone 16,Mobiles,128GB,8GB,Blue,67500,70000,true,5G,Latest iPhone",
       "Samsung,Galaxy S25,Mobiles,256GB,12GB,Phantom Black,74999,79999,true,New,",
     ];
-    const csv = [BULK_HEADERS.join(","), ...sample].join("\n");
+    const csv = [...instructions, BULK_HEADERS.join(","), ...sample].join("\n");
     const blob = new Blob([csv], { type:"text/csv" });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement("a");
@@ -608,7 +624,8 @@ export default function AdminDashboard() {
     const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = ev => {
-      const rows = csvToUpdates(ev.target.result);
+      const cleaned = ev.target.result.split("\n").filter(l => !l.trimStart().startsWith("#")).join("\n");
+      const rows = csvToUpdates(cleaned);
       const valid = [], invalid = [];
       rows.forEach((row, i) => {
         if (!row.name || !row.brand || !row.price) {
