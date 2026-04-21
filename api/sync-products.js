@@ -17,8 +17,15 @@ export default async function handler(req, res) {
   if (action === 'insert') {
     if (!product) return res.status(400).json({ error: 'product is required' });
     try {
-      const row = toRow(product);
-      delete row.id; // let Supabase auto-assign
+      // id column has no DEFAULT sequence — fetch current max and assign manually
+      const { data: maxRow } = await supabase
+        .from('products')
+        .select('id')
+        .order('id', { ascending: false })
+        .limit(1)
+        .single();
+      const nextId = ((maxRow?.id) || 0) + 1;
+      const row = { ...toRow(product), id: nextId };
       const { data, error } = await supabase
         .from('products')
         .insert(row)
@@ -37,8 +44,17 @@ export default async function handler(req, res) {
     if (!Array.isArray(newProducts) || newProducts.length === 0)
       return res.status(400).json({ error: 'products array is required' });
     try {
-      // Build rows WITHOUT id key — letting Supabase auto-assign
+      // id column has no DEFAULT sequence — fetch current max and assign manually
+      const { data: maxRow } = await supabase
+        .from('products')
+        .select('id')
+        .order('id', { ascending: false })
+        .limit(1)
+        .single();
+      let nextId = ((maxRow?.id) || 0) + 1;
+
       const rows = newProducts.map(p => ({
+        id:             nextId++,
         name:           p.name           ?? '',
         brand:          p.brand          ?? '',
         category:       p.category       ?? '',
