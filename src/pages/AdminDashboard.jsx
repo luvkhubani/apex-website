@@ -656,28 +656,30 @@ export default function AdminDashboard() {
   const applyBulkAdd = async () => {
     if (!bulkPreview?.valid?.length) return;
     setBulkAdding(true);
-    let added = 0, failed = 0;
-    for (const product of bulkPreview.valid) {
-      try {
-        const res = await fetch("/api/sync-products", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "insert", product }),
-        });
-        const data = await res.json();
-        if (res.ok && data.id) {
-          persist([...products, { ...product, id: data.id }]);
-          added++;
-        } else {
-          failed++;
+    // Insert all products in parallel — much faster than sequential, and avoids stale-closure bug
+    const results = await Promise.all(
+      bulkPreview.valid.map(async product => {
+        try {
+          const res  = await fetch("/api/sync-products", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "insert", product }),
+          });
+          const data = await res.json();
+          if (res.ok && data.id) return { ...product, id: data.id };
+          return null;
+        } catch (_) {
+          return null;
         }
-      } catch (_) {
-        failed++;
-      }
-    }
+      })
+    );
+    const inserted = results.filter(Boolean);
+    const failed   = results.length - inserted.length;
+    // Single persist with all new products appended at once
+    if (inserted.length > 0) persist([...products, ...inserted]);
     setBulkAdding(false);
     setBulkPreview(null);
-    showToast(failed ? `Added ${added}, failed ${failed}` : `${added} products added!`);
+    showToast(failed ? `Added ${inserted.length}, failed ${failed}` : `${inserted.length} products added!`);
   };
 
   // ── Display settings ──────────────────────────────────
