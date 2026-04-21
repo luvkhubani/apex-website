@@ -348,7 +348,7 @@ export default function Home() {
 
             {/* Price */}
             {banner.price && (
-              <p className="text-[18px] font-semibold text-apple-black mb-5">
+              <p className="font-bold text-apple-black mb-5 tracking-tight" style={{ fontSize: 'clamp(28px, 5vw, 48px)' }}>
                 {isNaN(Number(banner.price))
                   ? banner.price
                   : `From ${new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(Number(banner.price))}`
@@ -375,9 +375,12 @@ export default function Home() {
             </div>
 
             {/* Delivery badge */}
-            <p className="text-[12px] font-semibold text-emerald-600 mb-0">
-              ⚡ 2-Hour COD Delivery · All Indore
-            </p>
+            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-full px-4 py-1.5 mb-0">
+              <span className="text-emerald-600 text-[15px]">⚡</span>
+              <p className="text-[13px] font-bold text-emerald-700 tracking-wide">
+                2-Hour COD Delivery · All Indore
+              </p>
+            </div>
 
             {/* Product image — flows directly below CTAs */}
             <div className="w-full max-w-[640px] -mt-4">
