@@ -31,6 +31,24 @@ export default async function handler(req, res) {
     }
   }
 
+  // ── action: 'bulk_insert' — insert multiple new products in one Supabase call ──
+  if (action === 'bulk_insert') {
+    const { products: newProducts } = req.body;
+    if (!Array.isArray(newProducts) || newProducts.length === 0)
+      return res.status(400).json({ error: 'products array is required' });
+    try {
+      const rows = newProducts.map(p => { const r = toRow(p); delete r.id; return r; });
+      const { data, error } = await supabase
+        .from('products')
+        .insert(rows)
+        .select('id');
+      if (error) throw error;
+      return res.status(200).json({ success: true, ids: data.map(r => r.id) });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
   if (!Array.isArray(products))
     return res.status(400).json({ error: "products array is required" });
 

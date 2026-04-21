@@ -656,30 +656,24 @@ export default function AdminDashboard() {
   const applyBulkAdd = async () => {
     if (!bulkPreview?.valid?.length) return;
     setBulkAdding(true);
-    // Insert all products in parallel — much faster than sequential, and avoids stale-closure bug
-    const results = await Promise.all(
-      bulkPreview.valid.map(async product => {
-        try {
-          const res  = await fetch("/api/sync-products", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "insert", product }),
-          });
-          const data = await res.json();
-          if (res.ok && data.id) return { ...product, id: data.id };
-          return null;
-        } catch (_) {
-          return null;
-        }
-      })
-    );
-    const inserted = results.filter(Boolean);
-    const failed   = results.length - inserted.length;
-    // Single persist with all new products appended at once
-    if (inserted.length > 0) persist([...products, ...inserted]);
-    setBulkAdding(false);
-    setBulkPreview(null);
-    showToast(failed ? `Added ${inserted.length}, failed ${failed}` : `${inserted.length} products added!`);
+    try {
+      const res  = await fetch("/api/sync-products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "bulk_insert", products: bulkPreview.valid }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ids) throw new Error(data.error || "Insert failed");
+      // Pair each inserted id back with its product
+      const inserted = bulkPreview.valid.map((p, i) => ({ ...p, id: data.ids[i] })).filter(p => p.id);
+      persist([...products, ...inserted]);
+      setBulkAdding(false);
+      setBulkPreview(null);
+      showToast(`${inserted.length} products added!`);
+    } catch (err) {
+      setBulkAdding(false);
+      showToast("Bulk add failed: " + err.message, "warn");
+    }
   };
 
   // ── Display settings ──────────────────────────────────
