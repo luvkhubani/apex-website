@@ -130,7 +130,7 @@ export default function ProductModal({ group, onClose }) {
         <div className="flex flex-col sm:flex-row overflow-y-auto">
 
           {/* ── Image panel ─────────────────────────────── */}
-          <div className="bg-apple-light sm:w-[42%] aspect-square flex-shrink-0 flex items-center justify-center p-10">
+          <div className="bg-apple-light sm:w-[48%] aspect-square flex-shrink-0 flex items-center justify-center p-4 sm:p-6">
             {imgSrc ? (
               <img
                 src={imgSrc}
