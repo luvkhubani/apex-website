@@ -1016,13 +1016,14 @@ export default function AdminDashboard() {
                     <div style={{ borderTop:"1px solid #1a1a1a", overflowX:"auto" }}>
                       <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"13px" }}>
                         <thead><tr style={{ background:"#0d0d0d" }}>
-                          {["Storage","RAM","Colour","Price (₹)","Orig. Price","Badge","Stock","Image","Actions"].map(h => (
+                          {["ID","Storage","RAM","Colour","Price (₹)","Orig. Price","Badge","Stock","Image","Actions"].map(h => (
                             <th key={h} style={{ padding:"9px 14px", color:"#555", fontWeight:600, textAlign:"left", whiteSpace:"nowrap", borderBottom:"1px solid #1a1a1a" }}>{h}</th>
                           ))}
                         </tr></thead>
                         <tbody>
                           {variants.map(v => (
                             <tr key={v.id} style={{ borderBottom:"1px solid #141414" }}>
+                              <td style={{ padding:"10px 14px", color:"#444", fontSize:"11px", fontFamily:"monospace" }}>{v.id ?? <span style={{color:"#333"}}>—</span>}</td>
                               <td style={{ padding:"10px 14px", color:"#e0e0e0", fontWeight:600 }}>{v.storage||<span style={{color:"#333"}}>—</span>}</td>
                               <td style={{ padding:"10px 14px", color:"#888" }}>{v.ram||<span style={{color:"#333"}}>—</span>}</td>
                               <td style={{ padding:"10px 14px" }}>
