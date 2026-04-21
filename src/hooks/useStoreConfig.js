@@ -51,6 +51,10 @@ export const STORE_DEFAULTS = {
     { label: 'Accessories',        emoji: '🎧', filter: 'Accessories', sub: 'Complete your setup',    images: [], link: '' },
   ],
 
+  // ── WhatsApp message template (product modal) ─────────
+  // Placeholders: {name} {specs} {color} — missing ones are trimmed automatically
+  productWaMessage: 'Hi Apex! I am interested in {name} {specs} {color}. Please share availability and best price.',
+
   // ── Google Maps ───────────────────────────────────────
   googleMapsEmbed: '',
   googleMapsLink: 'https://maps.google.com/?q=Apex+The+Mobile+Shoppe+Jail+Road+Indore',

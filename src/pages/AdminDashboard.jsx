@@ -1393,6 +1393,21 @@ export default function AdminDashboard() {
                 </div>
                 <div style={{ gridColumn:"1 / -1" }}>
                   <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>
+                    Product WhatsApp Message <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(sent when customer taps WhatsApp on a product)</span>
+                  </label>
+                  <textarea
+                    value={storeCfg.productWaMessage ?? ''}
+                    onChange={e => Fs("productWaMessage")(e.target.value)}
+                    rows={3}
+                    placeholder="Hi Apex! I am interested in {name} {specs} {color}. Please share availability and best price."
+                    style={{ ...iStyle, resize:"vertical", fontFamily:"monospace", fontSize:"13px", marginBottom:"6px" }}
+                  />
+                  <p style={{ color:"#555", fontSize:"11px", margin:"0 0 14px" }}>
+                    Available placeholders: <code style={{ color:"#aaa" }}>{"{name}"}</code> — product name &nbsp;·&nbsp; <code style={{ color:"#aaa" }}>{"{specs}"}</code> — storage/variant &nbsp;·&nbsp; <code style={{ color:"#aaa" }}>{"{color}"}</code> — colour. Missing values are removed automatically.
+                  </p>
+                </div>
+                <div style={{ gridColumn:"1 / -1" }}>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>
                     Contact Numbers <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(shown in footer and contact page)</span>
                   </label>
                   {/* Quick-add preset labels */}
