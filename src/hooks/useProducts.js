@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import defaultProducts from "../data/products";
+import { loadStoreConfig } from "./useStoreConfig";
 
 const STORAGE_KEY = "apex_products_override";
 
@@ -14,17 +15,22 @@ function localProducts() {
   return null;
 }
 
+function applyVisibility(products) {
+  const hidden = new Set(loadStoreConfig().hiddenProductIds || []);
+  if (hidden.size === 0) return products;
+  return products.filter(p => !hidden.has(p.id));
+}
+
 export function useProducts() {
-  const [products, setProducts] = useState(() => localProducts() || defaultProducts);
+  const [products, setProducts] = useState(() => applyVisibility(localProducts() || defaultProducts));
 
   useEffect(() => {
-    // Fetch live data from API (reads GitHub directly — no redeploy needed)
     fetch("/api/products-data")
       .then(r => r.ok ? r.json() : null)
       .then(remote => {
         if (!Array.isArray(remote) || remote.length === 0) return;
-        setProducts(remote);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(remote));
+        setProducts(applyVisibility(remote));
       })
       .catch(() => {});
   }, []);
@@ -35,7 +41,7 @@ export function useProducts() {
       if (e.key === STORAGE_KEY && e.newValue) {
         try {
           const parsed = JSON.parse(e.newValue);
-          if (Array.isArray(parsed) && parsed.length > 0) setProducts(parsed);
+          if (Array.isArray(parsed) && parsed.length > 0) setProducts(applyVisibility(parsed));
         } catch (_) {}
       }
     };

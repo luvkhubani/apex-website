@@ -1163,7 +1163,7 @@ export default function AdminDashboard() {
                     <div style={{ borderTop:"1px solid #1a1a1a", overflowX:"auto" }}>
                       <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"13px" }}>
                         <thead><tr style={{ background:"#0d0d0d" }}>
-                          {["ID","Storage","RAM","Colour","Price (₹)","Orig. Price","Badge","Stock","Image","Actions"].map(h => (
+                          {["ID","Storage","RAM","Colour","Price (₹)","Orig. Price","Badge","Stock","Visible","Image","Actions"].map(h => (
                             <th key={h} style={{ padding:"9px 14px", color:"#555", fontWeight:600, textAlign:"left", whiteSpace:"nowrap", borderBottom:"1px solid #1a1a1a" }}>{h}</th>
                           ))}
                         </tr></thead>
@@ -1188,6 +1188,27 @@ export default function AdminDashboard() {
                                 <button onClick={() => handleToggleStock(v.id)} style={{ background:v.inStock?"#00c85122":"#ff444422", color:v.inStock?"#00c851":"#ff4444", border:`1px solid ${v.inStock?"#00c85144":"#ff444444"}`, borderRadius:"6px", padding:"4px 10px", fontSize:"11px", fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>
                                   {v.inStock?"✓ In Stock":"✗ Out"}
                                 </button>
+                              </td>
+                              <td style={{ padding:"10px 14px" }}>
+                                {(() => {
+                                  const hidden = (storeCfg.hiddenProductIds || []).includes(v.id);
+                                  return (
+                                    <button
+                                      onClick={() => {
+                                        const next = hidden
+                                          ? (storeCfg.hiddenProductIds || []).filter(id => id !== v.id)
+                                          : [...(storeCfg.hiddenProductIds || []), v.id];
+                                        const updated = { ...storeCfg, hiddenProductIds: next };
+                                        setStoreCfg(updated);
+                                        saveStore(updated);
+                                      }}
+                                      title={hidden ? "Hidden from site — click to show" : "Visible on site — click to hide"}
+                                      style={{ background:hidden?"#ff444422":"#00c85122", color:hidden?"#ff4444":"#00c851", border:`1px solid ${hidden?"#ff444444":"#00c85144"}`, borderRadius:"6px", padding:"4px 10px", fontSize:"13px", cursor:"pointer" }}
+                                    >
+                                      {hidden ? "🚫" : "👁"}
+                                    </button>
+                                  );
+                                })()}
                               </td>
                               <td style={{ padding:"10px 14px" }}>{v.image?<img src={resolveImg(v.image)} alt="" style={{ width:"36px",height:"36px",objectFit:"contain",borderRadius:"6px",background:"#1a1a1a",border:"1px solid #2a2a2a" }} onError={e=>{e.target.style.display="none";}} />:<span style={{color:"#333",fontSize:"11px"}}>None</span>}</td>
                               <td style={{ padding:"10px 14px" }}>

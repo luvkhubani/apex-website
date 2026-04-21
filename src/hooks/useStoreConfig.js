@@ -51,6 +51,10 @@ export const STORE_DEFAULTS = {
     { label: 'Accessories',        emoji: '🎧', filter: 'Accessories', sub: 'Complete your setup',    images: [], link: '' },
   ],
 
+  // ── Product visibility ────────────────────────────────
+  // IDs in this list are hidden from the public site
+  hiddenProductIds: [],
+
   // ── WhatsApp message template (product modal) ─────────
   // Placeholders: {name} {specs} {color} — missing ones are trimmed automatically
   productWaMessage: 'Hi Apex! I am interested in {name} {specs} {color}. Please share availability and best price.',
@@ -100,15 +104,16 @@ export function loadStoreConfig() {
       return {
         ...STORE_DEFAULTS,
         ...parsed,
-        phoneNumbers:   parsed.phoneNumbers   ?? STORE_DEFAULTS.phoneNumbers,
-        storePhotos:    parsed.storePhotos    ?? STORE_DEFAULTS.storePhotos,
-        categories:     parsed.categories     ?? STORE_DEFAULTS.categories,
-        trustStats:     parsed.trustStats     ?? STORE_DEFAULTS.trustStats,
-        testimonials:   parsed.testimonials   ?? STORE_DEFAULTS.testimonials,
-        aboutStory:     parsed.aboutStory     ?? STORE_DEFAULTS.aboutStory,
-        aboutStatItems: parsed.aboutStatItems ?? STORE_DEFAULTS.aboutStatItems,
-        aboutValues:    parsed.aboutValues    ?? STORE_DEFAULTS.aboutValues,
-        aboutServices:  parsed.aboutServices  ?? STORE_DEFAULTS.aboutServices,
+        phoneNumbers:      parsed.phoneNumbers      ?? STORE_DEFAULTS.phoneNumbers,
+        storePhotos:       parsed.storePhotos       ?? STORE_DEFAULTS.storePhotos,
+        categories:        parsed.categories        ?? STORE_DEFAULTS.categories,
+        trustStats:        parsed.trustStats        ?? STORE_DEFAULTS.trustStats,
+        testimonials:      parsed.testimonials      ?? STORE_DEFAULTS.testimonials,
+        aboutStory:        parsed.aboutStory        ?? STORE_DEFAULTS.aboutStory,
+        aboutStatItems:    parsed.aboutStatItems    ?? STORE_DEFAULTS.aboutStatItems,
+        aboutValues:       parsed.aboutValues       ?? STORE_DEFAULTS.aboutValues,
+        aboutServices:     parsed.aboutServices     ?? STORE_DEFAULTS.aboutServices,
+        hiddenProductIds:  parsed.hiddenProductIds  ?? STORE_DEFAULTS.hiddenProductIds,
       };
     }
   } catch (_) {}
@@ -131,15 +136,16 @@ export function useStoreConfig() {
         const merged = {
           ...STORE_DEFAULTS,
           ...remote,
-          phoneNumbers:   remote.phoneNumbers   ?? STORE_DEFAULTS.phoneNumbers,
-          storePhotos:    remote.storePhotos    ?? STORE_DEFAULTS.storePhotos,
-          categories:     remote.categories     ?? STORE_DEFAULTS.categories,
-          trustStats:     remote.trustStats     ?? STORE_DEFAULTS.trustStats,
-          testimonials:   remote.testimonials   ?? STORE_DEFAULTS.testimonials,
-          aboutStory:     remote.aboutStory     ?? STORE_DEFAULTS.aboutStory,
-          aboutStatItems: remote.aboutStatItems ?? STORE_DEFAULTS.aboutStatItems,
-          aboutValues:    remote.aboutValues    ?? STORE_DEFAULTS.aboutValues,
-          aboutServices:  remote.aboutServices  ?? STORE_DEFAULTS.aboutServices,
+          phoneNumbers:      remote.phoneNumbers      ?? STORE_DEFAULTS.phoneNumbers,
+          storePhotos:       remote.storePhotos       ?? STORE_DEFAULTS.storePhotos,
+          categories:        remote.categories        ?? STORE_DEFAULTS.categories,
+          trustStats:        remote.trustStats        ?? STORE_DEFAULTS.trustStats,
+          testimonials:      remote.testimonials      ?? STORE_DEFAULTS.testimonials,
+          aboutStory:        remote.aboutStory        ?? STORE_DEFAULTS.aboutStory,
+          aboutStatItems:    remote.aboutStatItems    ?? STORE_DEFAULTS.aboutStatItems,
+          aboutValues:       remote.aboutValues       ?? STORE_DEFAULTS.aboutValues,
+          aboutServices:     remote.aboutServices     ?? STORE_DEFAULTS.aboutServices,
+          hiddenProductIds:  remote.hiddenProductIds  ?? STORE_DEFAULTS.hiddenProductIds,
         };
         saveStoreConfig(merged);
         setCfg(merged);
