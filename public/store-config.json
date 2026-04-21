@@ -6,14 +6,22 @@
   "phoneDisplay": "+91 83495 70000",
   "phoneNumbers": [
     {
-      "label": "",
+      "label": "MAIN",
+      "number": "+91 98270 10000"
+    },
+    {
+      "label": "OFFICE AND ORDERS",
       "number": "+91 83495 70000"
+    },
+    {
+      "label": "DISPATCH",
+      "number": "+91 92947 70000"
     }
   ],
   "addressLine1": "Jail Road, Indore",
   "addressLine2": "Madhya Pradesh — 452 001",
   "storeHours": "Monday – Sunday, 10:00 AM – 8:00 PM",
-  "storeHoursShort": "10AM – 8PM",
+  "storeHoursShort": "10AM – 9:30PM",
   "instagramHandle": "apexmobileindia",
   "instagramUrl": "https://instagram.com/apexmobileindia",
   "trustStats": [
@@ -77,6 +85,7 @@
       "image": ""
     }
   ],
+  "productWaMessage": "Hi Apex! I am interested in {name} {specs} {color}. Kindly get it delivered to {contact details}",
   "googleMapsEmbed": "",
   "googleMapsLink": "https://maps.google.com/?q=Apex+The+Mobile+Shoppe+Jail+Road+Indore",
   "aboutHeadline": "Three decades.\nOne promise.",
@@ -117,5 +126,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-21T08:54:07.098Z"
+  "_savedAt": "2026-04-21T09:40:12.762Z"
 }
