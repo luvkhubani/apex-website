@@ -37,7 +37,21 @@ export default async function handler(req, res) {
     if (!Array.isArray(newProducts) || newProducts.length === 0)
       return res.status(400).json({ error: 'products array is required' });
     try {
-      const rows = newProducts.map(p => { const r = toRow(p); delete r.id; return r; });
+      // Build rows WITHOUT id key — letting Supabase auto-assign
+      const rows = newProducts.map(p => ({
+        name:           p.name           ?? '',
+        brand:          p.brand          ?? '',
+        category:       p.category       ?? '',
+        ram:            p.ram            ?? '',
+        storage:        p.storage        ?? '',
+        color:          p.color          ?? '',
+        price:          Number(p.price)  || 0,
+        original_price: Number(p.originalPrice) || Number(p.price) || 0,
+        badge:          p.badge          ?? '',
+        in_stock:       p.inStock === false ? false : true,
+        image:          '',
+        description:    p.description    ?? '',
+      }));
       const { data, error } = await supabase
         .from('products')
         .insert(rows)
