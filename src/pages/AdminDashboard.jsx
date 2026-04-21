@@ -369,10 +369,11 @@ export default function AdminDashboard() {
   }, [heroConfig]);
 
   const showToast = (msg, type="ok") => { setToast({ msg, type }); setTimeout(() => setToast(null), type==="ok" && !msg.startsWith("Sync error") && !msg.startsWith("Sync failed") ? 3500 : 12000); };
-  const persist   = (p) => {
+  const persist   = (p, { skipSync = false } = {}) => {
     lastWriteRef.current = Date.now(); // prevent poll from overwriting this write for 60s
     setProducts(p);
     saveProducts(p);
+    if (skipSync) return; // new inserts: Supabase already has the row; skip the destructive full sync
     // Strip blob: URLs before syncing — they are temporary browser-only preview URLs
     const syncReady = p.map(prod =>
       prod.image?.startsWith('blob:') ? { ...prod, image: undefined } : prod
@@ -491,7 +492,7 @@ export default function AdminDashboard() {
           ...products.map(p => finalForm.description && p.brand === finalForm.brand && p.name === finalForm.name ? { ...p, description: finalForm.description } : p),
           { ...finalForm, id:savedId, price:priceNum, originalPrice:origNum, image:imagePath },
         ];
-        persist(updated);
+        persist(updated, { skipSync: true }); // INSERT already saved to Supabase — skip full sync to avoid delete race
       }
 
       if (editId && imagePath) {
@@ -666,7 +667,7 @@ export default function AdminDashboard() {
       if (!res.ok || !data.ids) throw new Error(data.error || "Insert failed");
       // Pair each inserted id back with its product
       const inserted = bulkPreview.valid.map((p, i) => ({ ...p, id: data.ids[i] })).filter(p => p.id);
-      persist([...products, ...inserted]);
+      persist([...products, ...inserted], { skipSync: true }); // bulk_insert already in Supabase — skip full sync
       setBulkAdding(false);
       setBulkPreview(null);
       showToast(`${inserted.length} products added!`);
