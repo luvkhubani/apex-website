@@ -195,6 +195,9 @@ export default function AdminDashboard() {
   const [editingModel,  setEditingModel]  = useState(null);
   const [expanded,      setExpanded]      = useState(new Set());
   const [csvPreview,    setCsvPreview]    = useState(null);
+  const [bulkPreview,   setBulkPreview]   = useState(null); // rows to insert
+  const [bulkAdding,    setBulkAdding]    = useState(false);
+  const bulkAddRef = useRef(null);
   const [ds,            setDs]            = useState(loadDS);   // display settings
   const [heroConfig,    setHeroConfig]    = useState(loadHero); // hero products
   const [heroSearch,    setHeroSearch]    = useState("");
@@ -584,6 +587,82 @@ export default function AdminDashboard() {
     showToast(`Updated ${csvPreview.matched.length} products!`); setCsvPreview(null);
   };
 
+  // ── Bulk Add ──────────────────────────────────────────
+  const BULK_HEADERS = ["brand","name","category","storage","ram","color","price","originalPrice","inStock","badge","description"];
+
+  const handleDownloadTemplate = () => {
+    const sample = [
+      "Apple,iPhone 16,Mobiles,128GB,8GB,Black,67500,70000,true,5G,Latest iPhone",
+      "Samsung,Galaxy S25,Mobiles,256GB,12GB,Phantom Black,74999,79999,true,New,",
+    ];
+    const csv = [BULK_HEADERS.join(","), ...sample].join("\n");
+    const blob = new Blob([csv], { type:"text/csv" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href = url; a.download = "apex-bulk-add-template.csv"; a.click();
+    URL.revokeObjectURL(url);
+    showToast("Template downloaded!");
+  };
+
+  const handleBulkFile = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const rows = csvToUpdates(ev.target.result);
+      const valid = [], invalid = [];
+      rows.forEach((row, i) => {
+        if (!row.name || !row.brand || !row.price) {
+          invalid.push(`Row ${i + 2}: missing name, brand, or price`);
+        } else {
+          valid.push({
+            brand:         row.brand || "Apple",
+            name:          row.name,
+            category:      row.category || "Mobiles",
+            storage:       row.storage || "",
+            ram:           row.ram || "",
+            color:         row.color || "",
+            price:         Number(row.price) || 0,
+            originalPrice: Number(row.originalPrice) || Number(row.price) || 0,
+            inStock:       row.inStock === "false" ? false : true,
+            badge:         row.badge || "",
+            description:   row.description || "",
+            image:         "",
+          });
+        }
+      });
+      setBulkPreview({ valid, invalid });
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
+  const applyBulkAdd = async () => {
+    if (!bulkPreview?.valid?.length) return;
+    setBulkAdding(true);
+    let added = 0, failed = 0;
+    for (const product of bulkPreview.valid) {
+      try {
+        const res = await fetch("/api/sync-products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "insert", product }),
+        });
+        const data = await res.json();
+        if (res.ok && data.id) {
+          persist([...products, { ...product, id: data.id }]);
+          added++;
+        } else {
+          failed++;
+        }
+      } catch (_) {
+        failed++;
+      }
+    }
+    setBulkAdding(false);
+    setBulkPreview(null);
+    showToast(failed ? `Added ${added}, failed ${failed}` : `${added} products added!`);
+  };
+
   // ── Display settings ──────────────────────────────────
   const updateDS = (key, val) => {
     const next = { ...ds, [key]: val };
@@ -930,6 +1009,57 @@ export default function AdminDashboard() {
         </div>
       )}
 
+      {/* Bulk Add Preview Modal */}
+      {bulkPreview && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", zIndex:1000, display:"flex", alignItems:"center", justifyContent:"center", padding:"24px" }}>
+          <div style={{ background:"#111", border:"1px solid #2a2a2a", borderRadius:"16px", padding:"28px", maxWidth:"780px", width:"100%", maxHeight:"80vh", overflowY:"auto" }}>
+            <h2 style={{ margin:"0 0 6px", fontSize:"18px", fontWeight:700 }}>📦 Bulk Add Preview</h2>
+            <p style={{ color:"#666", fontSize:"13px", margin:"0 0 20px" }}>Review the products below before adding. Images can be uploaded individually after adding.</p>
+            {bulkPreview.valid.length > 0 && (
+              <>
+                <p style={{ color:"#00c851", fontSize:"12px", fontWeight:600, margin:"0 0 10px" }}>✓ {bulkPreview.valid.length} product{bulkPreview.valid.length !== 1 ? "s" : ""} ready to add</p>
+                <div style={{ overflowX:"auto", marginBottom:"16px" }}>
+                  <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"12px" }}>
+                    <thead><tr style={{ background:"#0d0d0d" }}>
+                      {["Brand","Name","Category","Storage","RAM","Colour","Price","Badge","In Stock"].map(h => (
+                        <th key={h} style={{ padding:"8px 12px", color:"#555", textAlign:"left", borderBottom:"1px solid #1a1a1a", whiteSpace:"nowrap" }}>{h}</th>
+                      ))}
+                    </tr></thead>
+                    <tbody>
+                      {bulkPreview.valid.map((r, i) => (
+                        <tr key={i} style={{ borderBottom:"1px solid #141414" }}>
+                          <td style={{ padding:"8px 12px", color:"#ccc" }}>{r.brand}</td>
+                          <td style={{ padding:"8px 12px", color:"#fff", fontWeight:600 }}>{r.name}</td>
+                          <td style={{ padding:"8px 12px", color:"#888" }}>{r.category}</td>
+                          <td style={{ padding:"8px 12px", color:"#888" }}>{r.storage||"—"}</td>
+                          <td style={{ padding:"8px 12px", color:"#888" }}>{r.ram||"—"}</td>
+                          <td style={{ padding:"8px 12px", color:"#888" }}>{r.color||"—"}</td>
+                          <td style={{ padding:"8px 12px", color:"#00c851", fontWeight:600 }}>₹{Number(r.price).toLocaleString("en-IN")}</td>
+                          <td style={{ padding:"8px 12px", color:"#888" }}>{r.badge||"—"}</td>
+                          <td style={{ padding:"8px 12px", color:r.inStock?"#00c851":"#ff4444", fontWeight:600 }}>{r.inStock?"Yes":"No"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+            {bulkPreview.invalid.length > 0 && (
+              <div style={{ marginBottom:"16px" }}>
+                <p style={{ color:"#ff4444", fontSize:"12px", fontWeight:600, margin:"0 0 6px" }}>✗ {bulkPreview.invalid.length} row{bulkPreview.invalid.length !== 1 ? "s" : ""} skipped (fix and re-upload)</p>
+                {bulkPreview.invalid.map((err, i) => <p key={i} style={{ color:"#ff8800", fontSize:"11px", margin:"0 0 2px" }}>• {err}</p>)}
+              </div>
+            )}
+            <div style={{ display:"flex", gap:"10px" }}>
+              <Btn onClick={applyBulkAdd} style={{ flex:1 }} disabled={bulkAdding || !bulkPreview.valid.length}>
+                {bulkAdding ? "Adding…" : `Add ${bulkPreview.valid.length} Products`}
+              </Btn>
+              <Btn color="ghost" onClick={() => setBulkPreview(null)} disabled={bulkAdding}>Cancel</Btn>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div style={{ background:"#111", borderBottom:"1px solid #222", padding:"0 24px", display:"flex", alignItems:"center", justifyContent:"space-between", height:"60px", position:"sticky", top:0, zIndex:100 }}>
         <div style={{ display:"flex", alignItems:"center", gap:"12px" }}>
@@ -973,6 +1103,9 @@ export default function AdminDashboard() {
               <Btn small color="#007aff" onClick={handleExportCSV}>⬇ Download Prices</Btn>
               <Btn small color="#007aff" onClick={() => csvInputRef.current?.click()}>⬆ Upload Prices</Btn>
               <input ref={csvInputRef} type="file" accept=".csv" style={{ display:"none" }} onChange={handleCSVFile} />
+              <Btn small color="#5856d6" onClick={handleDownloadTemplate}>⬇ Bulk Template</Btn>
+              <Btn small color="#5856d6" onClick={() => bulkAddRef.current?.click()}>📦 Bulk Add</Btn>
+              <input ref={bulkAddRef} type="file" accept=".csv" style={{ display:"none" }} onChange={handleBulkFile} />
             </div>
 
             {Object.entries(grouped).map(([key, variants]) => {
