@@ -70,8 +70,11 @@
       "emoji": "🎧",
       "filter": "Accessories",
       "sub": "Complete your setup",
-      "images": [],
-      "link": "https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/321497_15_S6lluQ3MM.png?updatedAt=1772297753746?tr=w-1000"
+      "images": [
+        "https://res.cloudinary.com/dz489r0qy/image/upload/v1776692612/store/categories/samsung--android.png"
+      ],
+      "link": "",
+      "image": ""
     }
   ],
   "googleMapsEmbed": "",
@@ -114,5 +117,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-20T14:38:16.881Z"
+  "_savedAt": "2026-04-21T08:48:39.377Z"
 }
