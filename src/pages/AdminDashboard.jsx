@@ -1192,21 +1192,22 @@ export default function AdminDashboard() {
                               <td style={{ padding:"10px 14px" }}>
                                 {(() => {
                                   const hidden = (storeCfg.hiddenProductIds || []).includes(v.id);
+                                  const on = !hidden;
                                   return (
-                                    <button
+                                    <div
                                       onClick={() => {
-                                        const next = hidden
-                                          ? (storeCfg.hiddenProductIds || []).filter(id => id !== v.id)
-                                          : [...(storeCfg.hiddenProductIds || []), v.id];
+                                        const next = on
+                                          ? [...(storeCfg.hiddenProductIds || []), v.id]
+                                          : (storeCfg.hiddenProductIds || []).filter(id => id !== v.id);
                                         const updated = { ...storeCfg, hiddenProductIds: next };
                                         setStoreCfg(updated);
                                         saveStore(updated);
                                       }}
-                                      title={hidden ? "Hidden from site — click to show" : "Visible on site — click to hide"}
-                                      style={{ background:hidden?"#ff444422":"#00c85122", color:hidden?"#ff4444":"#00c851", border:`1px solid ${hidden?"#ff444444":"#00c85144"}`, borderRadius:"6px", padding:"4px 10px", fontSize:"13px", cursor:"pointer" }}
+                                      title={on ? "Visible — click to hide" : "Hidden — click to show"}
+                                      style={{ width:"36px", height:"20px", borderRadius:"10px", background:on?"#00c851":"#333", cursor:"pointer", position:"relative", transition:"background 0.2s", flexShrink:0 }}
                                     >
-                                      {hidden ? "🚫" : "👁"}
-                                    </button>
+                                      <div style={{ position:"absolute", top:"3px", left: on?"17px":"3px", width:"14px", height:"14px", borderRadius:"50%", background:"#fff", transition:"left 0.2s" }} />
+                                    </div>
                                   );
                                 })()}
                               </td>
