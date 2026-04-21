@@ -4,13 +4,13 @@
       "brand": "DYSON",
       "name": "DYSON AIRWRAP ID",
       "description": "",
-      "layout": "left"
+      "layout": "center"
     },
     {
       "brand": "Apple",
       "name": "iPhone 17",
       "description": "",
-      "layout": "left"
+      "layout": "center"
     },
     {
       "brand": "Apple",
@@ -28,5 +28,5 @@
     "ctaText": "Order on WhatsApp",
     "ctaLink": ""
   },
-  "_savedAt": "2026-04-21T08:06:40.349Z"
+  "_savedAt": "2026-04-21T09:41:26.210Z"
 }
