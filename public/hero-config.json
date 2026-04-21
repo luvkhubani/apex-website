@@ -4,13 +4,13 @@
       "brand": "DYSON",
       "name": "DYSON AIRWRAP ID",
       "description": "",
-      "layout": "center"
+      "layout": "left"
     },
     {
       "brand": "Apple",
       "name": "iPhone 17",
       "description": "",
-      "layout": "right"
+      "layout": "left"
     },
     {
       "brand": "Apple",
@@ -24,9 +24,9 @@
     "label": "Highlight of the Day",
     "title": "IPHONE 17 PRO 256GB",
     "subtitle": "FRESH | SEALED PACK | 1 YEAR APPLE WARRANTY",
-    "price": "119999",
+    "price": "118999",
     "ctaText": "Order on WhatsApp",
     "ctaLink": ""
   },
-  "_savedAt": "2026-04-21T12:09:42.054Z"
+  "_savedAt": "2026-04-21T12:16:36.763Z"
 }
