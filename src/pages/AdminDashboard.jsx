@@ -1573,7 +1573,7 @@ export default function AdminDashboard() {
                     style={{ ...iStyle, resize:"vertical", fontFamily:"monospace", fontSize:"13px", marginBottom:"6px" }}
                   />
                   <p style={{ color:"#555", fontSize:"11px", margin:"0 0 14px" }}>
-                    Available placeholders: <code style={{ color:"#aaa" }}>{"{name}"}</code> — product name &nbsp;·&nbsp; <code style={{ color:"#aaa" }}>{"{specs}"}</code> — storage/variant &nbsp;·&nbsp; <code style={{ color:"#aaa" }}>{"{color}"}</code> — colour. Missing values are removed automatically.
+                    Available placeholders: <code style={{ color:"#aaa" }}>{"{name}"}</code> — product name &nbsp;·&nbsp; <code style={{ color:"#aaa" }}>{"{specs}"}</code> — storage/variant &nbsp;·&nbsp; <code style={{ color:"#aaa" }}>{"{color}"}</code> — colour &nbsp;·&nbsp; <code style={{ color:"#aaa" }}>{"{price}"}</code> — listed price. Missing values are removed automatically.
                   </p>
                 </div>
                 <div style={{ gridColumn:"1 / -1" }}>
