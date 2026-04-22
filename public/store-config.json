@@ -86,7 +86,9 @@
     }
   ],
   "hiddenProductIds": [
-    95
+    95,
+    96,
+    97
   ],
   "productWaMessage": "Hi Apex! I am interested in {name} {specs} {color}. Kindly get it delivered to {contact details}",
   "googleMapsEmbed": "",
@@ -129,5 +131,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-22T11:33:12.326Z"
+  "_savedAt": "2026-04-22T11:33:12.750Z"
 }
