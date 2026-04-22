@@ -200,7 +200,7 @@ function HeroProductSection({ item, products, index, waN }) {
         Order on WhatsApp
       </PillBlack>
       <p className="text-[12px] font-semibold text-emerald-600 mt-4">
-        ⚡ 2-Hour COD Delivery · All Indore
+        ⚡ 2-Hour Delivery · All Indore
       </p>
     </div>
   );
@@ -378,7 +378,7 @@ export default function Home() {
             <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-full px-4 py-1.5 mb-0">
               <span className="text-emerald-600 text-[15px]">⚡</span>
               <p className="text-[13px] font-bold text-emerald-700 tracking-wide">
-                2-Hour COD Delivery · All Indore
+                2-Hour Delivery · All Indore
               </p>
             </div>
 
@@ -426,7 +426,7 @@ export default function Home() {
               <PillOutline href={waUrl(storeCfg.whatsappNumber)}>Chat on WhatsApp</PillOutline>
             </div>
             <p className="text-[12px] font-semibold text-emerald-600 mt-6">
-              ⚡ 2-Hour COD Delivery · All Indore
+              ⚡ 2-Hour Delivery · All Indore
             </p>
           </FadeUp>
           <FadeUp delay={150} className="w-full max-w-[700px] mt-16">

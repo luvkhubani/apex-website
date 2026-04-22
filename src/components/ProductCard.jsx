@@ -157,7 +157,7 @@ export default function ProductCard({ group, onClick }) {
 
         {/* COD delivery badge */}
         <p className="text-[11px] text-emerald-600 font-medium mb-3">
-          ⚡ 2-Hour COD Delivery · All Indore
+          ⚡ 2-Hour Delivery · All Indore
         </p>
 
         {/* CTA */}

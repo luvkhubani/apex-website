@@ -249,7 +249,7 @@ export default function ProductModal({ group, onClose }) {
             {/* COD delivery highlight */}
             <div className="flex items-center justify-center gap-2 mt-4 py-2.5 px-4 rounded-xl bg-emerald-50 border border-emerald-100">
               <span className="text-emerald-600 text-[15px]">⚡</span>
-              <p className="text-[12px] font-semibold text-emerald-700">2-Hour COD Delivery · All Indore</p>
+              <p className="text-[12px] font-semibold text-emerald-700">2-Hour Delivery · All Indore</p>
             </div>
 
             <p className="text-center text-[11px] text-apple-gray mt-3">
