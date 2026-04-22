@@ -92,7 +92,9 @@
     413,
     414,
     415,
-    417
+    417,
+    418,
+    419
   ],
   "productWaMessage": "Hi Apex! I am interested in {name} {specs} {color}. Kindly get it delivered to {contact details}",
   "googleMapsEmbed": "",
@@ -135,5 +137,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-22T11:33:26.516Z"
+  "_savedAt": "2026-04-22T11:33:28.498Z"
 }
