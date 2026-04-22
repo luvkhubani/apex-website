@@ -35,7 +35,8 @@ function resolveImg(path) {
 
 function autoPath(brand, name, color) {
   const slug = s => (s || "").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-  return `${slug(brand)}/${slug(name)}/${slug(color)}.webp`;
+  const parts = [slug(brand), slug(name), slug(color)].filter(Boolean);
+  return parts.join("/") + ".webp";
 }
 
 function productsToCSV(products) {
