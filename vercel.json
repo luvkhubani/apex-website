@@ -1,5 +1,4 @@
 {
-  "ignoreCommand": "node -e \"process.exit((process.env.VERCEL_GIT_COMMIT_MESSAGE||'').includes('[skip ci]')?1:0)\"",
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
