@@ -1313,6 +1313,17 @@ export default function AdminDashboard() {
         {/* ═══════════════════════════════ HERO ═══════════════════════════════ */}
         {tab === "hero" && (
           <div style={{ maxWidth:"720px" }}>
+
+            {/* ── Store Hero Text ── */}
+            <div style={{ background:"#111", border:"1px solid #1e1e1e", borderRadius:"14px", padding:"24px", marginBottom:"28px" }}>
+              <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>🏠 Store Hero Text</h3>
+              <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>The eyebrow line and headline shown at the top of the home page.</p>
+              <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Eyebrow Line</label>
+              <input value={storeCfg.heroEyebrow ?? ''} onChange={e => Fs("heroEyebrow")(e.target.value)} placeholder="Trusted Since 1996 · Jail Road, Indore" style={{ ...iStyle, marginBottom:"16px" }} />
+              <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Headline <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(use a new line to add a line break)</span></label>
+              <textarea value={storeCfg.heroHeadline ?? ''} onChange={e => Fs("heroHeadline")(e.target.value)} placeholder={"The Best Phones.\nIndore's Best Price."} rows={3} style={{ ...iStyle, resize:"vertical", fontFamily:"inherit", lineHeight:"1.6", marginBottom:"6px" }} />
+            </div>
+
             <h2 style={{ fontSize:"20px", fontWeight:700, marginBottom:"6px" }}>🌟 Featured Products</h2>
             <p style={{ color:"#555", fontSize:"13px", margin:"0 0 24px" }}>Choose up to 3 products to showcase on the home page. They appear as full product sections with image, description and price.</p>
 

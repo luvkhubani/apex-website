@@ -55,6 +55,10 @@ export const STORE_DEFAULTS = {
   // IDs in this list are hidden from the public site
   hiddenProductIds: [],
 
+  // ── Home page — Hero text ─────────────────────────────
+  heroEyebrow: 'Trusted Since 1996 · Jail Road, Indore',
+  heroHeadline: 'The Best Phones.\nIndore\'s Best Price.',
+
   // ── WhatsApp message template (product modal) ─────────
   // Placeholders: {name} {specs} {color} — missing ones are trimmed automatically
   productWaMessage: 'Hi Apex! I am interested in {name} {specs} {color} at "{price}". Kindly get it delivered to {name, contact, address}',

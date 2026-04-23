@@ -311,10 +311,12 @@ export default function Home() {
 
             {/* Store headline */}
             <p className="text-[13px] font-medium text-apple-gray tracking-[0.1em] uppercase mb-4">
-              Trusted Since 1996 · {storeCfg.addressLine1}
+              {storeCfg.heroEyebrow || `Trusted Since 1996 · ${storeCfg.addressLine1}`}
             </p>
             <h2 className="font-sans font-bold text-[32px] md:text-[48px] text-apple-black leading-[1.07] tracking-[-0.02em] mb-8">
-              The Best Phones.<br />Indore&apos;s Best Price.
+              {(storeCfg.heroHeadline || 'The Best Phones.\nIndore\'s Best Price.').split('\n').map((line, i, arr) => (
+                <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
+              ))}
             </h2>
 
             {/* Divider */}
@@ -412,11 +414,12 @@ export default function Home() {
         <section className="bg-white min-h-screen flex flex-col items-center justify-center text-center px-6 py-20">
           <FadeUp>
             <p className="text-[14px] font-medium text-apple-gray tracking-[0.1em] uppercase mb-6">
-              Trusted Since 1996
+              {storeCfg.heroEyebrow || `Trusted Since 1996 · ${storeCfg.addressLine1}`}
             </p>
             <h1 className="font-sans font-bold text-[48px] md:text-[80px] text-apple-black leading-[1.05] tracking-[-0.02em] mb-6">
-              The Best Phones.<br />
-              Indore&apos;s Best Price.
+              {(storeCfg.heroHeadline || 'The Best Phones.\nIndore\'s Best Price.').split('\n').map((line, i, arr) => (
+                <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
+              ))}
             </h1>
             <p className="text-[19px] md:text-[21px] text-apple-gray max-w-[560px] mx-auto mb-10 leading-relaxed">
               {activeBrands.slice(0, 4).join('. ')}. All in one place.
