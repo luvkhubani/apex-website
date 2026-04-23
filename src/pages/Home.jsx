@@ -313,11 +313,18 @@ export default function Home() {
             <p className="text-[13px] font-medium text-apple-gray tracking-[0.1em] uppercase mb-4">
               {storeCfg.heroEyebrow || `Trusted Since 1996 · ${storeCfg.addressLine1}`}
             </p>
-            <h2 className="font-sans font-bold text-[32px] md:text-[48px] text-apple-black leading-[1.07] tracking-[-0.02em] mb-8">
+            <h2 className="font-sans font-bold text-[32px] md:text-[48px] text-apple-black leading-[1.07] tracking-[-0.02em] mb-6">
               {(storeCfg.heroHeadline || 'The Best Phones.\nIndore\'s Best Price.').split('\n').map((line, i, arr) => (
                 <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
               ))}
             </h2>
+
+            <Link
+              to="/products"
+              className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-[#0071e3] hover:underline underline-offset-2 transition-all mb-8"
+            >
+              Shop All Products <span className="text-[18px] leading-none">›</span>
+            </Link>
 
             {/* Divider */}
             <div className="w-12 h-px bg-apple-border mb-8" />
