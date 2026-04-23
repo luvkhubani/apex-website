@@ -1321,7 +1321,8 @@ export default function AdminDashboard() {
               <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Eyebrow Line</label>
               <input value={storeCfg.heroEyebrow ?? ''} onChange={e => Fs("heroEyebrow")(e.target.value)} placeholder="Trusted Since 1996 · Jail Road, Indore" style={{ ...iStyle, marginBottom:"16px" }} />
               <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Headline <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(use a new line to add a line break)</span></label>
-              <textarea value={storeCfg.heroHeadline ?? ''} onChange={e => Fs("heroHeadline")(e.target.value)} placeholder={"The Best Phones.\nIndore's Best Price."} rows={3} style={{ ...iStyle, resize:"vertical", fontFamily:"inherit", lineHeight:"1.6", marginBottom:"6px" }} />
+              <textarea value={storeCfg.heroHeadline ?? ''} onChange={e => Fs("heroHeadline")(e.target.value)} placeholder={"The Best Phones.\nIndore's Best Price."} rows={3} style={{ ...iStyle, resize:"vertical", fontFamily:"inherit", lineHeight:"1.6", marginBottom:"16px" }} />
+              <Btn onClick={() => saveStore({...storeCfg})}>Save Hero Text</Btn>
             </div>
 
             <h2 style={{ fontSize:"20px", fontWeight:700, marginBottom:"6px" }}>🌟 Featured Products</h2>
