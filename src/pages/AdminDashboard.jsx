@@ -184,9 +184,11 @@ export default function AdminDashboard() {
   const lastHeroSyncRef    = useRef(null);  // serialized last-synced payload for dedup
 
   const [products,      setProducts]      = useState(loadProducts);
-  const [search,        setSearch]        = useState("");
-  const [filterBrand,   setFilterBrand]   = useState("All");
-  const [filterMissing, setFilterMissing] = useState("All");
+  const [search,           setSearch]           = useState("");
+  const [filterBrand,      setFilterBrand]      = useState("All");
+  const [filterNoPhoto,    setFilterNoPhoto]    = useState(false);
+  const [filterNoColour,   setFilterNoColour]   = useState(false);
+  const [filterNotVisible, setFilterNotVisible] = useState(false);
   const [tab,           setTab]           = useState("products");
   const [editId,        setEditId]        = useState(null);
   const [form,          setForm]          = useState(EMPTY);
@@ -393,17 +395,19 @@ export default function AdminDashboard() {
   const F         = (k) => (v) => setForm(f => ({ ...f, [k]: v }));
 
   // ── Filter & group ────────────────────────────────────
+  const anyCheckFilter = filterNoPhoto || filterNoColour || filterNotVisible;
   const filtered = products.filter(p => {
     const q = search.toLowerCase();
-    const noPhoto  = !p.image  || p.image.startsWith('blob:');
-    const noColour = !p.color;
-    const missingOk = filterMissing === "All"
-      || (filterMissing === "no-photo"  && noPhoto)
-      || (filterMissing === "no-colour" && noColour)
-      || (filterMissing === "both"      && (noPhoto || noColour));
+    const noPhoto    = !p.image || p.image.startsWith('blob:');
+    const noColour   = !p.color;
+    const notVisible = (storeCfg.hiddenProductIds || []).includes(p.id);
+    const checkOk = !anyCheckFilter
+      || (filterNoPhoto    && noPhoto)
+      || (filterNoColour   && noColour)
+      || (filterNotVisible && notVisible);
     return (!q || p.name?.toLowerCase().includes(q) || p.brand?.toLowerCase().includes(q) || p.color?.toLowerCase().includes(q) || p.storage?.toLowerCase().includes(q))
       && (filterBrand === "All" || p.brand === filterBrand)
-      && missingOk;
+      && checkOk;
   });
 
   const grouped = filtered.reduce((acc, p) => {
@@ -1182,13 +1186,29 @@ export default function AdminDashboard() {
                 <option value="All">All Brands</option>
                 {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
               </select>
-              <select value={filterMissing} onChange={e => setFilterMissing(e.target.value)} style={{ ...iStyle, width:"180px", color: filterMissing !== "All" ? "#ff8800" : undefined, borderColor: filterMissing !== "All" ? "#ff880066" : undefined }}>
-                <option value="All">All Products</option>
-                <option value="no-photo">⚠ Missing Photo</option>
-                <option value="no-colour">⚠ Missing Colour</option>
-                <option value="both">⚠ Missing Photo or Colour</option>
-              </select>
               <Btn onClick={() => setTab("add")}>+ Add Product</Btn>
+            </div>
+            <div style={{ display:"flex", gap:"10px", marginBottom:"12px", flexWrap:"wrap", alignItems:"center" }}>
+              <span style={{ color:"#444", fontSize:"11px", fontWeight:600, textTransform:"uppercase", letterSpacing:"0.08em" }}>Filter:</span>
+              {[
+                { label:"Missing Photo",   state:filterNoPhoto,    set:setFilterNoPhoto,    color:"#ff8800" },
+                { label:"Missing Colour",  state:filterNoColour,   set:setFilterNoColour,   color:"#ff8800" },
+                { label:"Not Visible",     state:filterNotVisible, set:setFilterNotVisible, color:"#ff4444" },
+              ].map(({ label, state, set, color }) => (
+                <button key={label} onClick={() => set(v => !v)}
+                  style={{ display:"flex", alignItems:"center", gap:"7px", background: state ? color+"18" : "transparent", border:`1px solid ${state ? color+"66" : "#2a2a2a"}`, borderRadius:"8px", padding:"5px 12px", cursor:"pointer", color: state ? color : "#555", fontSize:"12px", fontWeight:600, transition:"all 0.15s" }}>
+                  <span style={{ width:"14px", height:"14px", borderRadius:"3px", border:`2px solid ${state ? color : "#444"}`, background: state ? color : "transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s" }}>
+                    {state && <span style={{ color:"#fff", fontSize:"10px", lineHeight:1, fontWeight:900 }}>✓</span>}
+                  </span>
+                  {label}
+                </button>
+              ))}
+              {anyCheckFilter && (
+                <button onClick={() => { setFilterNoPhoto(false); setFilterNoColour(false); setFilterNotVisible(false); }}
+                  style={{ background:"none", border:"none", color:"#555", fontSize:"12px", cursor:"pointer", padding:"5px 4px", textDecoration:"underline" }}>
+                  Clear
+                </button>
+              )}
             </div>
 
             <div style={{ display:"flex", gap:"8px", marginBottom:"16px", flexWrap:"wrap", alignItems:"center" }}>
