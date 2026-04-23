@@ -452,6 +452,13 @@ export default function Home() {
       {/* ── 2. BRANDS BAR (dynamic) ─────────────────────────── */}
       <div className="border-t border-b border-apple-border py-4 overflow-x-auto no-scrollbar">
         <div className="flex items-center justify-center min-w-max gap-0 px-6">
+          <Link
+            to="/products"
+            className="text-[18px] font-semibold text-blue-600 px-5 hover:underline underline-offset-4 transition-all duration-150 whitespace-nowrap"
+          >
+            Shop All →
+          </Link>
+          <span className="text-apple-border text-lg select-none px-2">·</span>
           {activeBrands.map((brand, i) => (
             <span key={brand} className="flex items-center">
               <Link
