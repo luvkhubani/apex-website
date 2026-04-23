@@ -321,9 +321,9 @@ export default function Home() {
 
             <Link
               to="/products"
-              className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-[#0071e3] hover:underline underline-offset-2 transition-all mb-8"
+              className="inline-flex items-center gap-2 text-[22px] md:text-[28px] font-bold text-white bg-[#0071e3] px-8 py-3.5 rounded-full hover:bg-[#0077ed] active:scale-[0.98] transition-all shadow-md mb-8"
             >
-              Shop All Products <span className="text-[18px] leading-none">›</span>
+              Shop All Products <span className="text-[24px] leading-none">›</span>
             </Link>
 
             {/* Divider */}
