@@ -293,8 +293,9 @@ export default function AdminDashboard() {
       if (editId || tab === "add") return; // don't disrupt active editing
       if (Date.now() - lastWriteRef.current < 60000) return; // wait 60s after any local write
       try {
+        const ts = Date.now();
         const [pRes, hRes] = await Promise.all([
-          fetch("/api/products-data"),
+          fetch(`/api/products-data?_=${ts}`),
           fetch("/api/hero-config"),
         ]);
         if (pRes.ok) {
@@ -320,7 +321,7 @@ export default function AdminDashboard() {
 
   // On first load: pull from GitHub and merge with local state
   useEffect(() => {
-    fetch("/api/products-data")
+    fetch(`/api/products-data?_=${Date.now()}`)
       .then(r => r.ok ? r.json() : null)
       .then(remote => {
         if (!Array.isArray(remote) || remote.length === 0) return;
