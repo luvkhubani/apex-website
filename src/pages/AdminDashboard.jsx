@@ -302,9 +302,12 @@ export default function AdminDashboard() {
           const remote = await pRes.json();
           if (Array.isArray(remote) && remote.length > 0) {
             setProducts(local => {
-              if (JSON.stringify(remote) === JSON.stringify(local)) return local;
-              saveProducts(remote);
-              return remote;
+              const remoteIds = new Set(remote.map(p => p.id));
+              const localOnly = local.filter(p => !remoteIds.has(p.id));
+              const merged = [...remote, ...localOnly];
+              if (JSON.stringify(merged) === JSON.stringify(local)) return local;
+              saveProducts(merged);
+              return merged;
             });
           }
         }
