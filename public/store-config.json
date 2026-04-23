@@ -24,6 +24,8 @@
   "storeHoursShort": "10AM – 9:30PM",
   "instagramHandle": "apexmobile.indore",
   "instagramUrl": "https://instagram.com/apexmobile.indore",
+  "instagramPosts": [],
+  "instagramPostCount": 0,
   "trustStats": [
     {
       "num": "30+",
@@ -246,5 +248,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-23T11:21:58.237Z"
+  "_savedAt": "2026-04-23T11:51:56.098Z"
 }
