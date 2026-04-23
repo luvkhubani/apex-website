@@ -624,7 +624,6 @@ export default function Home() {
       </Section>
 
       {/* ── 8. INSTAGRAM ─────────────────────────────────────── */}
-      {(storeCfg.instagramPostCount ?? 0) > 0 && (
       <Section bg="bg-white">
         <FadeUp>
           <div className="text-center mb-12">
@@ -633,6 +632,7 @@ export default function Home() {
             </h2>
             <p className="text-[19px] text-apple-gray">@{storeCfg.instagramHandle}</p>
           </div>
+          {(storeCfg.instagramPostCount ?? 0) > 0 && (
           <div className={`grid gap-3 mb-10 ${storeCfg.instagramPostCount === 1 ? 'grid-cols-1 max-w-xs mx-auto' : storeCfg.instagramPostCount === 2 ? 'grid-cols-2 max-w-sm mx-auto' : storeCfg.instagramPostCount === 3 ? 'grid-cols-3' : storeCfg.instagramPostCount === 4 ? 'grid-cols-2 md:grid-cols-4' : storeCfg.instagramPostCount === 5 ? 'grid-cols-2 md:grid-cols-5' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-6'}`}>
             {Array.from({ length: storeCfg.instagramPostCount }).map((_, i) => {
               const imgUrl = (storeCfg.instagramPosts || [])[i];
@@ -652,12 +652,12 @@ export default function Home() {
               );
             })}
           </div>
+          )}
           <div className="text-center">
             <PillBlack href={storeCfg.instagramUrl}>Follow on Instagram</PillBlack>
           </div>
         </FadeUp>
       </Section>
-      )}
 
     </div>
   );
