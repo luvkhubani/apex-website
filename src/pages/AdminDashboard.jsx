@@ -1749,6 +1749,61 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
+              {/* Instagram post count selector */}
+              <div style={{ marginBottom:"20px" }}>
+                <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"10px" }}>Posts to show on homepage</label>
+                <div style={{ display:"flex", gap:"8px", flexWrap:"wrap" }}>
+                  {["None",1,2,3,4,5,6].map((v,i) => {
+                    const val = i === 0 ? 0 : v;
+                    const active = (storeCfg.instagramPostCount ?? 0) === val;
+                    return (
+                      <button key={val} onClick={() => setStoreCfg(c => ({ ...c, instagramPostCount: val }))}
+                        style={{ background: active ? "#007aff22" : "#1a1a1a", color: active ? "#007aff" : "#666", border: `1px solid ${active ? "#007aff66" : "#2a2a2a"}`, borderRadius:"8px", padding:"6px 14px", fontSize:"13px", fontWeight:600, cursor:"pointer" }}>
+                        {v}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Instagram post photo grid */}
+              {(storeCfg.instagramPostCount ?? 0) > 0 && (
+                <div style={{ marginBottom:"20px" }}>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"10px" }}>Post Photos <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(upload up to {storeCfg.instagramPostCount})</span></label>
+                  <div style={{ display:"grid", gridTemplateColumns:"repeat(6, 1fr)", gap:"8px" }}>
+                    {Array.from({ length: storeCfg.instagramPostCount ?? 0 }).map((_, idx) => {
+                      const existing = (storeCfg.instagramPosts || [])[idx];
+                      return (
+                        <div key={idx} style={{ position:"relative", aspectRatio:"1", background:"#1a1a1a", borderRadius:"10px", overflow:"hidden", border:"1px solid #2a2a2a", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer" }}
+                          onClick={() => { const inp = document.getElementById(`ig-post-${idx}`); inp?.click(); }}>
+                          {existing
+                            ? <img src={existing} alt={`Post ${idx+1}`} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                            : <span style={{ color:"#333", fontSize:"22px" }}>+</span>}
+                          <input id={`ig-post-${idx}`} type="file" accept="image/*" style={{ display:"none" }} onChange={async e => {
+                            const file = e.target.files[0]; if (!file) return;
+                            const ts = Date.now();
+                            uploadStoreImage(file, `instagram-post-${idx}-${ts}.jpg`, url => {
+                              setStoreCfg(c => {
+                                const posts = [...(c.instagramPosts || [])];
+                                posts[idx] = url;
+                                const n = { ...c, instagramPosts: posts };
+                                if (!url.startsWith('blob:')) syncStoreConfig(n);
+                                return n;
+                              });
+                            });
+                            e.target.value = "";
+                          }} />
+                          {existing && (
+                            <button onClick={ev => { ev.stopPropagation(); setStoreCfg(c => { const posts = [...(c.instagramPosts||[])]; posts.splice(idx,1); const n={...c,instagramPosts:posts}; syncStoreConfig(n); return n; }); }}
+                              style={{ position:"absolute", top:"4px", right:"4px", background:"rgba(0,0,0,0.7)", border:"none", borderRadius:"50%", color:"#fff", width:"20px", height:"20px", fontSize:"12px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <Btn onClick={() => saveStore({...storeCfg})}>Save Social</Btn>
             </div>
 

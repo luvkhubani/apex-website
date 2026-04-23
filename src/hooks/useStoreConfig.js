@@ -22,6 +22,8 @@ export const STORE_DEFAULTS = {
   // ── Social ────────────────────────────────────────────
   instagramHandle: 'apexmobileindia',
   instagramUrl: 'https://instagram.com/apexmobileindia',
+  instagramPosts: [],      // uploaded post image URLs (up to 6)
+  instagramPostCount: 0,   // 0 = hide section, 1-6 = show N posts
 
   // ── Home page — Trust Stats ───────────────────────────
   // Leave num blank to auto-compute brands count from live products
