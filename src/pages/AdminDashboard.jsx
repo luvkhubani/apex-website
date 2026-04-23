@@ -523,6 +523,7 @@ export default function AdminDashboard() {
   const handleDeleteModel  = (b, n)     => { if (!window.confirm(`Delete ALL variants of "${n}"?`)) return; persist(products.filter(p => !(p.brand===b && p.name===n))); showToast(`"${n}" deleted.`, "warn"); };
   const handleToggleStock  = id         => persist(products.map(p => p.id===id ? { ...p, inStock:!p.inStock } : p));
   const handlePriceBlur    = (id, val)  => { const n=Number(val); if (!isNaN(n)&&n>=0) persist(products.map(p => p.id===id?{...p,price:n}:p)); };
+  const handleBadgeChange  = (id, val)  => persist(products.map(p => p.id===id?{...p,badge:val}:p));
   const startEdit          = p          => { setEditId(p.id); setForm({ ...p, price:String(p.price||""), originalPrice:String(p.originalPrice||"") }); setTab("add"); };
 
   const saveModelRename = () => {
@@ -1243,7 +1244,11 @@ export default function AdminDashboard() {
                                 <input type="number" defaultValue={v.price} onBlur={e=>handlePriceBlur(v.id,e.target.value)} style={{ ...iStyle, width:"110px", padding:"6px 8px" }} />
                               </td>
                               <td style={{ padding:"10px 14px", color:"#555", fontSize:"12px" }}>{v.originalPrice?`₹${v.originalPrice.toLocaleString("en-IN")}`:<span style={{color:"#333"}}>—</span>}</td>
-                              <td style={{ padding:"10px 14px" }}>{v.badge?<span style={{ background:"#007aff22", color:"#007aff", border:"1px solid #007aff44", borderRadius:"6px", padding:"2px 8px", fontSize:"11px", fontWeight:600 }}>{v.badge}</span>:<span style={{color:"#333"}}>—</span>}</td>
+                              <td style={{ padding:"10px 14px" }}>
+                                <select value={v.badge||""} onChange={e=>handleBadgeChange(v.id,e.target.value)} style={{ ...iStyle, width:"100px", padding:"5px 8px", fontSize:"12px" }}>
+                                  {BADGES.map(b => <option key={b} value={b}>{b||"None"}</option>)}
+                                </select>
+                              </td>
                               <td style={{ padding:"10px 14px" }}>
                                 <button onClick={() => handleToggleStock(v.id)} style={{ background:v.inStock?"#00c85122":"#ff444422", color:v.inStock?"#00c851":"#ff4444", border:`1px solid ${v.inStock?"#00c85144":"#ff444444"}`, borderRadius:"6px", padding:"4px 10px", fontSize:"11px", fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>
                                   {v.inStock?"✓ In Stock":"✗ Out"}
