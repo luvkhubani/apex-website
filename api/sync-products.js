@@ -79,6 +79,32 @@ export default async function handler(req, res) {
     }
   }
 
+  // ── action: 'delete' — delete a single variant by id ──
+  if (action === 'delete') {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ error: 'id is required' });
+    try {
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) throw error;
+      return res.status(200).json({ success: true });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  // ── action: 'delete_model' — delete all variants of a brand+name ──
+  if (action === 'delete_model') {
+    const { brand, name } = req.body;
+    if (!brand || !name) return res.status(400).json({ error: 'brand and name are required' });
+    try {
+      const { error } = await supabase.from('products').delete().eq('brand', brand).eq('name', name);
+      if (error) throw error;
+      return res.status(200).json({ success: true });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
   if (!Array.isArray(products))
     return res.status(400).json({ error: "products array is required" });
 
@@ -94,20 +120,11 @@ export default async function handler(req, res) {
     const existingImg = Object.fromEntries((existing || []).map(r => [r.id, r.image]));
     const safeRows = rows.map(r => ({ ...r, image: r.image || existingImg[r.id] || '' }));
 
-    // Upsert all incoming products
+    // Upsert all incoming products — never bulk-delete here to avoid race conditions
     const { error: upsertErr } = await supabase
       .from('products')
       .upsert(safeRows, { onConflict: 'id' });
     if (upsertErr) throw upsertErr;
-
-    // Delete any products that were removed (present in DB but not in incoming list)
-    if (incomingIds.length > 0) {
-      const { error: deleteErr } = await supabase
-        .from('products')
-        .delete()
-        .not('id', 'in', `(${incomingIds.join(',')})`);
-      if (deleteErr) throw deleteErr;
-    }
 
     return res.status(200).json({ success: true, count: rows.length });
   } catch (err) {

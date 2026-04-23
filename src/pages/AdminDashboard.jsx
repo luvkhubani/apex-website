@@ -523,8 +523,24 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDelete       = id         => { if (!window.confirm("Delete this variant?")) return; persist(products.filter(p => p.id !== id)); showToast("Deleted.", "warn"); };
-  const handleDeleteModel  = (b, n)     => { if (!window.confirm(`Delete ALL variants of "${n}"?`)) return; persist(products.filter(p => !(p.brand===b && p.name===n))); showToast(`"${n}" deleted.`, "warn"); };
+  const handleDelete = id => {
+    if (!window.confirm("Delete this variant?")) return;
+    const updated = products.filter(p => p.id !== id);
+    lastWriteRef.current = Date.now();
+    setProducts(updated);
+    saveProducts(updated);
+    fetch("/api/sync-products", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ action:"delete", id }) }).catch(()=>{});
+    showToast("Deleted.", "warn");
+  };
+  const handleDeleteModel = (b, n) => {
+    if (!window.confirm(`Delete ALL variants of "${n}"?`)) return;
+    const updated = products.filter(p => !(p.brand===b && p.name===n));
+    lastWriteRef.current = Date.now();
+    setProducts(updated);
+    saveProducts(updated);
+    fetch("/api/sync-products", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ action:"delete_model", brand:b, name:n }) }).catch(()=>{});
+    showToast(`"${n}" deleted.`, "warn");
+  };
   const handleToggleStock  = id         => persist(products.map(p => p.id===id ? { ...p, inStock:!p.inStock } : p));
   const handlePriceBlur    = (id, val)  => { const n=Number(val); if (!isNaN(n)&&n>=0) persist(products.map(p => p.id===id?{...p,price:n}:p)); };
   const handleBadgeChange  = (id, val)  => persist(products.map(p => p.id===id?{...p,badge:val}:p));
