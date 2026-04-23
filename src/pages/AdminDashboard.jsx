@@ -186,6 +186,7 @@ export default function AdminDashboard() {
   const [products,      setProducts]      = useState(loadProducts);
   const [search,        setSearch]        = useState("");
   const [filterBrand,   setFilterBrand]   = useState("All");
+  const [filterMissing, setFilterMissing] = useState("All");
   const [tab,           setTab]           = useState("products");
   const [editId,        setEditId]        = useState(null);
   const [form,          setForm]          = useState(EMPTY);
@@ -390,8 +391,15 @@ export default function AdminDashboard() {
   // ── Filter & group ────────────────────────────────────
   const filtered = products.filter(p => {
     const q = search.toLowerCase();
+    const noPhoto  = !p.image  || p.image.startsWith('blob:');
+    const noColour = !p.color;
+    const missingOk = filterMissing === "All"
+      || (filterMissing === "no-photo"  && noPhoto)
+      || (filterMissing === "no-colour" && noColour)
+      || (filterMissing === "both"      && (noPhoto || noColour));
     return (!q || p.name?.toLowerCase().includes(q) || p.brand?.toLowerCase().includes(q) || p.color?.toLowerCase().includes(q) || p.storage?.toLowerCase().includes(q))
-      && (filterBrand === "All" || p.brand === filterBrand);
+      && (filterBrand === "All" || p.brand === filterBrand)
+      && missingOk;
   });
 
   const grouped = filtered.reduce((acc, p) => {
@@ -573,8 +581,35 @@ export default function AdminDashboard() {
       updates.forEach(row => {
         const id   = Number(row.id);
         const prod = products.find(p => p.id === id);
-        if (prod) matched.push({ id, name:prod.name, color:prod.color, storage:prod.storage, oldPrice:prod.price, newPrice:Number(row.price)||prod.price, oldOrig:prod.originalPrice, newOrig:Number(row.originalPrice)||prod.originalPrice, oldStock:prod.inStock, newStock:row.inStock==="false"?false:row.inStock==="true"?true:prod.inStock });
-        else unmatched.push(row.id || "?");
+        if (prod) {
+          const newPrice    = row.price !== "" ? Number(row.price) : prod.price;
+          const newOrig     = row.originalPrice !== "" ? Number(row.originalPrice) : prod.originalPrice;
+          const newStock    = row.inStock === "false" ? false : row.inStock === "true" ? true : prod.inStock;
+          const newColor    = row.color    !== "" ? row.color    : prod.color;
+          const newImage    = row.image    !== "" ? row.image    : prod.image;
+          const newDesc     = row.description !== undefined ? row.description : prod.description;
+          const newBadge    = row.badge    !== undefined ? row.badge    : prod.badge;
+          const newStorage  = row.storage  !== "" ? row.storage  : prod.storage;
+          const newRam      = row.ram      !== "" ? row.ram      : prod.ram;
+          const newName     = row.name     !== "" ? row.name     : prod.name;
+          const newBrand    = row.brand    !== "" ? row.brand    : prod.brand;
+          const newCategory = row.category !== "" ? row.category : prod.category;
+          matched.push({
+            id, name: prod.name, color: prod.color, storage: prod.storage,
+            oldPrice: prod.price, newPrice,
+            oldOrig: prod.originalPrice, newOrig,
+            oldStock: prod.inStock, newStock,
+            oldColor: prod.color, newColor,
+            oldImage: prod.image, newImage,
+            oldDesc: prod.description, newDesc,
+            oldBadge: prod.badge, newBadge,
+            oldStorage: prod.storage, newStorage,
+            oldRam: prod.ram, newRam,
+            newName, newBrand, newCategory,
+          });
+        } else {
+          unmatched.push(row.id || "?");
+        }
       });
       setCsvPreview({ matched, unmatched });
     };
@@ -584,9 +619,15 @@ export default function AdminDashboard() {
 
   const applyCSVImport = () => {
     if (!csvPreview) return;
-    const map = {}; csvPreview.matched.forEach(r => { map[r.id] = r; });
-    persist(products.map(p => { const r=map[p.id]; if (!r) return p; return { ...p, price:r.newPrice, originalPrice:r.newOrig, inStock:r.newStock }; }));
-    showToast(`Updated ${csvPreview.matched.length} products!`); setCsvPreview(null);
+    const map = {};
+    csvPreview.matched.forEach(r => { map[r.id] = r; });
+    persist(products.map(p => {
+      const r = map[p.id];
+      if (!r) return p;
+      return { ...p, name: r.newName, brand: r.newBrand, category: r.newCategory, storage: r.newStorage, ram: r.newRam, color: r.newColor, price: r.newPrice, originalPrice: r.newOrig, inStock: r.newStock, badge: r.newBadge, image: r.newImage, description: r.newDesc };
+    }));
+    showToast(`Updated ${csvPreview.matched.length} products!`);
+    setCsvPreview(null);
   };
 
   // ── Bulk Add ──────────────────────────────────────────
@@ -987,29 +1028,41 @@ export default function AdminDashboard() {
       {/* CSV Preview Modal */}
       {csvPreview && (
         <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", zIndex:1000, display:"flex", alignItems:"center", justifyContent:"center", padding:"24px" }}>
-          <div style={{ background:"#111", border:"1px solid #2a2a2a", borderRadius:"16px", padding:"28px", maxWidth:"680px", width:"100%", maxHeight:"80vh", overflowY:"auto" }}>
+          <div style={{ background:"#111", border:"1px solid #2a2a2a", borderRadius:"16px", padding:"28px", maxWidth:"720px", width:"100%", maxHeight:"80vh", overflowY:"auto" }}>
             <h2 style={{ margin:"0 0 6px", fontSize:"18px", fontWeight:700 }}>📋 CSV Import Preview</h2>
-            <p style={{ color:"#666", fontSize:"13px", margin:"0 0 20px" }}>Only price, original price and stock will be updated.</p>
+            <p style={{ color:"#666", fontSize:"13px", margin:"0 0 20px" }}>Price, stock, colour, variants, photo, badge and description will be updated.</p>
             {csvPreview.matched.length > 0 && (
               <>
                 <p style={{ color:"#00c851", fontSize:"12px", fontWeight:600, margin:"0 0 10px" }}>{csvPreview.matched.length} products matched</p>
                 <div style={{ overflowX:"auto", marginBottom:"16px" }}>
                   <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"12px" }}>
                     <thead><tr style={{ background:"#0d0d0d" }}>
-                      {["ID","Name","Storage","Colour","Price","Orig. Price","Stock"].map(h => <th key={h} style={{ padding:"8px 12px", color:"#555", textAlign:"left", borderBottom:"1px solid #1a1a1a", whiteSpace:"nowrap" }}>{h}</th>)}
+                      {["ID","Name","Changes"].map(h => <th key={h} style={{ padding:"8px 12px", color:"#555", textAlign:"left", borderBottom:"1px solid #1a1a1a", whiteSpace:"nowrap" }}>{h}</th>)}
                     </tr></thead>
                     <tbody>
-                      {csvPreview.matched.map(r => (
-                        <tr key={r.id} style={{ borderBottom:"1px solid #141414" }}>
-                          <td style={{ padding:"8px 12px", color:"#555" }}>{r.id}</td>
-                          <td style={{ padding:"8px 12px", color:"#ccc" }}>{r.name}</td>
-                          <td style={{ padding:"8px 12px", color:"#888" }}>{r.storage||"—"}</td>
-                          <td style={{ padding:"8px 12px", color:"#888" }}>{r.color||"—"}</td>
-                          <td style={{ padding:"8px 12px" }}>{r.oldPrice!==r.newPrice?<><span style={{color:"#ff4444",textDecoration:"line-through"}}>₹{r.oldPrice?.toLocaleString("en-IN")}</span>{" → "}<span style={{color:"#00c851"}}>₹{r.newPrice?.toLocaleString("en-IN")}</span></>:<span style={{color:"#555"}}>₹{r.newPrice?.toLocaleString("en-IN")}</span>}</td>
-                          <td style={{ padding:"8px 12px" }}>{r.oldOrig!==r.newOrig?<><span style={{color:"#ff4444",textDecoration:"line-through"}}>₹{r.oldOrig?.toLocaleString("en-IN")}</span>{" → "}<span style={{color:"#00c851"}}>₹{r.newOrig?.toLocaleString("en-IN")}</span></>:<span style={{color:"#555"}}>₹{r.newOrig?.toLocaleString("en-IN")}</span>}</td>
-                          <td style={{ padding:"8px 12px" }}>{r.oldStock!==r.newStock?<><span style={{color:"#ff4444"}}>{r.oldStock?"In":"Out"}</span>{" → "}<span style={{color:"#00c851"}}>{r.newStock?"In":"Out"}</span></>:<span style={{color:"#555"}}>{r.newStock?"In":"Out"}</span>}</td>
-                        </tr>
-                      ))}
+                      {csvPreview.matched.map(r => {
+                        const diffs = [];
+                        if (r.oldPrice   !== r.newPrice)   diffs.push(<span key="price">Price: <span style={{color:"#ff4444",textDecoration:"line-through"}}>₹{r.oldPrice?.toLocaleString("en-IN")}</span> → <span style={{color:"#00c851"}}>₹{r.newPrice?.toLocaleString("en-IN")}</span></span>);
+                        if (r.oldOrig    !== r.newOrig)    diffs.push(<span key="orig">MRP: <span style={{color:"#ff4444",textDecoration:"line-through"}}>₹{r.oldOrig?.toLocaleString("en-IN")}</span> → <span style={{color:"#00c851"}}>₹{r.newOrig?.toLocaleString("en-IN")}</span></span>);
+                        if (r.oldStock   !== r.newStock)   diffs.push(<span key="stock">Stock: <span style={{color:"#ff4444"}}>{r.oldStock?"In":"Out"}</span> → <span style={{color:"#00c851"}}>{r.newStock?"In":"Out"}</span></span>);
+                        if (r.oldColor   !== r.newColor)   diffs.push(<span key="color">Colour: <span style={{color:"#ff4444"}}>{r.oldColor||"—"}</span> → <span style={{color:"#00c851"}}>{r.newColor||"—"}</span></span>);
+                        if (r.oldStorage !== r.newStorage) diffs.push(<span key="storage">Storage: <span style={{color:"#ff4444"}}>{r.oldStorage||"—"}</span> → <span style={{color:"#00c851"}}>{r.newStorage||"—"}</span></span>);
+                        if (r.oldRam     !== r.newRam)     diffs.push(<span key="ram">RAM: <span style={{color:"#ff4444"}}>{r.oldRam||"—"}</span> → <span style={{color:"#00c851"}}>{r.newRam||"—"}</span></span>);
+                        if (r.oldBadge   !== r.newBadge)   diffs.push(<span key="badge">Badge: <span style={{color:"#ff4444"}}>{r.oldBadge||"—"}</span> → <span style={{color:"#00c851"}}>{r.newBadge||"—"}</span></span>);
+                        if (r.oldImage   !== r.newImage)   diffs.push(<span key="image" style={{color:"#00c851"}}>Photo updated</span>);
+                        if (r.oldDesc    !== r.newDesc)    diffs.push(<span key="desc" style={{color:"#00c851"}}>Description updated</span>);
+                        return (
+                          <tr key={r.id} style={{ borderBottom:"1px solid #141414" }}>
+                            <td style={{ padding:"8px 12px", color:"#555", whiteSpace:"nowrap" }}>{r.id}</td>
+                            <td style={{ padding:"8px 12px", color:"#ccc", whiteSpace:"nowrap" }}>{r.name} <span style={{color:"#555"}}>{r.color||""}</span></td>
+                            <td style={{ padding:"8px 12px" }}>
+                              {diffs.length > 0
+                                ? <div style={{ display:"flex", flexWrap:"wrap", gap:"8px" }}>{diffs.map((d,i) => <span key={i}>{d}</span>)}</div>
+                                : <span style={{color:"#333"}}>No changes</span>}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -1108,6 +1161,12 @@ export default function AdminDashboard() {
                 <option value="All">All Brands</option>
                 {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
               </select>
+              <select value={filterMissing} onChange={e => setFilterMissing(e.target.value)} style={{ ...iStyle, width:"180px", color: filterMissing !== "All" ? "#ff8800" : undefined, borderColor: filterMissing !== "All" ? "#ff880066" : undefined }}>
+                <option value="All">All Products</option>
+                <option value="no-photo">⚠ Missing Photo</option>
+                <option value="no-colour">⚠ Missing Colour</option>
+                <option value="both">⚠ Missing Photo or Colour</option>
+              </select>
               <Btn onClick={() => setTab("add")}>+ Add Product</Btn>
             </div>
 
@@ -1115,8 +1174,8 @@ export default function AdminDashboard() {
               <button onClick={expandAll}  style={{ background:"none", border:"1px solid #2a2a2a", borderRadius:"6px", color:"#555", cursor:"pointer", padding:"5px 12px", fontSize:"12px" }}>Expand All</button>
               <button onClick={collapseAll} style={{ background:"none", border:"1px solid #2a2a2a", borderRadius:"6px", color:"#555", cursor:"pointer", padding:"5px 12px", fontSize:"12px" }}>Collapse All</button>
               <span style={{ flex:1 }} />
-              <Btn small color="#007aff" onClick={handleExportCSV}>⬇ Download Prices</Btn>
-              <Btn small color="#007aff" onClick={() => csvInputRef.current?.click()}>⬆ Upload Prices</Btn>
+              <Btn small color="#007aff" onClick={handleExportCSV}>⬇ Download CSV</Btn>
+              <Btn small color="#007aff" onClick={() => csvInputRef.current?.click()}>⬆ Upload CSV</Btn>
               <input ref={csvInputRef} type="file" accept=".csv" style={{ display:"none" }} onChange={handleCSVFile} />
               <Btn small color="#5856d6" onClick={handleDownloadTemplate}>⬇ Bulk Template</Btn>
               <Btn small color="#5856d6" onClick={() => bulkAddRef.current?.click()}>📦 Bulk Add</Btn>
