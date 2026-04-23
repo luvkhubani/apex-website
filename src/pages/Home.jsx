@@ -458,6 +458,13 @@ export default function Home() {
               )}
             </span>
           ))}
+          <span className="text-apple-border text-lg select-none px-2">·</span>
+          <Link
+            to="/products"
+            className="text-[18px] font-semibold text-blue-600 px-5 hover:underline underline-offset-4 transition-all duration-150 whitespace-nowrap"
+          >
+            Shop All →
+          </Link>
         </div>
       </div>
 
