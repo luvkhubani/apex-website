@@ -363,7 +363,7 @@ export default function Home() {
             {/* Product name */}
             <h1
               className="font-sans font-bold text-apple-black leading-[1.04] tracking-[-0.03em] mb-3"
-              style={{ fontSize: 'clamp(40px, 8vw, 96px)' }}
+              style={{ fontSize: 'clamp(30px, 6vw, 72px)' }}
             >
               {banner.title}
             </h1>
