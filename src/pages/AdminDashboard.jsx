@@ -412,10 +412,12 @@ export default function AdminDashboard() {
     const notVisible = (storeCfg.hiddenProductIds || []).includes(p.id);
     const isVisible  = !notVisible;
     const checkOk = !anyCheckFilter
-      || (filterNoPhoto    && noPhoto)
-      || (filterNoColour   && noColour)
-      || (filterNotVisible && notVisible)
-      || (filterVisible    && isVisible);
+      || (
+        (!filterNoPhoto    || noPhoto)    &&
+        (!filterNoColour   || noColour)   &&
+        (!filterNotVisible || notVisible) &&
+        (!filterVisible    || isVisible)
+      );
     return (!q || p.name?.toLowerCase().includes(q) || p.brand?.toLowerCase().includes(q) || p.color?.toLowerCase().includes(q) || p.storage?.toLowerCase().includes(q))
       && (filterBrand === "All" || p.brand === filterBrand)
       && checkOk;
