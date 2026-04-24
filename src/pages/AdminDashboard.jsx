@@ -186,6 +186,7 @@ export default function AdminDashboard() {
   const lastWriteRef       = useRef(0);   // timestamp of last local write — poll skips if too recent
   const heroFromRemoteRef  = useRef(false); // set before remote-sourced setHeroConfig calls
   const lastHeroSyncRef    = useRef(null);  // serialized last-synced payload for dedup
+  const lastBannerEditRef  = useRef(0);     // timestamp of last local banner edit — poll skips if too recent
 
   const [products,      setProducts]      = useState(loadProducts);
   const [search,           setSearch]           = useState("");
@@ -214,7 +215,10 @@ export default function AdminDashboard() {
     return { ...BANNER_EMPTY };
   });
   const [bannerImporting, setBannerImporting] = useState(false);
-  const Fb = k => v => setBanner(b => ({ ...b, [k]: v }));
+  const Fb = k => v => {
+    lastBannerEditRef.current = Date.now();
+    setBanner(b => { const next = { ...b, [k]: v }; saveBannerConfig(next); return next; });
+  };
 
   // ── Store config (logo, categories, about, maps, contact, social) ─────
   const [storeCfg, setStoreCfg] = useState(loadStoreConfig);
@@ -320,7 +324,7 @@ export default function AdminDashboard() {
         if (hRes.ok) {
           const { heroConfig: rHero, bannerConfig: rBanner } = await hRes.json();
           if (Array.isArray(rHero)) { heroFromRemoteRef.current = true; setHeroConfig(rHero); }
-          if (rBanner) setBanner(b => ({ ...b, ...rBanner }));
+          if (rBanner && Date.now() - lastBannerEditRef.current > 60000) setBanner(b => ({ ...b, ...rBanner }));
         }
       } catch (_) {}
     };
@@ -353,7 +357,7 @@ export default function AdminDashboard() {
       .then(d => {
         if (!d) return;
         if (Array.isArray(d.heroConfig)) { heroFromRemoteRef.current = true; setHeroConfig(d.heroConfig); }
-        if (d.bannerConfig) setBanner(b => ({ ...b, ...d.bannerConfig }));
+        if (d.bannerConfig && d._savedAt) setBanner(b => ({ ...b, ...d.bannerConfig }));
       })
       .catch(() => {});
   }, []);
@@ -442,7 +446,7 @@ export default function AdminDashboard() {
     setSaving(true);
     try {
       const priceNum = Number(form.price) || 0;
-      const origNum  = Number(form.originalPrice) || priceNum;
+      const origNum  = Number(form.originalPrice) || Number(form.mrp) || 0;
 
       // For edits: auto-import URL image before saving. For new products, upload happens after Supabase ID is assigned.
       let imagePath = form.image?.startsWith('blob:') ? '' : (form.image || '');
@@ -467,7 +471,7 @@ export default function AdminDashboard() {
       if (editId) {
         savedId = editId;
         updated = products.map(p => {
-          if (p.id === editId) return { ...finalForm, id:editId, price:priceNum, originalPrice:origNum };
+          if (p.id === editId) return { ...finalForm, id:editId, price:priceNum, mrp:origNum, originalPrice:origNum };
           if (finalForm.description && p.brand === finalForm.brand && p.name === finalForm.name) return { ...p, description: finalForm.description };
           return p;
         });
@@ -553,7 +557,7 @@ export default function AdminDashboard() {
   const handlePriceBlur    = (id, val)  => { const n=Number(val); if (!isNaN(n)&&n>=0) persist(products.map(p => p.id===id?{...p,price:n}:p)); };
   const handleMrpBlur     = (id, val)  => { const n=Number(val); if (!isNaN(n)&&n>=0) persist(products.map(p => p.id===id?{...p,mrp:n,originalPrice:n}:p)); };
   const handleBadgeChange  = (id, val)  => persist(products.map(p => p.id===id?{...p,badge:val}:p));
-  const startEdit          = p          => { setEditId(p.id); setForm({ ...p, price:String(p.price||""), originalPrice:String(p.originalPrice||"") }); setTab("add"); };
+  const startEdit          = p          => { setEditId(p.id); setForm({ ...p, price:String(p.price||""), originalPrice:String(p.mrp || p.originalPrice || "") }); setTab("add"); };
 
   const saveModelRename = () => {
     if (!editingModel?.newName?.trim()) { setEditingModel(null); return; }
@@ -1268,8 +1272,32 @@ export default function AdminDashboard() {
                         {variants.some(v=>!v.inStock) && <span style={{ color:"#ff4444", marginLeft:"6px" }}>· {variants.filter(v=>!v.inStock).length} out of stock</span>}
                       </div>
                     </div>
-                    <div style={{ display:"flex", gap:"8px", flexShrink:0 }}>
+                    <div style={{ display:"flex", gap:"8px", flexShrink:0, alignItems:"center" }}>
                       <Btn small onClick={() => { setForm({...EMPTY,brand,name}); setEditId(null); setTab("add"); }}>+ Variant</Btn>
+                      {(() => {
+                        const hiddenSet  = new Set(storeCfg.hiddenProductIds || []);
+                        const vIds       = variants.map(v => v.id);
+                        const hiddenCnt  = vIds.filter(id => hiddenSet.has(id)).length;
+                        const allHidden  = hiddenCnt === vIds.length;
+                        const someHidden = hiddenCnt > 0 && !allHidden;
+                        const col        = allHidden ? "#ff4444" : someHidden ? "#ff8800" : "#00c851";
+                        return (
+                          <button
+                            onClick={() => {
+                              const next = allHidden
+                                ? (storeCfg.hiddenProductIds || []).filter(id => !vIds.includes(id))
+                                : [...new Set([...(storeCfg.hiddenProductIds || []), ...vIds])];
+                              const updated = { ...storeCfg, hiddenProductIds: next };
+                              setStoreCfg(updated);
+                              saveStore(updated);
+                            }}
+                            title={allHidden ? "All hidden — click to show" : someHidden ? "Some hidden — click to hide all" : "All visible — click to hide all"}
+                            style={{ background:`${col}22`, border:`1px solid ${col}44`, color:col, borderRadius:"8px", padding:"4px 10px", fontSize:"11px", fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}
+                          >
+                            {allHidden ? "✗ Hidden" : someHidden ? "⚠ Partial" : "✓ Visible"}
+                          </button>
+                        );
+                      })()}
                       <Btn small danger onClick={() => handleDeleteModel(brand,name)}>Delete All</Btn>
                       <button onClick={() => toggleExpand(key)} style={{ background:"#1a1a1a", border:"1px solid #2a2a2a", borderRadius:"8px", color:"#666", cursor:"pointer", padding:"6px 12px", fontSize:"12px", fontWeight:600 }}>{isExpanded?"▲":"▼"}</button>
                     </div>

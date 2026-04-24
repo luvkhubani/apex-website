@@ -171,6 +171,9 @@ function HeroProductSection({ item, products, index, waN }) {
   const prices   = variants.map(v => v.price).filter(Boolean);
   const minPrice = prices.length ? Math.min(...prices) : 0;
   const priceStr = formatINR(minPrice);
+  const cheapest = variants.find(v => v.price === minPrice);
+  const heroMrp  = cheapest?.mrp || cheapest?.originalPrice || 0;
+  const heroPct  = heroMrp > minPrice && minPrice > 0 ? Math.round((heroMrp - minPrice) / heroMrp * 100) : 0;
   const bg       = index % 2 === 0 ? 'bg-white' : 'bg-apple-light';
   const layout   = item.layout || 'left';
   const waMsg    = `Hi Apex! I am interested in ${item.name}. Please share availability and best price.`;
@@ -195,7 +198,17 @@ function HeroProductSection({ item, products, index, waN }) {
           {item.description}
         </p>
       )}
-      {priceStr && <p className="text-[28px] font-semibold text-apple-black mb-6">From {priceStr}</p>}
+      {priceStr && (
+        <div className="mb-6">
+          <p className="text-[28px] font-semibold text-apple-black">From {priceStr}</p>
+          {heroPct > 0 && (
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-[15px] text-apple-gray line-through">{formatINR(heroMrp)}</span>
+              <span className="text-[13px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{heroPct}% off</span>
+            </div>
+          )}
+        </div>
+      )}
       <PillBlack href={waUrl(waN, waMsg)}>
         Order on WhatsApp
       </PillBlack>
@@ -219,7 +232,17 @@ function HeroProductSection({ item, products, index, waN }) {
                 {item.description}
               </p>
             )}
-            {priceStr && <p className="text-[28px] font-semibold text-apple-black mb-8">From {priceStr}</p>}
+            {priceStr && (
+              <div className="mb-8">
+                <p className="text-[28px] font-semibold text-apple-black">From {priceStr}</p>
+                {heroPct > 0 && (
+                  <div className="flex items-center justify-center gap-2 mt-1">
+                    <span className="text-[15px] text-apple-gray line-through">{formatINR(heroMrp)}</span>
+                    <span className="text-[13px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{heroPct}% off</span>
+                  </div>
+                )}
+              </div>
+            )}
             <PillBlack href={waUrl(waN, waMsg)}>Order on WhatsApp</PillBlack>
           </div>
           <div className="bg-apple-light rounded-[32px] aspect-square sm:aspect-[4/3] md:aspect-[16/9] max-w-[860px] mx-auto overflow-hidden flex items-center justify-center">
@@ -321,9 +344,9 @@ export default function Home() {
 
             <Link
               to="/products"
-              className="inline-flex items-center gap-2 text-[22px] md:text-[28px] font-bold text-white bg-[#0071e3] px-8 py-3.5 rounded-full hover:bg-[#0077ed] active:scale-[0.98] transition-all shadow-md mb-8"
+              className="inline-flex items-center gap-1.5 text-[15px] font-medium text-[#0071e3] hover:underline underline-offset-2 transition-all mb-8"
             >
-              Shop All Products <span className="text-[24px] leading-none">›</span>
+              Shop All Products <span className="text-[18px] leading-none">›</span>
             </Link>
 
             {/* Divider */}
