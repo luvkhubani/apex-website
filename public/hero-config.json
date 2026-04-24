@@ -19,6 +19,14 @@
       "layout": "center"
     }
   ],
-  "bannerConfig": {},
-  "_savedAt": "2026-04-24T09:11:47.976Z"
+  "bannerConfig": {
+    "image": "https://res.cloudinary.com/dz489r0qy/image/upload/v1777022064/products/hero/banner.png",
+    "label": "Highlight of the Day",
+    "title": "IPHONE 17 PRO 256GB",
+    "subtitle": "SEAL PACK | FRESH | 1 YEAR APPLE WARRANTY",
+    "price": "119999/-",
+    "ctaText": "Order on WhatsApp",
+    "ctaLink": "https://api.whatsapp.com/send/?phone=918349570000&text=Hi+Apex%21+I+am+interested+in+IPHONE+17+PRO+256GB"
+  },
+  "_savedAt": "2026-04-24T09:14:26.508Z"
 }
