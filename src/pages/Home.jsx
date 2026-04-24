@@ -330,7 +330,7 @@ export default function Home() {
           />
 
           {/* Text + Image — single continuous block, no gap */}
-          <div className="relative z-10 w-full flex flex-col items-center pt-24 px-6">
+          <div className="relative z-10 w-full flex flex-col items-center pt-10 px-6">
 
             {/* Store headline */}
             <p className="text-[13px] font-medium text-apple-gray tracking-[0.1em] uppercase mb-4">
@@ -344,9 +344,9 @@ export default function Home() {
 
             <Link
               to="/products"
-              className="inline-flex items-center gap-1.5 text-[15px] font-medium text-[#0071e3] hover:underline underline-offset-2 transition-all mb-8"
+              className="inline-flex items-center gap-2 text-[20px] font-semibold text-[#0071e3] hover:underline underline-offset-2 transition-all mb-8"
             >
-              Shop All Products <span className="text-[18px] leading-none">›</span>
+              Shop All Products <span className="text-[22px] leading-none">›</span>
             </Link>
 
             {/* Divider */}
