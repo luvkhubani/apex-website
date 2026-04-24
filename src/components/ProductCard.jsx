@@ -153,29 +153,25 @@ export default function ProductCard({ group, onClick }) {
           </div>
         )}
 
-        {/* Price */}
-        <div className="mt-auto mb-2">
+        {/* Bottom section — pinned as one unit */}
+        <div className="mt-auto">
           <p className="text-[16px] font-bold text-apple-black">
             {showFrom && minPrice > 0 ? 'From ' : ''}{formatINR(minPrice)}
           </p>
-          {/* Always reserve MRP row height so cards in a row stay aligned */}
-          <div className="flex items-center gap-2 mt-0.5 h-[18px]">
+          {/* Fixed-height MRP row so cards without discount stay aligned */}
+          <div className="flex items-center gap-2 mt-0.5 h-[18px] mb-2">
             {pctOff > 0 && <>
               <span className="text-[11px] text-apple-gray line-through">{formatINR(cardMrp)}</span>
               <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">{pctOff}% off</span>
             </>}
           </div>
+          <p className="text-[11px] text-emerald-600 font-medium mb-3">
+            ⚡ 2-Hour Delivery · All Indore
+          </p>
+          <button className="block w-full text-center text-[13px] font-medium text-apple-black bg-apple-light py-2.5 rounded-pill group-hover:bg-apple-black group-hover:text-white transition-colors duration-200">
+            Order Now →
+          </button>
         </div>
-
-        {/* COD delivery badge */}
-        <p className="text-[11px] text-emerald-600 font-medium mb-3">
-          ⚡ 2-Hour Delivery · All Indore
-        </p>
-
-        {/* CTA */}
-        <button className="block w-full text-center text-[13px] font-medium text-apple-black bg-apple-light py-2.5 rounded-pill group-hover:bg-apple-black group-hover:text-white transition-colors duration-200">
-          Order Now →
-        </button>
       </div>
     </div>
   );
