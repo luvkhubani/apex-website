@@ -158,12 +158,13 @@ export default function ProductCard({ group, onClick }) {
           <p className="text-[16px] font-bold text-apple-black">
             {showFrom && minPrice > 0 ? 'From ' : ''}{formatINR(minPrice)}
           </p>
-          {pctOff > 0 && (
-            <div className="flex items-center gap-2 mt-0.5">
+          {/* Always reserve MRP row height so cards in a row stay aligned */}
+          <div className="flex items-center gap-2 mt-0.5 h-[18px]">
+            {pctOff > 0 && <>
               <span className="text-[11px] text-apple-gray line-through">{formatINR(cardMrp)}</span>
               <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">{pctOff}% off</span>
-            </div>
-          )}
+            </>}
+          </div>
         </div>
 
         {/* COD delivery badge */}
