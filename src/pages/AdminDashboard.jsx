@@ -40,10 +40,11 @@ function autoPath(brand, name, color) {
 }
 
 function productsToCSV(products) {
-  const headers = ["id","brand","name","category","storage","ram","color","price","originalPrice","inStock","badge","image","description"];
+  const headers = ["id","brand","name","category","storage","ram","color","currentPrice","newPrice","originalPrice","inStock","badge","image","description"];
   const rows = products.map(p =>
     headers.map(h => {
-      const v = p[h] ?? "";
+      // currentPrice mirrors live price; newPrice is blank for user to fill in
+      const v = h === "currentPrice" ? (p.price ?? "") : h === "newPrice" ? "" : (p[h] ?? "");
       const str = String(v);
       return str.includes(",") || str.includes("\n") ? `"${str.replace(/"/g, '""')}"` : str;
     }).join(",")
@@ -607,7 +608,15 @@ export default function AdminDashboard() {
         const id   = Number(row.id);
         const prod = products.find(p => p.id === id);
         if (prod) {
-          const newPrice    = row.price !== "" ? Number(row.price) : prod.price;
+          // newPrice takes priority; fall back to currentPrice column, then live value
+          const resolvedPrice = row.newPrice?.trim() !== "" && row.newPrice !== undefined
+            ? row.newPrice
+            : row.currentPrice?.trim() !== "" && row.currentPrice !== undefined
+              ? row.currentPrice
+              : row.price?.trim() !== "" && row.price !== undefined
+                ? row.price  // legacy CSVs that still have "price" column
+                : String(prod.price);
+          const newPrice = Number(resolvedPrice) || prod.price;
           const newOrig     = row.originalPrice !== "" ? Number(row.originalPrice) : prod.originalPrice;
           const newStock    = row.inStock === "false" ? false : row.inStock === "true" ? true : prod.inStock;
           const newColor    = row.color    !== "" ? row.color    : prod.color;
