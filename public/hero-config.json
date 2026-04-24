@@ -19,6 +19,14 @@
       "layout": "center"
     }
   ],
-  "bannerConfig": {},
-  "_savedAt": "2026-04-24T06:39:31.433Z"
+  "bannerConfig": {
+    "image": "",
+    "label": "Highlight of the Day",
+    "title": "",
+    "subtitle": "",
+    "price": "",
+    "ctaText": "Order on WhatsApp",
+    "ctaLink": ""
+  },
+  "_savedAt": "2026-04-24T08:41:59.593Z"
 }
