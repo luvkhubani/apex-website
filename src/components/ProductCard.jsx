@@ -66,8 +66,8 @@ export default function ProductCard({ group, onClick }) {
   return (
     <div
       onClick={onClick}
-      className="group bg-white rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col cursor-pointer"
-      style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
+      className="group bg-white rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1 grid cursor-pointer"
+      style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.08)', gridTemplateRows: 'auto 1fr' }}
       onMouseEnter={e => e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.16)'}
       onMouseLeave={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'}
     >
@@ -106,59 +106,65 @@ export default function ProductCard({ group, onClick }) {
         )}
       </div>
 
-      {/* Info */}
-      <div className="p-5 flex flex-col flex-1">
-        <p className="text-[10px] font-semibold tracking-[0.12em] text-apple-gray uppercase mb-0.5">{brand}</p>
-        <h3 className="text-[15px] font-semibold text-apple-black leading-snug mb-2">{name}</h3>
+      {/* Info — grid row 1fr fills remaining card height */}
+      <div className="p-5 flex flex-col">
+        {/* Top: variable content */}
+        <div>
+          <p className="text-[10px] font-semibold tracking-[0.12em] text-apple-gray uppercase mb-0.5">{brand}</p>
+          <h3 className="text-[15px] font-semibold text-apple-black leading-snug mb-2">{name}</h3>
 
-        {/* Storage chips */}
-        {showStorage && storages.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-2">
-            {storages.slice(0, 5).map(s => (
-              <span key={s} className="text-[10px] font-medium text-apple-gray bg-apple-light px-2 py-0.5 rounded-full border border-apple-border">
-                {s}
-              </span>
-            ))}
-            {storages.length > 5 && (
-              <span className="text-[10px] text-apple-gray self-center">+{storages.length - 5}</span>
-            )}
-          </div>
-        )}
+          {/* Storage chips */}
+          {showStorage && storages.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-2">
+              {storages.slice(0, 5).map(s => (
+                <span key={s} className="text-[10px] font-medium text-apple-gray bg-apple-light px-2 py-0.5 rounded-full border border-apple-border">
+                  {s}
+                </span>
+              ))}
+              {storages.length > 5 && (
+                <span className="text-[10px] text-apple-gray self-center">+{storages.length - 5}</span>
+              )}
+            </div>
+          )}
 
-        {/* RAM chips */}
-        {showRAM && rams.length > 0 && storages.length === 0 && (
-          <div className="flex flex-wrap gap-1 mb-2">
-            {rams.slice(0, 4).map(r => (
-              <span key={r} className="text-[10px] font-medium text-apple-gray bg-apple-light px-2 py-0.5 rounded-full border border-apple-border">
-                {r}
-              </span>
-            ))}
-          </div>
-        )}
+          {/* RAM chips */}
+          {showRAM && rams.length > 0 && storages.length === 0 && (
+            <div className="flex flex-wrap gap-1 mb-2">
+              {rams.slice(0, 4).map(r => (
+                <span key={r} className="text-[10px] font-medium text-apple-gray bg-apple-light px-2 py-0.5 rounded-full border border-apple-border">
+                  {r}
+                </span>
+              ))}
+            </div>
+          )}
 
-        {/* Colour swatches */}
-        {showColours && colors.length > 0 && (
-          <div className="flex items-center gap-1.5 mb-3">
-            {colors.slice(0, 8).map(c => (
-              <span
-                key={c}
-                title={c}
-                className="w-3.5 h-3.5 rounded-full border border-black/10 flex-shrink-0"
-                style={{ backgroundColor: colorHex(c) }}
-              />
-            ))}
-            {colors.length > 8 && (
-              <span className="text-[10px] text-apple-gray ml-0.5">+{colors.length - 8}</span>
-            )}
-          </div>
-        )}
+          {/* Colour swatches */}
+          {showColours && colors.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              {colors.slice(0, 8).map(c => (
+                <span
+                  key={c}
+                  title={c}
+                  className="w-3.5 h-3.5 rounded-full border border-black/10 flex-shrink-0"
+                  style={{ backgroundColor: colorHex(c) }}
+                />
+              ))}
+              {colors.length > 8 && (
+                <span className="text-[10px] text-apple-gray ml-0.5">+{colors.length - 8}</span>
+              )}
+            </div>
+          )}
+        </div>
 
-        {/* Bottom section — pinned as one unit */}
-        <div className="mt-auto">
+        {/* Spacer pushes bottom to card bottom */}
+        <div className="flex-1" />
+
+        {/* Bottom: always pinned */}
+        <div className="mt-3">
           <p className="text-[16px] font-bold text-apple-black">
             {showFrom && minPrice > 0 ? 'From ' : ''}{formatINR(minPrice)}
           </p>
-          {/* Fixed-height MRP row so cards without discount stay aligned */}
+          {/* Fixed-height MRP row — always reserves space */}
           <div className="flex items-center gap-2 mt-0.5 h-[18px] mb-2">
             {pctOff > 0 && <>
               <span className="text-[11px] text-apple-gray line-through">{formatINR(cardMrp)}</span>
