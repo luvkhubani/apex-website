@@ -551,6 +551,7 @@ export default function AdminDashboard() {
   };
   const handleToggleStock  = id         => persist(products.map(p => p.id===id ? { ...p, inStock:!p.inStock } : p));
   const handlePriceBlur    = (id, val)  => { const n=Number(val); if (!isNaN(n)&&n>=0) persist(products.map(p => p.id===id?{...p,price:n}:p)); };
+  const handleMrpBlur     = (id, val)  => { const n=Number(val); if (!isNaN(n)&&n>=0) persist(products.map(p => p.id===id?{...p,mrp:n,originalPrice:n}:p)); };
   const handleBadgeChange  = (id, val)  => persist(products.map(p => p.id===id?{...p,badge:val}:p));
   const startEdit          = p          => { setEditId(p.id); setForm({ ...p, price:String(p.price||""), originalPrice:String(p.originalPrice||"") }); setTab("add"); };
 
@@ -1297,7 +1298,9 @@ export default function AdminDashboard() {
                               <td style={{ padding:"10px 14px" }}>
                                 <input type="number" defaultValue={v.price} onBlur={e=>handlePriceBlur(v.id,e.target.value)} style={{ ...iStyle, width:"110px", padding:"6px 8px" }} />
                               </td>
-                              <td style={{ padding:"10px 14px", color:"#555", fontSize:"12px" }}>{v.originalPrice?`₹${v.originalPrice.toLocaleString("en-IN")}`:<span style={{color:"#333"}}>—</span>}</td>
+                              <td style={{ padding:"10px 14px" }}>
+                                <input type="number" defaultValue={v.mrp||v.originalPrice||""} placeholder="—" onBlur={e=>handleMrpBlur(v.id,e.target.value)} style={{ ...iStyle, width:"110px", padding:"6px 8px" }} />
+                              </td>
                               <td style={{ padding:"10px 14px" }}>
                                 <select value={v.badge||""} onChange={e=>handleBadgeChange(v.id,e.target.value)} style={{ ...iStyle, width:"100px", padding:"5px 8px", fontSize:"12px" }}>
                                   {BADGES.map(b => <option key={b} value={b}>{b||"None"}</option>)}

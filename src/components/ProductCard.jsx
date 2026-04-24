@@ -173,7 +173,7 @@ export default function ProductCard({ group, onClick }) {
 
         {/* CTA */}
         <button className="block w-full text-center text-[13px] font-medium text-apple-black bg-apple-light py-2.5 rounded-pill group-hover:bg-apple-black group-hover:text-white transition-colors duration-200">
-          View Options →
+          Order Now →
         </button>
       </div>
     </div>
