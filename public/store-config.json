@@ -24,6 +24,8 @@
   "storeHoursShort": "10AM – 9:30PM",
   "instagramHandle": "apexmobile.indore",
   "instagramUrl": "https://instagram.com/apexmobile.indore",
+  "instagramPosts": [],
+  "instagramPostCount": 0,
   "trustStats": [
     {
       "num": "30+",
@@ -85,49 +87,6 @@
       "image": ""
     }
   ],
-  "productWaMessage": "Hi Apex! I am interested in {name} {specs} {color} at \"{price}\". Kindly get it delivered to {name, contact, address}",
-  "googleMapsEmbed": "",
-  "googleMapsLink": "https://maps.google.com/?q=Apex+The+Mobile+Shoppe+Jail+Road+Indore",
-  "aboutHeadline": "Three decades.\nOne promise.",
-  "aboutSub": "Honest advice, genuine products, and the best prices in Indore — since 1996.",
-  "aboutStory": [
-    "Apex — The Mobile Shoppe was founded in 1996 on Jail Road, Indore, with a simple mission: give every customer honest advice and the best product for their needs.",
-    "We are Indore's most trusted destination for premium electronics — from the latest iPhones and MacBooks to Galaxy folds, tablets and everything in between.",
-    "Over 30 years, more than ten lakh customers have trusted us for their most important tech purchases."
-  ],
-  "aboutStat": "30+",
-  "aboutStatLabel": "Years Serving Indore",
-  "aboutStatItems": [
-    "📍 8 Jail Road, Indore — Since 1996",
-    "👥 10 Lakh+ satisfied customers",
-    "📱 All major brands under one roof",
-    "✅ 100% genuine products guaranteed"
-  ],
-  "aboutValues": [
-    {
-      "icon": "🤝",
-      "title": "Honest Advice",
-      "desc": "We recommend what you actually need, not the highest-margin product."
-    },
-    {
-      "icon": "✅",
-      "title": "Genuine Products",
-      "desc": "Every item we sell is 100% original from authorised channels."
-    },
-    {
-      "icon": "💬",
-      "title": "Expert Team",
-      "desc": "Years of hands-on experience with every product we carry."
-    },
-    {
-      "icon": "💰",
-      "title": "Fair Pricing",
-      "desc": "Competitive prices. No hidden charges. What you see is what you pay."
-    }
-  ],
-  "aboutServices": [],
-  "instagramPosts": [],
-  "instagramPostCount": 0,
   "hiddenProductIds": [
     95,
     96,
@@ -248,5 +207,46 @@
   ],
   "heroEyebrow": "Trusted Since 1996 · Jail Road, Indore",
   "heroHeadline": "The Best Phones. Indore's Best Price.\n2-Hour Delivery · All Indore",
-  "_savedAt": "2026-04-23T14:01:11.054Z"
+  "productWaMessage": "Hi Apex! I am interested in {name} {specs} {color} at \"{price}\". Kindly get it delivered to {name, contact, address}",
+  "googleMapsEmbed": "",
+  "googleMapsLink": "https://maps.google.com/?q=Apex+The+Mobile+Shoppe+Jail+Road+Indore",
+  "aboutHeadline": "Three decades.\nOne promise.",
+  "aboutSub": "Honest advice, genuine products, and the best prices in Indore — since 1996.",
+  "aboutStory": [
+    "Apex — The Mobile Shoppe was founded in 1996 on Jail Road, Indore, with a simple mission: give every customer honest advice and the best product for their needs.",
+    "We are Indore's most trusted destination for premium electronics — from the latest iPhones and MacBooks to Galaxy folds, tablets and everything in between.",
+    "Over 30 years, more than ten lakh customers have trusted us for their most important tech purchases."
+  ],
+  "aboutStat": "30+",
+  "aboutStatLabel": "Years Serving Indore",
+  "aboutStatItems": [
+    "📍 8 Jail Road, Indore — Since 1996",
+    "👥 10 Lakh+ satisfied customers",
+    "📱 All major brands under one roof",
+    "✅ 100% genuine products guaranteed"
+  ],
+  "aboutValues": [
+    {
+      "icon": "🤝",
+      "title": "Honest Advice",
+      "desc": "We recommend what you actually need, not the highest-margin product."
+    },
+    {
+      "icon": "✅",
+      "title": "Genuine Products",
+      "desc": "Every item we sell is 100% original from authorised channels."
+    },
+    {
+      "icon": "💬",
+      "title": "Expert Team",
+      "desc": "Years of hands-on experience with every product we carry."
+    },
+    {
+      "icon": "💰",
+      "title": "Fair Pricing",
+      "desc": "Competitive prices. No hidden charges. What you see is what you pay."
+    }
+  ],
+  "aboutServices": [],
+  "_savedAt": "2026-04-24T08:41:59.863Z"
 }
