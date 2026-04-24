@@ -107,7 +107,9 @@ export default function Products() {
 
   // ── Filtered + grouped ───────────────────────────────────
   const groups = useMemo(() => {
-    let list = [...products];
+    // Apply visibility reactively (catches same-tab storeConfig updates)
+    const hiddenIds = new Set(storeCfg.hiddenProductIds || []);
+    let list = hiddenIds.size > 0 ? products.filter(p => !hiddenIds.has(p.id)) : [...products];
 
     // Search
     if (search.trim()) {
@@ -146,7 +148,7 @@ export default function Products() {
     }
 
     return g;
-  }, [products, search, brands, category, priceMin, priceMax, sort, clicks]);
+  }, [products, storeCfg, search, brands, category, priceMin, priceMax, sort, clicks]);
 
   const totalModels   = useMemo(() => groupProducts(products).length, [products]);
   const totalVariants = products.length;

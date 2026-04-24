@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import defaultProducts from "../data/products";
 import { loadStoreConfig } from "./useStoreConfig";
 
 const STORAGE_KEY = "apex_products_override";
+const CONFIG_KEY  = "apex_store_config";
 
 function localProducts() {
   try {
@@ -22,7 +23,9 @@ function applyVisibility(products) {
 }
 
 export function useProducts() {
-  const [products, setProducts] = useState(() => applyVisibility(localProducts() || defaultProducts));
+  // Keep raw (unfiltered) products separate so we can re-filter reactively
+  const rawRef = useRef(localProducts() || defaultProducts);
+  const [products, setProducts] = useState(() => applyVisibility(rawRef.current));
 
   useEffect(() => {
     fetch("/api/products-data")
@@ -30,19 +33,27 @@ export function useProducts() {
       .then(remote => {
         if (!Array.isArray(remote) || remote.length === 0) return;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(remote));
+        rawRef.current = remote;
         setProducts(applyVisibility(remote));
       })
       .catch(() => {});
   }, []);
 
-  // React to localStorage changes (admin panel saving in same browser)
+  // Re-filter when products change in another tab (admin saving)
   useEffect(() => {
     const onStorage = (e) => {
       if (e.key === STORAGE_KEY && e.newValue) {
         try {
           const parsed = JSON.parse(e.newValue);
-          if (Array.isArray(parsed) && parsed.length > 0) setProducts(applyVisibility(parsed));
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            rawRef.current = parsed;
+            setProducts(applyVisibility(parsed));
+          }
         } catch (_) {}
+      }
+      // Re-apply visibility whenever hiddenProductIds changes
+      if (e.key === CONFIG_KEY) {
+        setProducts(applyVisibility(rawRef.current));
       }
     };
     window.addEventListener("storage", onStorage);
