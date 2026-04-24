@@ -40,11 +40,14 @@ function autoPath(brand, name, color) {
 }
 
 function productsToCSV(products) {
-  const headers = ["id","brand","name","category","storage","ram","color","currentPrice","newPrice","originalPrice","inStock","badge","image","description"];
+  const headers = ["id","brand","name","category","storage","ram","color","currentPrice","newPrice","mrp","inStock","badge","image","description"];
   const rows = products.map(p =>
     headers.map(h => {
       // currentPrice mirrors live price; newPrice is blank for user to fill in
-      const v = h === "currentPrice" ? (p.price ?? "") : h === "newPrice" ? "" : (p[h] ?? "");
+      const v = h === "currentPrice" ? (p.price ?? "")
+              : h === "newPrice"    ? ""
+              : h === "mrp"        ? (p.mrp ?? p.originalPrice ?? "")
+              : (p[h] ?? "");
       const str = String(v);
       return str.includes(",") || str.includes("\n") ? `"${str.replace(/"/g, '""')}"` : str;
     }).join(",")
@@ -617,7 +620,8 @@ export default function AdminDashboard() {
                 ? row.price  // legacy CSVs that still have "price" column
                 : String(prod.price);
           const newPrice = Number(resolvedPrice) || prod.price;
-          const newOrig     = row.originalPrice !== "" ? Number(row.originalPrice) : prod.originalPrice;
+          const mrpRaw      = row.mrp !== undefined && row.mrp !== "" ? row.mrp : (row.originalPrice !== "" && row.originalPrice !== undefined ? row.originalPrice : "");
+          const newOrig     = mrpRaw !== "" ? Number(mrpRaw) : (prod.mrp || prod.originalPrice);
           const newStock    = row.inStock === "false" ? false : row.inStock === "true" ? true : prod.inStock;
           const newColor    = row.color    !== "" ? row.color    : prod.color;
           const newImage    = row.image    !== "" ? row.image    : prod.image;
@@ -658,14 +662,14 @@ export default function AdminDashboard() {
     persist(products.map(p => {
       const r = map[p.id];
       if (!r) return p;
-      return { ...p, name: r.newName, brand: r.newBrand, category: r.newCategory, storage: r.newStorage, ram: r.newRam, color: r.newColor, price: r.newPrice, originalPrice: r.newOrig, inStock: r.newStock, badge: r.newBadge, image: r.newImage, description: r.newDesc };
+      return { ...p, name: r.newName, brand: r.newBrand, category: r.newCategory, storage: r.newStorage, ram: r.newRam, color: r.newColor, price: r.newPrice, mrp: r.newOrig, originalPrice: r.newOrig, inStock: r.newStock, badge: r.newBadge, image: r.newImage, description: r.newDesc };
     }));
     showToast(`Updated ${csvPreview.matched.length} products!`);
     setCsvPreview(null);
   };
 
   // ── Bulk Add ──────────────────────────────────────────
-  const BULK_HEADERS = ["brand","name","category","storage","ram","color","price","originalPrice","inStock","badge","description"];
+  const BULK_HEADERS = ["brand","name","category","storage","ram","color","price","mrp","inStock","badge","description"];
 
   const handleDownloadTemplate = () => {
     const instructions = [
@@ -679,7 +683,7 @@ export default function AdminDashboard() {
       "# 6. category  — Mobiles / Tablets / Laptops / Accessories / Earphones  (default: Mobiles)",
       "# 7. inStock   — true or false  (default: true)",
       "# 8. badge     — 5G / New / Hot / Sale / Flagship / Best Seller / WiFi  (or leave blank)",
-      "# 9. originalPrice — crossed-out MRP; leave blank to use same as price",
+      "# 9. mrp — Max. Retail Price shown slashed on website; leave blank to hide discount",
       "# 10. Images cannot be added via CSV — upload them individually after adding.",
       "# -------------------------------------------------------",
     ];
@@ -716,7 +720,8 @@ export default function AdminDashboard() {
             ram:           row.ram || "",
             color:         row.color || "",
             price:         Number(row.price) || 0,
-            originalPrice: Number(row.originalPrice) || Number(row.price) || 0,
+            mrp:           Number(row.mrp) || Number(row.originalPrice) || 0,
+            originalPrice: Number(row.mrp) || Number(row.originalPrice) || 0,
             inStock:       row.inStock === "false" ? false : true,
             badge:         row.badge || "",
             description:   row.description || "",
@@ -1273,7 +1278,7 @@ export default function AdminDashboard() {
                     <div style={{ borderTop:"1px solid #1a1a1a", overflowX:"auto" }}>
                       <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"13px" }}>
                         <thead><tr style={{ background:"#0d0d0d" }}>
-                          {["ID","Storage","RAM","Colour","Price (₹)","Orig. Price","Badge","Stock","Visible","Image","Actions"].map(h => (
+                          {["ID","Storage","RAM","Colour","Price (₹)","MRP (₹)","Badge","Stock","Visible","Image","Actions"].map(h => (
                             <th key={h} style={{ padding:"9px 14px", color:"#555", fontWeight:600, textAlign:"left", whiteSpace:"nowrap", borderBottom:"1px solid #1a1a1a" }}>{h}</th>
                           ))}
                         </tr></thead>
@@ -1365,7 +1370,7 @@ export default function AdminDashboard() {
                 <FInput label="Colour"   value={form.color}    onChange={F("color")}     placeholder="e.g. Titanium Black" required />
                 <FInput label="Badge"    value={form.badge}    onChange={F("badge")}     options={BADGES} />
                 <FInput label="Price (₹)"          type="number" value={form.price}         onChange={F("price")}         placeholder="e.g. 129900" required />
-                <FInput label="Original Price (₹)" type="number" value={form.originalPrice} onChange={F("originalPrice")} placeholder="e.g. 139900" />
+                <FInput label="MRP — Max. Retail Price (₹)" type="number" value={form.originalPrice} onChange={F("originalPrice")} placeholder="e.g. 139900" />
 
                 {/* Image */}
                 <div style={{ gridColumn:"1 / -1" }}>

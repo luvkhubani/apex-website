@@ -214,9 +214,24 @@ export default function ProductModal({ group, onClose }) {
             )}
 
             {/* Price */}
-            <p className="text-[32px] font-bold text-apple-black tracking-tight mb-6">
-              {formatINR(activeVariant?.price)}
-            </p>
+            {(() => {
+              const p   = activeVariant?.price || 0;
+              const mrp = activeVariant?.mrp || activeVariant?.originalPrice || 0;
+              const pct = mrp > p && p > 0 ? Math.round((mrp - p) / mrp * 100) : 0;
+              return (
+                <div className="mb-6">
+                  <p className="text-[32px] font-bold text-apple-black tracking-tight leading-none">
+                    {formatINR(p)}
+                  </p>
+                  {pct > 0 && (
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <span className="text-[15px] text-apple-gray line-through">MRP {formatINR(mrp)}</span>
+                      <span className="text-[13px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{pct}% off</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* CTA */}
             {activeVariant?.inStock ? (

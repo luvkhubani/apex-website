@@ -48,9 +48,12 @@ export default function ProductCard({ group, onClick }) {
   const firstWithImg = variants.find(v => v.image);
   const imgSrc       = getProductImage(firstWithImg?.image);
 
-  const prices   = variants.map(v => v.price).filter(Boolean);
-  const minPrice = prices.length ? Math.min(...prices) : 0;
-  const showFrom = prices.length > 1 || minPrice === 0;
+  const prices    = variants.map(v => v.price).filter(Boolean);
+  const minPrice  = prices.length ? Math.min(...prices) : 0;
+  const showFrom  = prices.length > 1 || minPrice === 0;
+  const cheapest  = variants.find(v => v.price === minPrice);
+  const cardMrp   = cheapest?.mrp || cheapest?.originalPrice || 0;
+  const pctOff    = cardMrp > minPrice && minPrice > 0 ? Math.round((cardMrp - minPrice) / cardMrp * 100) : 0;
 
   const colors   = [...new Set(variants.map(v => v.color).filter(Boolean))];
   const storages = [...new Set(variants.map(v => v.storage).filter(Boolean))];
@@ -151,9 +154,17 @@ export default function ProductCard({ group, onClick }) {
         )}
 
         {/* Price */}
-        <p className="text-[16px] font-bold text-apple-black mt-auto mb-2">
-          {showFrom && minPrice > 0 ? 'From ' : ''}{formatINR(minPrice)}
-        </p>
+        <div className="mt-auto mb-2">
+          <p className="text-[16px] font-bold text-apple-black">
+            {showFrom && minPrice > 0 ? 'From ' : ''}{formatINR(minPrice)}
+          </p>
+          {pctOff > 0 && (
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-[11px] text-apple-gray line-through">{formatINR(cardMrp)}</span>
+              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">{pctOff}% off</span>
+            </div>
+          )}
+        </div>
 
         {/* COD delivery badge */}
         <p className="text-[11px] text-emerald-600 font-medium mb-3">
