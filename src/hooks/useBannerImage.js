@@ -13,27 +13,15 @@ export function useBannerConfig() {
   const [cfg, setCfg] = useState(load);
 
   useEffect(() => {
-    fetch('/api/hero-config')
+    fetch('/api/banner-config')
       .then(r => r.ok ? r.json() : null)
       .then(remote => {
-        // Only apply if admin has explicitly saved (has _savedAt timestamp)
-        if (!remote || !remote.bannerConfig || !remote._savedAt) return;
-        const merged = { ...EMPTY, ...remote.bannerConfig };
+        if (!remote) return;
+        const merged = { ...EMPTY, ...remote };
         setCfg(merged);
         localStorage.setItem(KEY, JSON.stringify(merged));
       })
-      .catch(() => {
-        // Fallback for local dev (API not running)
-        fetch('/hero-config.json?v=' + Date.now())
-          .then(r => r.ok ? r.json() : null)
-          .then(remote => {
-            if (!remote || !remote.bannerConfig || !remote._savedAt) return;
-            const merged = { ...EMPTY, ...remote.bannerConfig };
-            setCfg(merged);
-            localStorage.setItem(KEY, JSON.stringify(merged));
-          })
-          .catch(() => {});
-      });
+      .catch(() => {});
   }, []);
 
   useEffect(() => {

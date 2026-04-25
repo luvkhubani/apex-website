@@ -307,9 +307,10 @@ export default function AdminDashboard() {
       if (Date.now() - lastWriteRef.current < 60000) return; // wait 60s after any local write
       try {
         const ts = Date.now();
-        const [pRes, hRes] = await Promise.all([
+        const [pRes, hRes, bRes] = await Promise.all([
           fetch(`/api/products-data?_=${ts}`),
           fetch("/api/hero-config"),
+          fetch("/api/banner-config"),
         ]);
         if (pRes.ok) {
           const remote = await pRes.json();
@@ -325,9 +326,12 @@ export default function AdminDashboard() {
           }
         }
         if (hRes.ok) {
-          const { heroConfig: rHero, bannerConfig: rBanner } = await hRes.json();
+          const { heroConfig: rHero } = await hRes.json();
           if (Array.isArray(rHero)) { heroFromRemoteRef.current = true; setHeroConfig(rHero); }
-          if (rBanner && Date.now() - lastBannerEditRef.current > 60000) setBanner(b => ({ ...b, ...rBanner }));
+        }
+        if (bRes.ok && Date.now() - lastBannerEditRef.current > 60000) {
+          const rBanner = await bRes.json();
+          if (rBanner) setBanner(b => ({ ...b, ...rBanner }));
         }
       } catch (_) {}
     };
@@ -360,7 +364,14 @@ export default function AdminDashboard() {
       .then(d => {
         if (!d) return;
         if (Array.isArray(d.heroConfig)) { heroFromRemoteRef.current = true; setHeroConfig(d.heroConfig); }
-        if (d.bannerConfig && d._savedAt) setBanner(b => ({ ...b, ...d.bannerConfig }));
+      })
+      .catch(() => {});
+    fetch("/api/banner-config")
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (!d) return;
+        setBanner(b => ({ ...b, ...d }));
+        saveBannerConfig({ ...BANNER_EMPTY, ...d });
       })
       .catch(() => {});
   }, []);
@@ -374,14 +385,14 @@ export default function AdminDashboard() {
       heroFromRemoteRef.current = false;
       return;
     }
-    const payload = JSON.stringify({ heroConfig, bannerConfig: banner });
+    const payload = JSON.stringify({ heroConfig });
     const timer = setTimeout(() => {
       if (payload === lastHeroSyncRef.current) return;
       lastHeroSyncRef.current = payload;
       fetch("/api/sync-hero", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ heroConfig, bannerConfig: banner }),
+        body: JSON.stringify({ heroConfig, bannerConfig: {} }),
       }).catch(() => {});
     }, 3000);
     return () => clearTimeout(timer);
@@ -1046,13 +1057,17 @@ export default function AdminDashboard() {
   // ── Banner config ──────────────────────────────────────
   const handleSaveBanner = () => {
     saveBannerConfig(banner);
-    // Sync to GitHub so all browsers see the updated banner
-    fetch("/api/sync-hero", {
+    fetch("/api/banner-config", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ heroConfig, bannerConfig: banner }),
-    }).catch(() => {});
-    showToast("Highlight of the Day saved!");
+      body: JSON.stringify({ bannerConfig: banner }),
+    })
+      .then(async r => {
+        const d = await r.json();
+        if (d.success) showToast("Highlight of the Day saved!");
+        else showToast("Save failed: " + (d.error || r.status), "warn");
+      })
+      .catch(e => showToast("Save failed: " + e.message, "warn"));
   };
 
   const handleImportBanner = async () => {
