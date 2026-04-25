@@ -16,7 +16,7 @@ export function useBannerConfig() {
     fetch('/api/banner-config')
       .then(r => r.ok ? r.json() : null)
       .then(remote => {
-        if (!remote) return;
+        if (!remote || (!remote.title && !remote.image)) return;
         const merged = { ...EMPTY, ...remote };
         setCfg(merged);
         localStorage.setItem(KEY, JSON.stringify(merged));

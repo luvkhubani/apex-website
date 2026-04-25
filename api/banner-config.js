@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Supabase credentials not configured" });
 
   if (req.method === "GET") {
-    res.setHeader("Cache-Control", "s-maxage=10, stale-while-revalidate=60");
+    res.setHeader("Cache-Control", "no-store");
     try {
       const { data, error } = await supabase
         .from('app_config')
