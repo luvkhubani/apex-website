@@ -39,14 +39,16 @@ function autoPath(brand, name, color) {
   return parts.join("/") + ".webp";
 }
 
-function productsToCSV(products) {
-  const headers = ["id","brand","name","category","storage","ram","color","currentPrice","newPrice","mrp","inStock","badge","image","description"];
+function productsToCSV(products, hiddenProductIds = []) {
+  const hiddenSet = new Set(hiddenProductIds);
+  const headers = ["id","brand","name","category","storage","ram","color","currentPrice","newPrice","mrp","inStock","hidden","badge","image","description"];
   const rows = products.map(p =>
     headers.map(h => {
       // currentPrice mirrors live price; newPrice is blank for user to fill in
       const v = h === "currentPrice" ? (p.price ?? "")
               : h === "newPrice"    ? ""
               : h === "mrp"        ? (p.mrp ?? p.originalPrice ?? "")
+              : h === "hidden"     ? (hiddenSet.has(p.id) ? "yes" : "no")
               : (p[h] ?? "");
       const str = String(v);
       return str.includes(",") || str.includes("\n") ? `"${str.replace(/"/g, '""')}"` : str;
@@ -603,7 +605,7 @@ export default function AdminDashboard() {
 
   // ── CSV export/import ─────────────────────────────────
   const handleExportCSV = () => {
-    const blob = new Blob([productsToCSV(products)], { type:"text/csv" });
+    const blob = new Blob([productsToCSV(products, storeCfg.hiddenProductIds || [])], { type:"text/csv" });
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement("a");
     a.href = url; a.download = `apex-products-${new Date().toISOString().slice(0,10)}.csv`; a.click();
@@ -617,6 +619,7 @@ export default function AdminDashboard() {
     reader.onload = ev => {
       const updates = csvToUpdates(ev.target.result);
       const matched = [], unmatched = [];
+      const currentHiddenIds = storeCfg.hiddenProductIds || [];
       updates.forEach(row => {
         const id   = Number(row.id);
         const prod = products.find(p => p.id === id);
@@ -642,6 +645,9 @@ export default function AdminDashboard() {
           const newName     = row.name     !== "" ? row.name     : prod.name;
           const newBrand    = row.brand    !== "" ? row.brand    : prod.brand;
           const newCategory = row.category !== "" ? row.category : prod.category;
+          const isCurrentlyHidden = currentHiddenIds.includes(id);
+          const hiddenRaw   = row.hidden?.trim().toLowerCase();
+          const newHidden   = hiddenRaw === "yes" ? true : hiddenRaw === "no" ? false : isCurrentlyHidden;
           matched.push({
             id, name: prod.name, color: prod.color, storage: prod.storage,
             oldPrice: prod.price, newPrice,
@@ -654,6 +660,7 @@ export default function AdminDashboard() {
             oldStorage: prod.storage, newStorage,
             oldRam: prod.ram, newRam,
             newName, newBrand, newCategory,
+            oldHidden: isCurrentlyHidden, newHidden,
           });
         } else {
           unmatched.push(row.id || "?");
@@ -674,6 +681,21 @@ export default function AdminDashboard() {
       if (!r) return p;
       return { ...p, name: r.newName, brand: r.newBrand, category: r.newCategory, storage: r.newStorage, ram: r.newRam, color: r.newColor, price: r.newPrice, mrp: r.newOrig, originalPrice: r.newOrig, inStock: r.newStock, badge: r.newBadge, image: r.newImage, description: r.newDesc };
     }));
+    // Apply visibility changes from hidden column
+    const visibilityChanges = csvPreview.matched.filter(r => r.oldHidden !== r.newHidden);
+    if (visibilityChanges.length > 0) {
+      let hiddenIds = [...(storeCfg.hiddenProductIds || [])];
+      visibilityChanges.forEach(r => {
+        if (r.newHidden) {
+          if (!hiddenIds.includes(r.id)) hiddenIds.push(r.id);
+        } else {
+          hiddenIds = hiddenIds.filter(id => id !== r.id);
+        }
+      });
+      const updated = { ...storeCfg, hiddenProductIds: hiddenIds };
+      setStoreCfg(updated);
+      saveStore(updated);
+    }
     showToast(`Updated ${csvPreview.matched.length} products!`);
     setCsvPreview(null);
   };
@@ -1079,7 +1101,7 @@ export default function AdminDashboard() {
         <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", zIndex:1000, display:"flex", alignItems:"center", justifyContent:"center", padding:"24px" }}>
           <div style={{ background:"#111", border:"1px solid #2a2a2a", borderRadius:"16px", padding:"28px", maxWidth:"720px", width:"100%", maxHeight:"80vh", overflowY:"auto" }}>
             <h2 style={{ margin:"0 0 6px", fontSize:"18px", fontWeight:700 }}>📋 CSV Import Preview</h2>
-            <p style={{ color:"#666", fontSize:"13px", margin:"0 0 20px" }}>Price, stock, colour, variants, photo, badge and description will be updated.</p>
+            <p style={{ color:"#666", fontSize:"13px", margin:"0 0 20px" }}>Price, stock, colour, variants, photo, badge, description and visibility will be updated.</p>
             {csvPreview.matched.length > 0 && (
               <>
                 <p style={{ color:"#00c851", fontSize:"12px", fontWeight:600, margin:"0 0 10px" }}>{csvPreview.matched.length} products matched</p>
@@ -1100,6 +1122,7 @@ export default function AdminDashboard() {
                         if (r.oldBadge   !== r.newBadge)   diffs.push(<span key="badge">Badge: <span style={{color:"#ff4444"}}>{r.oldBadge||"—"}</span> → <span style={{color:"#00c851"}}>{r.newBadge||"—"}</span></span>);
                         if (r.oldImage   !== r.newImage)   diffs.push(<span key="image" style={{color:"#00c851"}}>Photo updated</span>);
                         if (r.oldDesc    !== r.newDesc)    diffs.push(<span key="desc" style={{color:"#00c851"}}>Description updated</span>);
+                        if (r.oldHidden  !== r.newHidden)  diffs.push(<span key="hidden">Visibility: <span style={{color:r.oldHidden?"#ff8800":"#00c851"}}>{r.oldHidden?"Hidden":"Visible"}</span> → <span style={{color:r.newHidden?"#ff8800":"#00c851"}}>{r.newHidden?"Hidden":"Visible"}</span></span>);
                         return (
                           <tr key={r.id} style={{ borderBottom:"1px solid #141414" }}>
                             <td style={{ padding:"8px 12px", color:"#555", whiteSpace:"nowrap" }}>{r.id}</td>
@@ -1206,7 +1229,7 @@ export default function AdminDashboard() {
           <div>
             <div style={{ display:"flex", gap:"12px", marginBottom:"10px", flexWrap:"wrap", alignItems:"center" }}>
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="🔍 Search name, brand, colour, storage…" style={{ ...iStyle, flex:1, minWidth:"200px" }} />
-              <select value={filterBrand} onChange={e => setFilterBrand(e.target.value)} style={{ ...iStyle, width:"160px" }}>
+              <select value={filterBrand} onChange={e => setFilterBrand(e.target.value)} style={{ ...iStyle, width:"160px", appearance:"none", WebkitAppearance:"none", backgroundImage:"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E\")", backgroundRepeat:"no-repeat", backgroundPosition:"right 12px center" }}>
                 <option value="All">All Brands</option>
                 {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
               </select>
