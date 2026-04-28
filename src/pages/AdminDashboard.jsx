@@ -41,7 +41,7 @@ function autoPath(brand, name, color) {
 
 function productsToCSV(products, hiddenProductIds = []) {
   const hiddenSet = new Set(hiddenProductIds);
-  const headers = ["id","brand","name","category","storage","ram","color","currentPrice","newPrice","mrp","inStock","hidden","badge","image","description"];
+  const headers = ["id","brand","name","category","storage","ram","color","currentPrice","newPrice","mrp","inStock","hidden","badge","soldLastMonth","image","description"];
   const rows = products.map(p =>
     headers.map(h => {
       // currentPrice mirrors live price; newPrice is blank for user to fill in
@@ -650,8 +650,9 @@ export default function AdminDashboard() {
           const newStock    = row.inStock === "false" ? false : row.inStock === "true" ? true : prod.inStock;
           const newColor    = row.color    !== "" ? row.color    : prod.color;
           const newImage    = row.image    !== "" ? row.image    : prod.image;
-          const newDesc     = row.description !== undefined ? row.description : prod.description;
-          const newBadge    = row.badge    !== undefined ? row.badge    : prod.badge;
+          const newDesc          = row.description   !== undefined ? row.description   : prod.description;
+          const newBadge         = row.badge         !== undefined ? row.badge         : prod.badge;
+          const newSoldLastMonth = row.soldLastMonth  !== undefined && row.soldLastMonth !== "" ? Number(row.soldLastMonth) : (prod.soldLastMonth || 0);
           const newStorage  = row.storage  !== "" ? row.storage  : prod.storage;
           const newRam      = row.ram      !== "" ? row.ram      : prod.ram;
           const newName     = row.name     !== "" ? row.name     : prod.name;
@@ -669,6 +670,7 @@ export default function AdminDashboard() {
             oldImage: prod.image, newImage,
             oldDesc: prod.description, newDesc,
             oldBadge: prod.badge, newBadge,
+            oldSoldLastMonth: prod.soldLastMonth || 0, newSoldLastMonth,
             oldStorage: prod.storage, newStorage,
             oldRam: prod.ram, newRam,
             newName, newBrand, newCategory,
@@ -691,7 +693,7 @@ export default function AdminDashboard() {
     persist(products.map(p => {
       const r = map[p.id];
       if (!r) return p;
-      return { ...p, name: r.newName, brand: r.newBrand, category: r.newCategory, storage: r.newStorage, ram: r.newRam, color: r.newColor, price: r.newPrice, mrp: r.newOrig, originalPrice: r.newOrig, inStock: r.newStock, badge: r.newBadge, image: r.newImage, description: r.newDesc };
+      return { ...p, name: r.newName, brand: r.newBrand, category: r.newCategory, storage: r.newStorage, ram: r.newRam, color: r.newColor, price: r.newPrice, mrp: r.newOrig, originalPrice: r.newOrig, inStock: r.newStock, badge: r.newBadge, soldLastMonth: r.newSoldLastMonth, image: r.newImage, description: r.newDesc };
     }));
     // Apply visibility changes from hidden column
     const visibilityChanges = csvPreview.matched.filter(r => r.oldHidden !== r.newHidden);
@@ -713,7 +715,7 @@ export default function AdminDashboard() {
   };
 
   // ── Bulk Add ──────────────────────────────────────────
-  const BULK_HEADERS = ["brand","name","category","storage","ram","color","price","mrp","inStock","badge","description"];
+  const BULK_HEADERS = ["brand","name","category","storage","ram","color","price","mrp","inStock","badge","soldLastMonth","description"];
 
   const handleDownloadTemplate = () => {
     const instructions = [
@@ -728,13 +730,14 @@ export default function AdminDashboard() {
       "# 7. inStock   — true or false  (default: true)",
       "# 8. badge     — 5G / New / Hot / Sale / Flagship / Best Seller / WiFi  (or leave blank)",
       "# 9. mrp — Max. Retail Price shown slashed on website; leave blank to hide discount",
-      "# 10. Images cannot be added via CSV — upload them individually after adding.",
+      "# 10. soldLastMonth — Number of units sold last month (shows '2K+ bought in past month' badge); leave blank or 0 to hide",
+      "# 11. Images cannot be added via CSV — upload them individually after adding.",
       "# -------------------------------------------------------",
     ];
     const sample = [
-      "Apple,iPhone 16,Mobiles,128GB,8GB,Black,67500,70000,true,5G,Latest iPhone",
-      "Apple,iPhone 16,Mobiles,128GB,8GB,Blue,67500,70000,true,5G,Latest iPhone",
-      "Samsung,Galaxy S25,Mobiles,256GB,12GB,Phantom Black,74999,79999,true,New,",
+      "Apple,iPhone 16,Mobiles,128GB,8GB,Black,67500,70000,true,5G,2000,Latest iPhone",
+      "Apple,iPhone 16,Mobiles,128GB,8GB,Blue,67500,70000,true,5G,2000,Latest iPhone",
+      "Samsung,Galaxy S25,Mobiles,256GB,12GB,Phantom Black,74999,79999,true,New,,",
     ];
     const csv = [...instructions, BULK_HEADERS.join(","), ...sample].join("\n");
     const blob = new Blob([csv], { type:"text/csv" });
@@ -766,9 +769,10 @@ export default function AdminDashboard() {
             price:         Number(row.price) || 0,
             mrp:           Number(row.mrp) || Number(row.originalPrice) || 0,
             originalPrice: Number(row.mrp) || Number(row.originalPrice) || 0,
-            inStock:       row.inStock === "false" ? false : true,
-            badge:         row.badge || "",
-            description:   row.description || "",
+            inStock:        row.inStock === "false" ? false : true,
+            badge:          row.badge || "",
+            soldLastMonth:  Number(row.soldLastMonth) || 0,
+            description:    row.description || "",
             image:         "",
           });
         }
@@ -1135,7 +1139,8 @@ export default function AdminDashboard() {
                         if (r.oldColor   !== r.newColor)   diffs.push(<span key="color">Colour: <span style={{color:"#ff4444"}}>{r.oldColor||"—"}</span> → <span style={{color:"#00c851"}}>{r.newColor||"—"}</span></span>);
                         if (r.oldStorage !== r.newStorage) diffs.push(<span key="storage">Storage: <span style={{color:"#ff4444"}}>{r.oldStorage||"—"}</span> → <span style={{color:"#00c851"}}>{r.newStorage||"—"}</span></span>);
                         if (r.oldRam     !== r.newRam)     diffs.push(<span key="ram">RAM: <span style={{color:"#ff4444"}}>{r.oldRam||"—"}</span> → <span style={{color:"#00c851"}}>{r.newRam||"—"}</span></span>);
-                        if (r.oldBadge   !== r.newBadge)   diffs.push(<span key="badge">Badge: <span style={{color:"#ff4444"}}>{r.oldBadge||"—"}</span> → <span style={{color:"#00c851"}}>{r.newBadge||"—"}</span></span>);
+                        if (r.oldBadge        !== r.newBadge)        diffs.push(<span key="badge">Badge: <span style={{color:"#ff4444"}}>{r.oldBadge||"—"}</span> → <span style={{color:"#00c851"}}>{r.newBadge||"—"}</span></span>);
+                        if (r.oldSoldLastMonth !== r.newSoldLastMonth) diffs.push(<span key="sold">Sold/mo: <span style={{color:"#ff4444"}}>{r.oldSoldLastMonth||0}</span> → <span style={{color:"#00c851"}}>{r.newSoldLastMonth||0}</span></span>);
                         if (r.oldImage   !== r.newImage)   diffs.push(<span key="image" style={{color:"#00c851"}}>Photo updated</span>);
                         if (r.oldDesc    !== r.newDesc)    diffs.push(<span key="desc" style={{color:"#00c851"}}>Description updated</span>);
                         if (r.oldHidden  !== r.newHidden)  diffs.push(<span key="hidden">Visibility: <span style={{color:r.oldHidden?"#ff8800":"#00c851"}}>{r.oldHidden?"Hidden":"Visible"}</span> → <span style={{color:r.newHidden?"#ff8800":"#00c851"}}>{r.newHidden?"Hidden":"Visible"}</span></span>);
