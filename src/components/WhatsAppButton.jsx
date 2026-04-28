@@ -2,7 +2,7 @@ import { useStoreConfig, waUrl } from '../hooks/useStoreConfig';
 
 export default function WhatsAppButton() {
   const cfg = useStoreConfig();
-  const waHref    = waUrl(cfg.whatsappNumber, 'Hi Apex! I am interested in your products.');
+  const waHref    = waUrl(cfg.whatsappNumber, 'Hello team Apex, we would love to know about your products.');
   const instaHref = cfg.instagramUrl || 'https://instagram.com/apexmobileindia';
 
   return (
