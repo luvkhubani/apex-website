@@ -71,7 +71,7 @@ function csvToUpdates(csvText) {
 const BRANDS     = ["Apple","Samsung","OnePlus","Nothing","Motorola","Xiaomi","Realme","Vivo","OPPO","Poco","Infinix","Tecno","AI Plus","Jio","Nokia"];
 const CATEGORIES = ["Mobiles","Tablets","Laptops","Accessories","Earphones"];
 const BADGES     = ["","5G","New","Hot","Sale","Flagship","Best Seller","WiFi"];
-const EMPTY      = { name:"", brand:"Apple", category:"Mobiles", ram:"", storage:"", color:"", price:"", originalPrice:"", badge:"", inStock:true, image:"", description:"" };
+const EMPTY      = { name:"", brand:"Apple", category:"Mobiles", ram:"", storage:"", color:"", price:"", originalPrice:"", badge:"", inStock:true, image:"", description:"", soldLastMonth:"" };
 
 const iStyle = { width:"100%", padding:"10px 12px", background:"#1a1a1a", border:"1px solid #2a2a2a", borderRadius:"8px", color:"#fff", fontSize:"13px", outline:"none", boxSizing:"border-box", fontFamily:"inherit" };
 
@@ -574,7 +574,8 @@ export default function AdminDashboard() {
   const handleToggleStock  = id         => persist(products.map(p => p.id===id ? { ...p, inStock:!p.inStock } : p));
   const handlePriceBlur    = (id, val)  => { const n=Number(val); if (!isNaN(n)&&n>=0) persist(products.map(p => p.id===id?{...p,price:n}:p)); };
   const handleMrpBlur     = (id, val)  => { const n=Number(val); if (!isNaN(n)&&n>=0) persist(products.map(p => p.id===id?{...p,mrp:n,originalPrice:n}:p)); };
-  const handleBadgeChange  = (id, val)  => persist(products.map(p => p.id===id?{...p,badge:val}:p));
+  const handleBadgeChange         = (id, val)  => persist(products.map(p => p.id===id?{...p,badge:val}:p));
+  const handleSoldLastMonthChange = (id, val)  => { const n=Number(val); if (!isNaN(n)&&n>=0) persist(products.map(p => p.id===id?{...p,soldLastMonth:n}:p)); };
   const startEdit          = p          => { setEditId(p.id); setForm({ ...p, price:String(p.price||""), originalPrice:String(p.mrp || p.originalPrice || "") }); setTab("add"); };
 
   const saveModelRename = () => {
@@ -1351,7 +1352,7 @@ export default function AdminDashboard() {
                     <div style={{ borderTop:"1px solid #1a1a1a", overflowX:"auto" }}>
                       <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"13px" }}>
                         <thead><tr style={{ background:"#0d0d0d" }}>
-                          {["ID","Storage","RAM","Colour","Price (₹)","MRP (₹)","Badge","Stock","Visible","Image","Actions"].map(h => (
+                          {["ID","Storage","RAM","Colour","Price (₹)","MRP (₹)","Badge","Sold/mo","Stock","Visible","Image","Actions"].map(h => (
                             <th key={h} style={{ padding:"9px 14px", color:"#555", fontWeight:600, textAlign:"left", whiteSpace:"nowrap", borderBottom:"1px solid #1a1a1a" }}>{h}</th>
                           ))}
                         </tr></thead>
@@ -1377,6 +1378,9 @@ export default function AdminDashboard() {
                                 <select value={v.badge||""} onChange={e=>handleBadgeChange(v.id,e.target.value)} style={{ ...iStyle, width:"100px", padding:"5px 8px", fontSize:"12px" }}>
                                   {BADGES.map(b => <option key={b} value={b}>{b||"None"}</option>)}
                                 </select>
+                              </td>
+                              <td style={{ padding:"10px 14px" }}>
+                                <input type="number" min="0" defaultValue={v.soldLastMonth||""} placeholder="—" onBlur={e=>handleSoldLastMonthChange(v.id,e.target.value)} style={{ ...iStyle, width:"80px", padding:"6px 8px" }} />
                               </td>
                               <td style={{ padding:"10px 14px" }}>
                                 <button onClick={() => handleToggleStock(v.id)} style={{ background:v.inStock?"#00c85122":"#ff444422", color:v.inStock?"#00c851":"#ff4444", border:`1px solid ${v.inStock?"#00c85144":"#ff444444"}`, borderRadius:"6px", padding:"4px 10px", fontSize:"11px", fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>
@@ -1444,6 +1448,7 @@ export default function AdminDashboard() {
                 <FInput label="RAM"      value={form.ram}      onChange={F("ram")}       placeholder="e.g. 8GB" />
                 <FInput label="Colour"   value={form.color}    onChange={F("color")}     placeholder="e.g. Titanium Black" required />
                 <FInput label="Badge"    value={form.badge}    onChange={F("badge")}     options={BADGES} />
+                <FInput label="Sold Last Month" type="number" value={form.soldLastMonth||""} onChange={F("soldLastMonth")} placeholder="e.g. 2000" />
                 <FInput label="Price (₹)"          type="number" value={form.price}         onChange={F("price")}         placeholder="e.g. 129900" required />
                 <FInput label="MRP — Max. Retail Price (₹)" type="number" value={form.originalPrice} onChange={F("originalPrice")} placeholder="e.g. 139900" />
 

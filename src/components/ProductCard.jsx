@@ -59,9 +59,11 @@ export default function ProductCard({ group, onClick }) {
   const storages = [...new Set(variants.map(v => v.storage).filter(Boolean))];
   const rams     = [...new Set(variants.map(v => v.ram).filter(Boolean))];
 
-  const activeBadge = badge || variants.find(v => v.badge)?.badge || '';
-  const badgeStyle  = BADGE_STYLE[activeBadge] || 'bg-apple-black text-white';
-  const anyInStock  = variants.some(v => v.inStock);
+  const activeBadge    = badge || variants.find(v => v.badge)?.badge || '';
+  const badgeStyle     = BADGE_STYLE[activeBadge] || 'bg-apple-black text-white';
+  const anyInStock     = variants.some(v => v.inStock);
+  const soldLastMonth  = variants.reduce((max, v) => Math.max(max, v.soldLastMonth || 0), 0);
+  const soldLabel      = soldLastMonth >= 1000 ? `${Math.floor(soldLastMonth / 1000)}K+` : soldLastMonth > 0 ? `${soldLastMonth}+` : '';
 
   return (
     <div
@@ -158,7 +160,12 @@ export default function ProductCard({ group, onClick }) {
               <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">{pctOff}% off</span>
             </>}
           </div>
-          <p className="text-[10px] sm:text-[11px] text-emerald-600 font-medium mb-2 sm:mb-3">⚡ 2-Hr Delivery</p>
+          {soldLabel && (
+            <p className="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full w-fit mb-1.5">
+              🛒 {soldLabel} bought in past month
+            </p>
+          )}
+          <p className="text-[10px] sm:text-[11px] text-emerald-600 font-medium mb-2 sm:mb-3">⚡ 2-Hour Delivery · All Indore</p>
           <button className="block w-full text-center text-[12px] sm:text-[13px] font-medium text-apple-black bg-apple-light py-2 sm:py-2.5 rounded-pill group-hover:bg-apple-black group-hover:text-white transition-colors duration-200">
             Order Now →
           </button>
