@@ -20,8 +20,8 @@ export const STORE_DEFAULTS = {
   storeHoursShort: '10AM – 8PM',    // used in compact spots
 
   // ── Social ────────────────────────────────────────────
-  instagramHandle: 'apexmobileindia',
-  instagramUrl: 'https://instagram.com/apexmobileindia',
+  instagramHandle: 'apexmobile.indore',
+  instagramUrl: 'https://instagram.com/apexmobile.indore',
   instagramPosts: [],      // uploaded post image URLs (up to 6)
   instagramPostCount: 0,   // 0 = hide section, 1-6 = show N posts
 
