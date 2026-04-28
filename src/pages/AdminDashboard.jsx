@@ -1230,7 +1230,7 @@ export default function AdminDashboard() {
 
       {/* Tabs */}
       <div style={{ background:"#111", borderBottom:"1px solid #1a1a1a", padding:"0 16px", display:"flex", gap:"2px", overflowX:"auto" }}>
-        {[["products","📦 Products"],["add",editId?"✏️ Edit":"➕ Add"],["hero","🌟 Hero"],["store","🏪 Store"],["about","📖 About"],["settings","⚙️ Settings"],["stats","📊 Stats"]].map(([t,label]) => (
+        {[["products","📦 Products"],["add",editId?"✏️ Edit":"➕ Add"],["display","🗂️ Display"],["hero","🌟 Hero"],["store","🏪 Store"],["about","📖 About"],["settings","⚙️ Settings"],["stats","📊 Stats"]].map(([t,label]) => (
           <button key={t} onClick={() => { setTab(t); if (t!=="add") { setEditId(null); setForm(EMPTY); } }} style={{ ...tabBtn, color:tab===t?"#00c851":"#666", borderBottom:tab===t?"2px solid #00c851":"2px solid transparent" }}>
             {label}
           </button>
@@ -1502,6 +1502,124 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+
+        {/* ═══════════════════════════════ DISPLAY ORDER ══════════════════════ */}
+        {tab === "display" && (() => {
+          const brandOrder    = storeCfg.brandOrder    || [];
+          const pinnedKeys    = storeCfg.pinnedProductKeys || [];
+          const pinnedSet     = new Set(pinnedKeys);
+
+          // All unique brands from products
+          const allBrands = [...new Set(products.map(p => p.brand).filter(Boolean))];
+          // Brands not yet in brandOrder
+          const missingBrands = allBrands.filter(b => !brandOrder.includes(b));
+
+          // All unique product groups for pinning
+          const groupMap = new Map();
+          products.forEach(p => {
+            const key = `${p.brand}__${p.name}`;
+            if (!groupMap.has(key)) groupMap.set(key, { key, brand: p.brand, name: p.name });
+          });
+          const allGroupsList = [...groupMap.values()].sort((a,b) => a.brand.localeCompare(b.brand) || a.name.localeCompare(b.name));
+
+          const moveUp = (arr, i) => { if (i === 0) return arr; const n=[...arr]; [n[i-1],n[i]]=[n[i],n[i-1]]; return n; };
+          const moveDown = (arr, i) => { if (i===arr.length-1) return arr; const n=[...arr]; [n[i],n[i+1]]=[n[i+1],n[i]]; return n; };
+
+          const saveBrandOrder = (next) => {
+            const updated = { ...storeCfg, brandOrder: next };
+            setStoreCfg(updated); saveStore(updated);
+          };
+          const savePinned = (next) => {
+            const updated = { ...storeCfg, pinnedProductKeys: next };
+            setStoreCfg(updated); saveStore(updated);
+          };
+
+          return (
+            <div style={{ maxWidth:"720px" }}>
+              <h2 style={{ color:"#fff", fontSize:"18px", fontWeight:700, marginBottom:"6px" }}>Display Order</h2>
+              <p style={{ color:"#666", fontSize:"13px", marginBottom:"24px" }}>Control which brand sections appear first and pin specific products to the top Featured row.</p>
+
+              {/* ── Pinned / Featured ── */}
+              <div style={{ background:"#111", borderRadius:"14px", padding:"20px", marginBottom:"20px", border:"1px solid #1e1e1e" }}>
+                <h3 style={{ color:"#f5c518", fontSize:"14px", fontWeight:700, marginBottom:"4px" }}>⭐ Featured (Pinned) Products</h3>
+                <p style={{ color:"#666", fontSize:"12px", marginBottom:"16px" }}>These appear above all brand sections on the products page.</p>
+
+                {pinnedKeys.length > 0 && (
+                  <div style={{ marginBottom:"12px", display:"flex", flexDirection:"column", gap:"6px" }}>
+                    {pinnedKeys.map((key, i) => {
+                      const g = groupMap.get(key);
+                      return (
+                        <div key={key} style={{ display:"flex", alignItems:"center", gap:"10px", background:"#1a1a1a", borderRadius:"10px", padding:"10px 14px", border:"1px solid #2a2a2a" }}>
+                          <div style={{ flex:1 }}>
+                            <span style={{ color:"#999", fontSize:"11px", fontWeight:600, textTransform:"uppercase", letterSpacing:"0.1em" }}>{g?.brand || key.split('__')[0]}</span>
+                            <p style={{ color:"#fff", fontSize:"13px", fontWeight:600, margin:0 }}>{g?.name || key.split('__')[1]}</p>
+                          </div>
+                          <div style={{ display:"flex", gap:"4px" }}>
+                            <button onClick={() => savePinned(moveUp(pinnedKeys, i))} style={{ background:"#2a2a2a", border:"none", color:"#aaa", borderRadius:"6px", padding:"4px 8px", cursor:"pointer", fontSize:"12px" }}>↑</button>
+                            <button onClick={() => savePinned(moveDown(pinnedKeys, i))} style={{ background:"#2a2a2a", border:"none", color:"#aaa", borderRadius:"6px", padding:"4px 8px", cursor:"pointer", fontSize:"12px" }}>↓</button>
+                            <button onClick={() => savePinned(pinnedKeys.filter(k => k !== key))} style={{ background:"#3a1a1a", border:"none", color:"#ff6b6b", borderRadius:"6px", padding:"4px 8px", cursor:"pointer", fontSize:"12px" }}>✕</button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div style={{ display:"flex", gap:"8px", alignItems:"center" }}>
+                  <select
+                    id="pin-select"
+                    defaultValue=""
+                    style={{ flex:1, background:"#1a1a1a", border:"1px solid #2a2a2a", color:"#fff", borderRadius:"8px", padding:"8px 12px", fontSize:"13px" }}
+                  >
+                    <option value="" disabled>Search & select a product to pin…</option>
+                    {allGroupsList.filter(g => !pinnedSet.has(g.key)).map(g => (
+                      <option key={g.key} value={g.key}>{g.brand} — {g.name}</option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={() => {
+                      const sel = document.getElementById('pin-select');
+                      if (sel.value) { savePinned([...pinnedKeys, sel.value]); sel.value = ''; }
+                    }}
+                    style={{ background:"#f5c518", border:"none", color:"#000", borderRadius:"8px", padding:"8px 16px", fontSize:"13px", fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}
+                  >Pin ⭐</button>
+                </div>
+              </div>
+
+              {/* ── Brand Order ── */}
+              <div style={{ background:"#111", borderRadius:"14px", padding:"20px", border:"1px solid #1e1e1e" }}>
+                <h3 style={{ color:"#fff", fontSize:"14px", fontWeight:700, marginBottom:"4px" }}>Brand Sections Order</h3>
+                <p style={{ color:"#666", fontSize:"12px", marginBottom:"16px" }}>Drag up/down to reorder. First brand appears at the top of the products page.</p>
+
+                <div style={{ display:"flex", flexDirection:"column", gap:"6px", marginBottom:"16px" }}>
+                  {[...brandOrder, ...missingBrands].map((brand, i) => (
+                    <div key={brand} style={{ display:"flex", alignItems:"center", gap:"10px", background:"#1a1a1a", borderRadius:"10px", padding:"10px 14px", border:"1px solid #2a2a2a" }}>
+                      <span style={{ color:"#444", fontSize:"12px", fontWeight:700, width:"20px", textAlign:"center" }}>{i + 1}</span>
+                      <span style={{ flex:1, color:"#fff", fontSize:"13px", fontWeight:600 }}>{brand}</span>
+                      <div style={{ display:"flex", gap:"4px" }}>
+                        <button
+                          onClick={() => saveBrandOrder(moveUp([...brandOrder, ...missingBrands], i))}
+                          disabled={i === 0}
+                          style={{ background:"#2a2a2a", border:"none", color: i===0?"#333":"#aaa", borderRadius:"6px", padding:"4px 8px", cursor: i===0?"default":"pointer", fontSize:"12px" }}
+                        >↑</button>
+                        <button
+                          onClick={() => saveBrandOrder(moveDown([...brandOrder, ...missingBrands], i))}
+                          disabled={i === [...brandOrder,...missingBrands].length - 1}
+                          style={{ background:"#2a2a2a", border:"none", color: i===[...brandOrder,...missingBrands].length-1?"#333":"#aaa", borderRadius:"6px", padding:"4px 8px", cursor: i===[...brandOrder,...missingBrands].length-1?"default":"pointer", fontSize:"12px" }}
+                        >↓</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => saveBrandOrder([...brandOrder, ...missingBrands])}
+                  style={{ background:"#00c851", border:"none", color:"#000", borderRadius:"8px", padding:"8px 20px", fontSize:"13px", fontWeight:700, cursor:"pointer" }}
+                >Save Order</button>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* ═══════════════════════════════ HERO ═══════════════════════════════ */}
         {tab === "hero" && (

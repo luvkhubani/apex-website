@@ -92,7 +92,7 @@ export default function ProductCard({ group, onClick }) {
           <img
             src={imgSrc}
             alt={name}
-            className="w-full h-full object-contain p-8 transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full object-contain p-4 sm:p-8 transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
             decoding="async"
           />
@@ -107,9 +107,9 @@ export default function ProductCard({ group, onClick }) {
       </div>
 
       {/* Info */}
-      <div className="p-5 flex flex-col flex-1">
-        <p className="text-[10px] font-semibold tracking-[0.12em] text-apple-gray uppercase mb-0.5">{brand}</p>
-        <h3 className="text-[15px] font-semibold text-apple-black leading-snug mb-2">{name}</h3>
+      <div className="p-3 sm:p-5 flex flex-col flex-1">
+        <p className="text-[9px] sm:text-[10px] font-semibold tracking-[0.12em] text-apple-gray uppercase mb-0.5">{brand}</p>
+        <h3 className="text-[13px] sm:text-[15px] font-semibold text-apple-black leading-snug mb-2">{name}</h3>
 
         {/* Chip row — always rendered at fixed height for alignment */}
         <div className="h-[22px] overflow-hidden mb-1">
@@ -148,7 +148,7 @@ export default function ProductCard({ group, onClick }) {
 
         {/* Price — mt-auto pushes to bottom */}
         <div className="mt-auto">
-          <p className="text-[16px] font-bold text-apple-black">
+          <p className="text-[13px] sm:text-[16px] font-bold text-apple-black">
             {showFrom && minPrice > 0 ? 'From ' : ''}{formatINR(minPrice)}
           </p>
           {/* Fixed-height MRP row */}
@@ -158,8 +158,8 @@ export default function ProductCard({ group, onClick }) {
               <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">{pctOff}% off</span>
             </>}
           </div>
-          <p className="text-[11px] text-emerald-600 font-medium mb-3">⚡ 2-Hour Delivery · All Indore</p>
-          <button className="block w-full text-center text-[13px] font-medium text-apple-black bg-apple-light py-2.5 rounded-pill group-hover:bg-apple-black group-hover:text-white transition-colors duration-200">
+          <p className="text-[10px] sm:text-[11px] text-emerald-600 font-medium mb-2 sm:mb-3">⚡ 2-Hr Delivery</p>
+          <button className="block w-full text-center text-[12px] sm:text-[13px] font-medium text-apple-black bg-apple-light py-2 sm:py-2.5 rounded-pill group-hover:bg-apple-black group-hover:text-white transition-colors duration-200">
             Order Now →
           </button>
         </div>

@@ -57,6 +57,12 @@ export const STORE_DEFAULTS = {
   // IDs in this list are hidden from the public site
   hiddenProductIds: [],
 
+  // ── Product display order ─────────────────────────────
+  // Brands shown in this order as sections; unlisted brands appear after
+  brandOrder: ['Apple','Samsung','OnePlus','Nothing','Motorola','Xiaomi','Realme','Vivo','OPPO','Poco','Infinix','Tecno','AI Plus','Jio','Nokia'],
+  // product keys (brand__name) pinned to a "Featured" row above all brand sections
+  pinnedProductKeys: [],
+
   // ── Home page — Hero text ─────────────────────────────
   heroEyebrow: 'Trusted Since 1996 · Jail Road, Indore',
   heroHeadline: 'The Best Phones.\nIndore\'s Best Price.',
@@ -120,6 +126,8 @@ export function loadStoreConfig() {
         aboutValues:       parsed.aboutValues       ?? STORE_DEFAULTS.aboutValues,
         aboutServices:     parsed.aboutServices     ?? STORE_DEFAULTS.aboutServices,
         hiddenProductIds:  parsed.hiddenProductIds  ?? STORE_DEFAULTS.hiddenProductIds,
+        brandOrder:        parsed.brandOrder        ?? STORE_DEFAULTS.brandOrder,
+        pinnedProductKeys: parsed.pinnedProductKeys ?? STORE_DEFAULTS.pinnedProductKeys,
       };
     }
   } catch (_) {}
@@ -152,6 +160,8 @@ export function useStoreConfig() {
           aboutValues:       remote.aboutValues       ?? STORE_DEFAULTS.aboutValues,
           aboutServices:     remote.aboutServices     ?? STORE_DEFAULTS.aboutServices,
           hiddenProductIds:  remote.hiddenProductIds  ?? STORE_DEFAULTS.hiddenProductIds,
+          brandOrder:        remote.brandOrder        ?? STORE_DEFAULTS.brandOrder,
+          pinnedProductKeys: remote.pinnedProductKeys ?? STORE_DEFAULTS.pinnedProductKeys,
         };
         saveStoreConfig(merged);
         setCfg(merged);

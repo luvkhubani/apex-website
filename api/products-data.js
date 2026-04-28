@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Supabase credentials not configured" });
   }
 
-  res.setHeader("Cache-Control", "s-maxage=30, stale-while-revalidate=30");
+  res.setHeader("Cache-Control", "no-store");
 
   try {
     const { data, error } = await supabase
