@@ -13,8 +13,9 @@ CREATE TABLE products (
   badge           TEXT          NOT NULL DEFAULT '',
   in_stock        BOOLEAN       NOT NULL DEFAULT TRUE,
   image           TEXT          NOT NULL DEFAULT '',
-  description     TEXT          NOT NULL DEFAULT '',
-  updated_at      TIMESTAMPTZ   NOT NULL DEFAULT NOW()
+  description       TEXT          NOT NULL DEFAULT '',
+  sold_last_month   INTEGER       NOT NULL DEFAULT 0,
+  updated_at        TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
 -- Auto-update updated_at on every row change
