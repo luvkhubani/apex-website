@@ -104,7 +104,6 @@ export default function Products() {
 
   const handleGroupClick = (group) => {
     recordClick(group.key);
-    setClicks(prev => ({ ...prev, [group.key]: (prev[group.key] || 0) + 1 }));
     navigate(location.pathname + location.search + '#' + encodeURIComponent(group.key));
   };
 
