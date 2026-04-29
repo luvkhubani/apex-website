@@ -1,12 +1,5 @@
 {
-  "heroConfig": [
-    {
-      "brand": "Apple",
-      "name": "MacBook Neo",
-      "description": "",
-      "layout": "left"
-    }
-  ],
+  "heroConfig": [],
   "bannerConfig": {},
-  "_savedAt": "2026-04-29T12:05:48.611Z"
+  "_savedAt": "2026-04-29T12:15:07.018Z"
 }
