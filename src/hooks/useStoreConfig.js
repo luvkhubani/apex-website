@@ -72,7 +72,7 @@ export const STORE_DEFAULTS = {
 
   // ── WhatsApp message template (product modal) ─────────
   // Placeholders: {name} {specs} {color} — missing ones are trimmed automatically
-  productWaMessage: 'Hi Apex! I am interested in {name} {specs} {color} at "{price}". Kindly get it delivered to {name, contact, address}',
+  productWaMessage: 'Hello Apex Mobile! I am interested in {name} {specs} {color} at "{price}". Kindly get it delivered to {name, contact, address}',
 
   // ── Google Maps ───────────────────────────────────────
   googleMapsEmbed: '',

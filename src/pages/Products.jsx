@@ -235,7 +235,7 @@ export default function Products() {
       {/* ── WhatsApp banner ───────────────────────────────── */}
       <div className="bg-[#25D366] text-white text-center py-2.5 px-4">
         <a
-          href={waUrl(storeCfg.whatsappNumber, 'Hi Apex! I am looking for:\nModel: \nColour: \nStorage / Variant: \nBudget: \nBrands preferred: ')}
+          href={waUrl(storeCfg.whatsappNumber, 'Hello Apex Mobile! I am looking for:\nModel: \nColour: \nStorage / Variant: \nBudget: \nBrands preferred: ')}
           target="_blank"
           rel="noopener noreferrer"
           className="text-[13px] font-medium hover:underline"
@@ -458,7 +458,7 @@ export default function Products() {
             Store open <strong className="text-apple-black">{storeCfg.storeHoursShort}</strong> daily
           </p>
           <a
-            href={waUrl(storeCfg.whatsappNumber, 'Hi Apex! I am looking for a specific product. Please help.')}
+            href={waUrl(storeCfg.whatsappNumber, 'Hello Apex Mobile! I am looking for a specific product. Please help.')}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-[14px] font-medium text-white bg-[#25D366] px-7 py-3 rounded-pill hover:opacity-90 transition-opacity"

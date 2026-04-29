@@ -135,7 +135,7 @@ export default function About() {
               Drop in at Jail Road or WhatsApp us anytime. No appointment needed.
             </p>
             <a
-              href={waUrl(cfg.whatsappNumber, 'Hi Apex! I would like to visit your store.')}
+              href={waUrl(cfg.whatsappNumber, 'Hello Apex Mobile! I would like to visit your store.')}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center text-[17px] font-medium text-white bg-apple-black px-8 py-3.5 rounded-pill hover:scale-[1.02] transition-transform"

@@ -13,7 +13,7 @@ export default function Contact() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    const text = `Hi Apex! My name is ${form.name}. ${form.message} (Phone: ${form.phone})`;
+    const text = `Hello Apex Mobile! My name is ${form.name}. ${form.message} (Phone: ${form.phone})`;
     window.open(waUrl(storeCfg.whatsappNumber, text), '_blank', 'noopener,noreferrer');
     setSubmitted(true);
   }

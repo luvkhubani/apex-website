@@ -64,7 +64,7 @@ export default function ProductModal({ group, onClose }) {
   const specs    = specLabel(activeVariant ?? {});
   const color    = activeVariant?.color ?? '';
   const price    = formatINR(activeVariant?.price);
-  const waText   = (storeCfg.productWaMessage || 'Hi Apex! I am interested in {name} {specs} {color} at "{price}".')
+  const waText   = (storeCfg.productWaMessage || 'Hello Apex Mobile! I am interested in {name} {specs} {color} at "{price}".')
     .replace('{name}', name).replace('{specs}', specs).replace('{color}', color).replace('{price}', price)
     .replace(/\s{2,}/g, ' ').trim();
   const waLink   = waUrl(storeCfg.whatsappNumber, waText);

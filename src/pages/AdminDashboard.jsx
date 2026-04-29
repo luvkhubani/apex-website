@@ -1909,7 +1909,7 @@ export default function AdminDashboard() {
                     value={storeCfg.productWaMessage ?? ''}
                     onChange={e => Fs("productWaMessage")(e.target.value)}
                     rows={3}
-                    placeholder="Hi Apex! I am interested in {name} {specs} {color}. Please share availability and best price."
+                    placeholder="Hello Apex Mobile! I am interested in {name} {specs} {color}. Please share availability and best price."
                     style={{ ...iStyle, resize:"vertical", fontFamily:"monospace", fontSize:"13px", marginBottom:"6px" }}
                   />
                   <p style={{ color:"#555", fontSize:"11px", margin:"0 0 14px" }}>

@@ -175,7 +175,7 @@ function HeroProductSection({ item, products, index, waN }) {
   const heroPct  = heroMrp > minPrice && minPrice > 0 ? Math.round((heroMrp - minPrice) / heroMrp * 100) : 0;
   const bg       = index % 2 === 0 ? 'bg-white' : 'bg-apple-light';
   const layout   = item.layout || 'left';
-  const waMsg    = `Hi Apex! I am interested in ${item.name}. Please share availability and best price.`;
+  const waMsg    = `Hello Apex Mobile! I am interested in ${item.name}. Please share availability and best price.`;
 
   const ImageBox = () => (
     <div className="bg-apple-light rounded-[32px] aspect-square overflow-hidden flex items-center justify-center">
@@ -398,7 +398,7 @@ export default function Home() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center gap-3 mb-3">
               <a
-                href={banner.ctaLink || waUrl(storeCfg.whatsappNumber, 'Hi Apex! I am interested in ' + banner.title + '. Please share availability and best price.')}
+                href={banner.ctaLink || waUrl(storeCfg.whatsappNumber, 'Hello Apex Mobile! I am interested in ' + banner.title + '. Please share availability and best price.')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 text-[15px] font-medium text-white bg-[#0071e3] px-7 py-3 rounded-full hover:bg-[#0077ed] active:scale-[0.98] transition-all shadow-sm"
