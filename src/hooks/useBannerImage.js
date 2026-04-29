@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 const KEY = 'apex_banner_config';
 
-const EMPTY = { image:'', label:'Highlight of the Day', title:'', subtitle:'', price:'', ctaText:'Order on WhatsApp', ctaLink:'' };
+const EMPTY = { image:'', label:'Highlight of the Day', title:'', subtitle:'', price:'', ctaText:'Message to Order', ctaLink:'' };
 
 function load() {
   try { const s = localStorage.getItem(KEY); if (s) return { ...EMPTY, ...JSON.parse(s) }; } catch (_) {}

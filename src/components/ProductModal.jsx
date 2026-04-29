@@ -161,7 +161,7 @@ export default function ProductModal({ group, onClose }) {
         <a href={waLink} target="_blank" rel="noopener noreferrer"
           className="flex-1 flex items-center justify-center gap-2 text-[14px] font-bold text-white bg-[#25D366] py-3 rounded-pill hover:opacity-90 active:scale-[0.98] transition-all">
           <WaIcon />
-          <span>Order on WhatsApp</span>
+          <span>Message to Order</span>
         </a>
         <a href={`tel:${phone}`}
           className="flex-1 flex items-center justify-center gap-2 text-[14px] font-bold text-white bg-apple-black py-3 rounded-pill hover:opacity-80 active:scale-[0.98] transition-all">

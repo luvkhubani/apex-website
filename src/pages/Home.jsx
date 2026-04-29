@@ -213,7 +213,7 @@ function HeroProductSection({ item, products, index, waN }) {
         )}
       </div>
       <PillBlack href={waUrl(waN, waMsg)}>
-        Order on WhatsApp
+        Message to Order
       </PillBlack>
       <p className="text-[12px] font-semibold text-emerald-600 mt-4">
         ⚡ 2-Hour Delivery · All Indore
@@ -250,7 +250,7 @@ function HeroProductSection({ item, products, index, waN }) {
                 <p className="text-[18px] text-apple-gray">Contact us for pricing</p>
               )}
             </div>
-            <PillBlack href={waUrl(waN, waMsg)}>Order on WhatsApp</PillBlack>
+            <PillBlack href={waUrl(waN, waMsg)}>Message to Order</PillBlack>
           </div>
           <div className="bg-apple-light rounded-[32px] aspect-square sm:aspect-[4/3] md:aspect-[16/9] max-w-[860px] mx-auto overflow-hidden flex items-center justify-center">
             {imgSrc
@@ -403,7 +403,7 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 text-[15px] font-medium text-white bg-[#0071e3] px-7 py-3 rounded-full hover:bg-[#0077ed] active:scale-[0.98] transition-all shadow-sm"
               >
-                {banner.ctaText || 'Order on WhatsApp'}
+                {banner.ctaText || 'Message to Order'}
               </a>
               <Link
                 to="/products"
