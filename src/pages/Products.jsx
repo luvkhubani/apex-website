@@ -29,7 +29,7 @@ const BRAND_TIER = {
 };
 
 function recordClick(key) {
-  fetch('/api/product-clicks', {
+  return fetch('/api/product-clicks', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ key }),
@@ -103,7 +103,12 @@ export default function Products() {
   }, []);
 
   const handleGroupClick = (group) => {
-    recordClick(group.key);
+    recordClick(group.key).then(() =>
+      fetch('/api/product-clicks')
+        .then(r => r.ok ? r.json() : null)
+        .then(data => { if (data) setClicks(data); })
+        .catch(() => {})
+    );
     navigate(location.pathname + location.search + '#' + encodeURIComponent(group.key));
   };
 
