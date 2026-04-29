@@ -22,7 +22,7 @@
   "addressLine2": "Madhya Pradesh — 452001",
   "storeHours": "Monday – Sunday, 10:00 AM – 9:00 PM",
   "storeHoursShort": "10AM – 9:30PM",
-  "instagramHandle": "apexmobile.indore",
+  "instagramHandle": "apexmobile_indore",
   "instagramUrl": "https://instagram.com/apexmobile.indore",
   "instagramPosts": [],
   "instagramPostCount": 0,
@@ -317,6 +317,24 @@
     444,
     445
   ],
+  "brandOrder": [
+    "Apple",
+    "Samsung",
+    "OnePlus",
+    "Nothing",
+    "Motorola",
+    "Xiaomi",
+    "Realme",
+    "Vivo",
+    "OPPO",
+    "Poco",
+    "Infinix",
+    "Tecno",
+    "AI Plus",
+    "Jio",
+    "Nokia"
+  ],
+  "pinnedProductKeys": [],
   "heroEyebrow": "Trusted Since 1996 · Jail Road, Indore",
   "heroHeadline": "The Best Phones. Indore's Best Price.\n2-Hour Delivery · All Indore",
   "productWaMessage": "Hi Apex! I am interested in {name} {specs} {color} at \"{price}\". Kindly get it delivered to {name, contact, address}",
@@ -360,5 +378,5 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-28T09:56:02.445Z"
+  "_savedAt": "2026-04-29T09:35:17.006Z"
 }
