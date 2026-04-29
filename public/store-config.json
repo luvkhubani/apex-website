@@ -22,7 +22,6 @@
   "addressLine2": "Madhya Pradesh — 452001",
   "storeHours": "Monday – Sunday, 10:00 AM – 9:00 PM",
   "storeHoursShort": "10AM – 9:30PM",
-  "floatingCallNumber": "+918349570000",
   "instagramHandle": "apexmobile_indore",
   "instagramUrl": "https://instagram.com/apexmobile_indore",
   "instagramPosts": [],
@@ -329,7 +328,13 @@
     74,
     75,
     76,
-    184
+    184,
+    527,
+    528,
+    529,
+    530,
+    531,
+    532
   ],
   "brandOrder": [
     "Apple",
@@ -392,5 +397,6 @@
     }
   ],
   "aboutServices": [],
-  "_savedAt": "2026-04-29T16:16:53.055Z"
+  "floatingCallNumber": "+918349570000",
+  "_savedAt": "2026-04-29T16:36:19.638Z"
 }
