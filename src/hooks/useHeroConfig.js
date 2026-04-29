@@ -20,15 +20,7 @@ export function useHeroConfig() {
         localStorage.setItem(KEY, JSON.stringify(remote.heroConfig));
       })
       .catch(() => {
-        // Fallback for local dev (API not running)
-        fetch('/hero-config.json?v=' + Date.now())
-          .then(r => r.ok ? r.json() : null)
-          .then(remote => {
-            if (!remote || !Array.isArray(remote.heroConfig) || !remote._savedAt) return;
-            setC(remote.heroConfig);
-            localStorage.setItem(KEY, JSON.stringify(remote.heroConfig));
-          })
-          .catch(() => {});
+        // API unavailable — keep whatever is in localStorage (already the initial state)
       });
   }, []);
 
