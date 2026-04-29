@@ -2,12 +2,6 @@
   "heroConfig": [
     {
       "brand": "Apple",
-      "name": "MacBook Neo",
-      "description": "",
-      "layout": "center"
-    },
-    {
-      "brand": "Apple",
       "name": "MacBook Air 13\" M4",
       "description": "",
       "layout": "center"
@@ -20,5 +14,5 @@
     }
   ],
   "bannerConfig": {},
-  "_savedAt": "2026-04-29T12:15:33.702Z"
+  "_savedAt": "2026-04-29T12:15:56.868Z"
 }
