@@ -11,8 +11,14 @@
       "name": "DYSON AIRWRAP ID",
       "description": "",
       "layout": "center"
+    },
+    {
+      "brand": "Apple",
+      "name": "iPhone 17",
+      "description": "",
+      "layout": "left"
     }
   ],
   "bannerConfig": {},
-  "_savedAt": "2026-04-29T12:15:56.868Z"
+  "_savedAt": "2026-04-29T12:16:01.816Z"
 }
