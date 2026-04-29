@@ -4,15 +4,21 @@
       "brand": "Apple",
       "name": "MacBook Neo",
       "description": "",
-      "layout": "left"
+      "layout": "center"
     },
     {
       "brand": "Apple",
       "name": "MacBook Air 13\" M4",
       "description": "",
-      "layout": "left"
+      "layout": "center"
+    },
+    {
+      "brand": "DYSON",
+      "name": "DYSON AIRWRAP ID",
+      "description": "",
+      "layout": "center"
     }
   ],
   "bannerConfig": {},
-  "_savedAt": "2026-04-29T12:15:24.497Z"
+  "_savedAt": "2026-04-29T12:15:33.702Z"
 }
