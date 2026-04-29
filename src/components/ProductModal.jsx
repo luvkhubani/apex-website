@@ -77,8 +77,14 @@ export default function ProductModal({ group, onClose }) {
   useEffect(() => {
     const onKey = e => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', onKey);
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = 'hidden';
-    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    };
   }, [onClose]);
 
   /* ─────────────────────────── Shared detail content ────────────────────── */
