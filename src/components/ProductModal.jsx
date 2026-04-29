@@ -217,7 +217,7 @@ export default function ProductModal({ group, onClose }) {
       {/* ── MOBILE bottom sheet (below sm) ────────────────────────────────── */}
       <div
         className="sm:hidden relative bg-white w-full rounded-t-3xl shadow-2xl flex flex-col"
-        style={{ maxHeight: '92vh' }}
+        style={{ maxHeight: 'min(92dvh, 92vh)' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Drag handle */}
