@@ -232,9 +232,9 @@ export default function ProductModal({ group, onClose }) {
         {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto min-h-0">
           {/* Compact image */}
-          <div className="bg-apple-light flex items-center justify-center" style={{ height: '210px' }}>
+          <div className="bg-apple-light flex items-center justify-center" style={{ height: '50vw', minHeight: '240px', maxHeight: '360px' }}>
             {imgSrc
-              ? <img src={imgSrc} alt={`${name} ${color}`} className="h-full w-full object-contain p-4" />
+              ? <img src={imgSrc} alt={`${name} ${color}`} className="h-full w-full object-contain" />
               : <div className="flex flex-col items-center gap-2">
                   <span className="text-6xl">{BRAND_EMOJI[brand] || '📦'}</span>
                   <p className="text-[12px] text-apple-gray text-center px-4">{name}</p>

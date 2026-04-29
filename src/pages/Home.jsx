@@ -164,13 +164,12 @@ function Section({ bg = 'bg-white', children, className = '' }) {
 // ── Hero product section (dynamic) ────────────────────────
 function HeroProductSection({ item, products, index, waN }) {
   const variants = products.filter(p => p.brand === item.brand && p.name === item.name);
-  if (variants.length === 0) return null;
 
   const thumbV   = variants.find(v => v.image) || variants[0];
   const imgSrc   = getProductImage(thumbV?.image);
   const prices   = variants.map(v => v.price).filter(Boolean);
   const minPrice = prices.length ? Math.min(...prices) : 0;
-  const priceStr = formatINR(minPrice);
+  const priceStr = minPrice > 0 ? formatINR(minPrice) : null;
   const cheapest = variants.find(v => v.price === minPrice);
   const heroMrp  = cheapest?.mrp || cheapest?.originalPrice || 0;
   const heroPct  = heroMrp > minPrice && minPrice > 0 ? Math.round((heroMrp - minPrice) / heroMrp * 100) : 0;
@@ -198,17 +197,21 @@ function HeroProductSection({ item, products, index, waN }) {
           {item.description}
         </p>
       )}
-      {priceStr && (
-        <div className="mb-6">
-          <p className="text-[28px] font-semibold text-apple-black">From {priceStr}</p>
-          {heroPct > 0 && (
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-[15px] text-apple-gray line-through">{formatINR(heroMrp)}</span>
-              <span className="text-[13px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{heroPct}% off</span>
-            </div>
-          )}
-        </div>
-      )}
+      <div className="mb-6">
+        {priceStr ? (
+          <>
+            <p className="text-[28px] font-semibold text-apple-black">From {priceStr}</p>
+            {heroPct > 0 && (
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-[15px] text-apple-gray line-through">{formatINR(heroMrp)}</span>
+                <span className="text-[13px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{heroPct}% off</span>
+              </div>
+            )}
+          </>
+        ) : (
+          <p className="text-[18px] text-apple-gray">Contact us for pricing</p>
+        )}
+      </div>
       <PillBlack href={waUrl(waN, waMsg)}>
         Order on WhatsApp
       </PillBlack>
@@ -232,17 +235,21 @@ function HeroProductSection({ item, products, index, waN }) {
                 {item.description}
               </p>
             )}
-            {priceStr && (
-              <div className="mb-8">
-                <p className="text-[28px] font-semibold text-apple-black">From {priceStr}</p>
-                {heroPct > 0 && (
-                  <div className="flex items-center justify-center gap-2 mt-1">
-                    <span className="text-[15px] text-apple-gray line-through">{formatINR(heroMrp)}</span>
-                    <span className="text-[13px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{heroPct}% off</span>
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="mb-8">
+              {priceStr ? (
+                <>
+                  <p className="text-[28px] font-semibold text-apple-black">From {priceStr}</p>
+                  {heroPct > 0 && (
+                    <div className="flex items-center justify-center gap-2 mt-1">
+                      <span className="text-[15px] text-apple-gray line-through">{formatINR(heroMrp)}</span>
+                      <span className="text-[13px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{heroPct}% off</span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-[18px] text-apple-gray">Contact us for pricing</p>
+              )}
+            </div>
             <PillBlack href={waUrl(waN, waMsg)}>Order on WhatsApp</PillBlack>
           </div>
           <div className="bg-apple-light rounded-[32px] aspect-square sm:aspect-[4/3] md:aspect-[16/9] max-w-[860px] mx-auto overflow-hidden flex items-center justify-center">

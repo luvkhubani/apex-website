@@ -3,10 +3,27 @@ import { useStoreConfig, waUrl } from '../hooks/useStoreConfig';
 export default function WhatsAppButton() {
   const cfg = useStoreConfig();
   const waHref    = waUrl(cfg.whatsappNumber, 'Hello team Apex, we would love to know about your products.');
-  const instaHref = cfg.instagramUrl || 'https://instagram.com/apexmobileindia';
+  const instaHref = cfg.instagramUrl || `https://instagram.com/${cfg.instagramHandle || 'apexmobileindia'}`;
+  const callHref  = `tel:${(cfg.floatingCallNumber || '+918349570000').replace(/\s/g, '')}`;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+
+      {/* Call */}
+      <a
+        href={callHref}
+        aria-label="Call us"
+        className="group flex items-center gap-2"
+      >
+        <span className="hidden group-hover:flex items-center text-[12px] font-medium text-white bg-apple-black px-3 py-1.5 rounded-pill whitespace-nowrap shadow-lg">
+          Call us
+        </span>
+        <div className="w-14 h-14 bg-[#007aff] rounded-full flex items-center justify-center shadow-lg group-hover:scale-[1.08] transition-transform duration-200">
+          <svg className="w-7 h-7 fill-white" viewBox="0 0 24 24">
+            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+          </svg>
+        </div>
+      </a>
 
       {/* Instagram */}
       <a

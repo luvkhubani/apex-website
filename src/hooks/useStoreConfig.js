@@ -19,6 +19,9 @@ export const STORE_DEFAULTS = {
   storeHours: 'Monday – Sunday, 10:00 AM – 8:00 PM',
   storeHoursShort: '10AM – 8PM',    // used in compact spots
 
+  // ── Floating buttons ──────────────────────────────────
+  floatingCallNumber: '+918349570000',
+
   // ── Social ────────────────────────────────────────────
   instagramHandle: 'apexmobile.indore',
   instagramUrl: 'https://instagram.com/apexmobile.indore',
@@ -108,12 +111,17 @@ export const STORE_DEFAULTS = {
   aboutServices: [],
 };
 
+function normalizeConfig(cfg) {
+  const handle = cfg.instagramHandle || STORE_DEFAULTS.instagramHandle;
+  return { ...cfg, instagramHandle: handle, instagramUrl: `https://instagram.com/${handle}` };
+}
+
 export function loadStoreConfig() {
   try {
     const s = localStorage.getItem(STORE_KEY);
     if (s) {
       const parsed = JSON.parse(s);
-      return {
+      return normalizeConfig({
         ...STORE_DEFAULTS,
         ...parsed,
         phoneNumbers:      parsed.phoneNumbers      ?? STORE_DEFAULTS.phoneNumbers,
@@ -128,10 +136,10 @@ export function loadStoreConfig() {
         hiddenProductIds:  parsed.hiddenProductIds  ?? STORE_DEFAULTS.hiddenProductIds,
         brandOrder:        parsed.brandOrder        ?? STORE_DEFAULTS.brandOrder,
         pinnedProductKeys: parsed.pinnedProductKeys ?? STORE_DEFAULTS.pinnedProductKeys,
-      };
+      });
     }
   } catch (_) {}
-  return { ...STORE_DEFAULTS };
+  return normalizeConfig({ ...STORE_DEFAULTS });
 }
 
 export function saveStoreConfig(config) {
@@ -147,7 +155,7 @@ export function useStoreConfig() {
       .then(r => r.ok ? r.json() : null)
       .then(remote => {
         if (!remote || typeof remote !== 'object') return;
-        const merged = {
+        const merged = normalizeConfig({
           ...STORE_DEFAULTS,
           ...remote,
           phoneNumbers:      remote.phoneNumbers      ?? STORE_DEFAULTS.phoneNumbers,
@@ -162,7 +170,7 @@ export function useStoreConfig() {
           hiddenProductIds:  remote.hiddenProductIds  ?? STORE_DEFAULTS.hiddenProductIds,
           brandOrder:        remote.brandOrder        ?? STORE_DEFAULTS.brandOrder,
           pinnedProductKeys: remote.pinnedProductKeys ?? STORE_DEFAULTS.pinnedProductKeys,
-        };
+        });
         saveStoreConfig(merged);
         setCfg(merged);
       })
@@ -173,7 +181,7 @@ export function useStoreConfig() {
   useEffect(() => {
     const onStorage = e => {
       if (e.key === STORE_KEY && e.newValue) {
-        try { setCfg(JSON.parse(e.newValue)); } catch (_) {}
+        try { setCfg(normalizeConfig(JSON.parse(e.newValue))); } catch (_) {}
       }
     };
     window.addEventListener('storage', onStorage);

@@ -1897,6 +1897,12 @@ export default function AdminDashboard() {
                 </div>
                 <div style={{ gridColumn:"1 / -1" }}>
                   <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>
+                    Floating Call Button Number <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(shown as blue phone button on all pages)</span>
+                  </label>
+                  <input value={storeCfg.floatingCallNumber ?? '+918349570000'} onChange={e => Fs("floatingCallNumber")(e.target.value)} placeholder="+918349570000" style={{ ...iStyle, marginBottom:"14px" }} />
+                </div>
+                <div style={{ gridColumn:"1 / -1" }}>
+                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>
                     Product WhatsApp Message <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(sent when customer taps WhatsApp on a product)</span>
                   </label>
                   <textarea
@@ -1975,15 +1981,17 @@ export default function AdminDashboard() {
               <h3 style={{ margin:"0 0 4px", fontSize:"15px", fontWeight:700 }}>📸 Social Media</h3>
               <p style={{ color:"#555", fontSize:"12px", margin:"0 0 20px" }}>Shown in the Instagram section on the home page.</p>
 
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0 16px" }}>
-                <div>
-                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Instagram Handle <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(without @)</span></label>
-                  <input value={storeCfg.instagramHandle} onChange={e => Fs("instagramHandle")(e.target.value.replace(/^@/,""))} placeholder="apexmobileindia" style={{ ...iStyle, marginBottom:"14px" }} />
-                </div>
-                <div>
-                  <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Instagram URL</label>
-                  <input value={storeCfg.instagramUrl} onChange={e => Fs("instagramUrl")(e.target.value)} placeholder="https://instagram.com/..." style={{ ...iStyle, marginBottom:"14px" }} />
-                </div>
+              <div>
+                <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Instagram Handle <span style={{ color:"#444", fontWeight:400, textTransform:"none", letterSpacing:0 }}>(without @)</span></label>
+                <input
+                  value={storeCfg.instagramHandle}
+                  onChange={e => {
+                    const handle = e.target.value.replace(/^@/, "");
+                    setStoreCfg(c => ({ ...c, instagramHandle: handle, instagramUrl: `https://instagram.com/${handle}` }));
+                  }}
+                  placeholder="apexmobileindia"
+                  style={{ ...iStyle, marginBottom:"14px" }}
+                />
               </div>
 
               {/* Instagram post count selector */}

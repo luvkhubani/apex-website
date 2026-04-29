@@ -94,7 +94,7 @@ export default function ProductCard({ group, onClick }) {
           <img
             src={imgSrc}
             alt={name}
-            className="w-full h-full object-contain p-4 sm:p-8 transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full object-contain p-2 sm:p-3 transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
             decoding="async"
           />

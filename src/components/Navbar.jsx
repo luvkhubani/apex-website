@@ -16,18 +16,25 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-xl border-b border-apple-border">
+
       <nav className="max-w-[1200px] mx-auto px-6 h-12 flex items-center justify-between gap-8">
 
-        {/* Logo */}
+        {/* Logo + tagline */}
         <Link
           to="/"
           onClick={() => setOpen(false)}
-          className="shrink-0 hover:opacity-70 transition-opacity duration-200"
+          className="shrink-0 flex items-center gap-3 hover:opacity-70 transition-opacity duration-200"
         >
           {logoSrc
             ? <img src={logoSrc} alt={storeCfg.logoText || 'Apex'} className="h-8 w-auto object-contain" onError={e => { e.target.style.display = 'none'; }} />
             : <span className="text-[20px] font-bold text-apple-black tracking-tight">{storeCfg.logoText || 'APEX'}</span>
           }
+          <span
+            className="text-[10px] font-semibold tracking-[0.1em] uppercase leading-tight border-l border-apple-border pl-3"
+            style={{ color: '#6e6e73' }}
+          >
+            Trusted<br />Since 1996
+          </span>
         </Link>
 
         {/* Desktop center nav */}
