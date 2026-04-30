@@ -1,20 +1,13 @@
 {
-  "heroConfig": [
-    {
-      "brand": "Apple",
-      "name": "MacBook Air 13\" M2",
-      "description": "",
-      "layout": "left"
-    }
-  ],
+  "heroConfig": [],
   "bannerConfig": {
     "image": "https://res.cloudinary.com/dz489r0qy/image/upload/v1777022064/products/hero/banner.png",
     "label": "Highlight of the Day",
     "title": "IPHONE 17 PRO 256GB",
     "subtitle": "FRESH | SEALED PACK | 1 YEAR APPLE WARRANTY",
     "price": "121999",
-    "ctaText": "CLICK TO ORDER",
+    "ctaText": "Order on WhatsApp",
     "ctaLink": "https://api.whatsapp.com/send/?phone=918349570000&text=Hi+Apex%21+I+am+interested+in+iPhone+17+PRO+256GB+at+120999.+Kindly+get+it+delivered+to+%7Bname%2C+contact%2C+address%7D&type=phone_number&app_absent=0"
   },
-  "_savedAt": "2026-04-29T20:32:07.730Z"
+  "_savedAt": "2026-04-30T02:29:55.201Z"
 }
