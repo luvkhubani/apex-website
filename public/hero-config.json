@@ -1,13 +1,12 @@
 {
-  "heroConfig": [],
-  "bannerConfig": {
-    "image": "https://res.cloudinary.com/dz489r0qy/image/upload/v1777022064/products/hero/banner.png",
-    "label": "Highlight of the Day",
-    "title": "IPHONE 17 PRO 256GB",
-    "subtitle": "FRESH | SEALED PACK | 1 YEAR APPLE WARRANTY",
-    "price": "121999",
-    "ctaText": "CLICK TO ORDER",
-    "ctaLink": "https://api.whatsapp.com/send/?phone=918349570000&text=Hi+Apex%21+I+am+interested+in+iPhone+17+PRO+256GB+at+120999.+Kindly+get+it+delivered+to+%7Bname%2C+contact%2C+address%7D&type=phone_number&app_absent=0"
-  },
-  "_savedAt": "2026-04-30T13:59:49.464Z"
+  "heroConfig": [
+    {
+      "brand": "Apple",
+      "name": "iPhone 17",
+      "description": "",
+      "layout": "center"
+    }
+  ],
+  "bannerConfig": {},
+  "_savedAt": "2026-05-01T10:16:41.789Z"
 }
