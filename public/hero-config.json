@@ -11,8 +11,14 @@
       "name": "DYSON AIRWRAP ID",
       "description": "",
       "layout": "center"
+    },
+    {
+      "brand": "Apple",
+      "name": "MacBook Air 13\" M4",
+      "description": "",
+      "layout": "left"
     }
   ],
   "bannerConfig": {},
-  "_savedAt": "2026-05-01T10:16:46.336Z"
+  "_savedAt": "2026-05-01T10:16:53.453Z"
 }
