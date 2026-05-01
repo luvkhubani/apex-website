@@ -1,24 +1,5 @@
 {
-  "heroConfig": [
-    {
-      "brand": "Apple",
-      "name": "iPhone 17",
-      "description": "",
-      "layout": "center"
-    },
-    {
-      "brand": "DYSON",
-      "name": "DYSON AIRWRAP ID",
-      "description": "",
-      "layout": "center"
-    },
-    {
-      "brand": "Apple",
-      "name": "MacBook Air 13\" M4",
-      "description": "",
-      "layout": "left"
-    }
-  ],
+  "heroConfig": [],
   "bannerConfig": {},
-  "_savedAt": "2026-05-01T10:16:53.453Z"
+  "_savedAt": "2026-05-01T10:33:06.231Z"
 }
