@@ -5,8 +5,20 @@
       "name": "iPhone 17",
       "description": "",
       "layout": "center"
+    },
+    {
+      "brand": "Apple",
+      "name": "MacBook Air 13\" M4",
+      "description": "",
+      "layout": "center"
+    },
+    {
+      "brand": "DYSON",
+      "name": "DYSON AIRWRAP ID",
+      "description": "",
+      "layout": "left"
     }
   ],
   "bannerConfig": {},
-  "_savedAt": "2026-05-01T11:53:04.730Z"
+  "_savedAt": "2026-05-01T11:53:12.313Z"
 }
