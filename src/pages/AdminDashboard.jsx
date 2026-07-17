@@ -8,9 +8,18 @@ import { getProductImage } from "../utils/productImages";
 import { STORE_DEFAULTS, loadStoreConfig, saveStoreConfig, getStoreImage } from "../hooks/useStoreConfig";
 
 const STORAGE_KEY  = "apex_products_override";
-const AUTH_KEY     = "apex_admin_auth";
+const TOKEN_KEY    = "apex_admin_token";
 const DS_KEY       = "apex_display_settings";
 const HERO_KEY     = "apex_hero_config";
+
+// Wrapper that automatically attaches the admin token to every API request
+function adminFetch(url, opts = {}) {
+  const token = localStorage.getItem(TOKEN_KEY) || '';
+  return fetch(url, {
+    ...opts,
+    headers: { ...(opts.headers || {}), 'x-admin-token': token },
+  });
+}
 
 function loadProducts() {
   try { const s = localStorage.getItem(STORAGE_KEY); if (s) return JSON.parse(s); } catch (_) {}
@@ -41,29 +50,57 @@ function autoPath(brand, name, color) {
 
 function productsToCSV(products, hiddenProductIds = []) {
   const hiddenSet = new Set(hiddenProductIds);
-  const headers = ["id","brand","name","category","storage","ram","color","currentPrice","newPrice","mrp","inStock","hidden","badge","soldLastMonth","image","description"];
+  // Keep the exported headers aligned with the actual product fields. This
+  // makes an exported CSV editable in-place: change `price`, `mrp`, or any
+  // other column and upload the same file.
+  const headers = ["id","brand","name","category","storage","ram","color","price","mrp","inStock","hidden","badge","soldLastMonth","image","description"];
   const rows = products.map(p =>
     headers.map(h => {
-      // currentPrice mirrors live price; newPrice is blank for user to fill in
-      const v = h === "currentPrice" ? (p.price ?? "")
-              : h === "newPrice"    ? ""
-              : h === "mrp"        ? (p.mrp ?? p.originalPrice ?? "")
+      const v = h === "mrp"        ? (p.mrp ?? p.originalPrice ?? "")
               : h === "hidden"     ? (hiddenSet.has(p.id) ? "yes" : "no")
               : (p[h] ?? "");
       const str = String(v);
       return str.includes(",") || str.includes("\n") ? `"${str.replace(/"/g, '""')}"` : str;
     }).join(",")
   );
-  return [headers.join(","), ...rows].join("\n");
+  // CSV cannot freeze or colour a column, so make the ID warning explicit in
+  // the downloaded header while keeping the value itself unchanged.
+  return [["id (DO NOT EDIT)", ...headers.slice(1)].join(","), ...rows].join("\n");
 }
 
 function csvToUpdates(csvText) {
-  const lines = csvText.trim().split("\n");
-  const headers = lines[0].split(",").map(h => h.trim());
-  return lines.slice(1).map(line => {
-    const vals = line.split(",").map(v => v.trim().replace(/^"|"$/g, ""));
+  // Parse quoted CSV values as well as plain values. This keeps an exported CSV
+  // round-trippable when descriptions contain commas, quotes, or line breaks.
+  const rows = [];
+  let row = [], value = "", quoted = false;
+  for (let i = 0; i < csvText.length; i++) {
+    const char = csvText[i];
+    if (quoted) {
+      if (char === '"' && csvText[i + 1] === '"') { value += '"'; i++; }
+      else if (char === '"') quoted = false;
+      else value += char;
+    } else if (char === '"') {
+      quoted = true;
+    } else if (char === ',') {
+      row.push(value); value = "";
+    } else if (char === '\n') {
+      row.push(value); rows.push(row); row = []; value = "";
+    } else if (char !== '\r') {
+      value += char;
+    }
+  }
+  if (value !== "" || row.length) { row.push(value); rows.push(row); }
+
+  // Strip a possible UTF-8 BOM and normalize headers so files edited in
+  // spreadsheet applications still map to the same product fields.
+  const headers = (rows.shift() || []).map(h => {
+    const normalized = h.replace(/^\uFEFF/, "").trim().toLowerCase();
+    return normalized.startsWith("id") ? "id" : normalized;
+  });
+  return rows.filter(vals => vals.some(v => v.trim() !== "")).map(vals => {
+    vals = vals.map(v => v.trim());
     const obj = {};
-    headers.forEach((h, i) => { obj[h] = vals[i] ?? ""; });
+    headers.forEach((h, i) => { obj[h.toLowerCase()] = vals[i] ?? ""; });
     return obj;
   });
 }
@@ -147,7 +184,7 @@ function ChangePasswordSection() {
     if (next !== conf)   { setMsg({ text: "Passwords don't match.", ok: false }); return; }
     setSaving(true);
     try {
-      const res  = await fetch("/api/change-admin-password", {
+      const res  = await adminFetch("/api/change-admin-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ currentPassword: cur, newPassword: next }),
@@ -234,7 +271,7 @@ export default function AdminDashboard() {
   const [photosLoading, setPhotosLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/store-photos")
+    adminFetch("/api/store-photos")
       .then(r => r.json())
       .then(data => { setStorePhotos(Array.isArray(data) ? data : []); setPhotosLoading(false); })
       .catch(() => setPhotosLoading(false));
@@ -242,7 +279,7 @@ export default function AdminDashboard() {
 
   const savePhotos = async (newPhotos) => {
     setStorePhotos(newPhotos);
-    const r = await fetch("/api/store-photos", {
+    const r = await adminFetch("/api/store-photos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ photos: newPhotos }),
@@ -265,7 +302,7 @@ export default function AdminDashboard() {
       })),
       logoImage: (cfg.logoImage || '').startsWith('blob:') ? '' : (cfg.logoImage || ''),
     };
-    fetch("/api/sync-store-config", {
+    adminFetch("/api/sync-store-config", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ storeConfig: clean }),
@@ -285,7 +322,7 @@ export default function AdminDashboard() {
       })),
       logoImage: (next.logoImage || '').startsWith('blob:') ? '' : (next.logoImage || ''),
     };
-    fetch("/api/sync-store-config", {
+    adminFetch("/api/sync-store-config", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ storeConfig: clean }),
@@ -298,7 +335,7 @@ export default function AdminDashboard() {
       .catch(e => showToast("Sync failed: " + e.message));
   };
 
-  useEffect(() => { if (!localStorage.getItem(AUTH_KEY)) navigate("/admin"); }, []);
+  useEffect(() => { if (!localStorage.getItem(TOKEN_KEY)) navigate("/admin"); }, []);
 
   // Poll for remote changes every 30s — silently merge when no form is open
   useEffect(() => {
@@ -308,9 +345,9 @@ export default function AdminDashboard() {
       try {
         const ts = Date.now();
         const [pRes, hRes, bRes] = await Promise.all([
-          fetch(`/api/products-data?_=${ts}`),
-          fetch("/api/hero-config"),
-          fetch("/api/banner-config"),
+          adminFetch(`/api/products-data?_=${ts}`),
+          adminFetch("/api/hero-config"),
+          adminFetch("/api/banner-config"),
         ]);
         if (pRes.ok) {
           const remote = await pRes.json();
@@ -341,7 +378,7 @@ export default function AdminDashboard() {
 
   // On first load: pull from GitHub and merge with local state
   useEffect(() => {
-    fetch(`/api/products-data?_=${Date.now()}`)
+    adminFetch(`/api/products-data?_=${Date.now()}`)
       .then(r => r.ok ? r.json() : null)
       .then(remote => {
         if (!Array.isArray(remote) || remote.length === 0) return;
@@ -359,14 +396,14 @@ export default function AdminDashboard() {
         });
       })
       .catch(() => {});
-    fetch("/api/hero-config")
+    adminFetch("/api/hero-config")
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (!d) return;
         if (Array.isArray(d.heroConfig)) { heroFromRemoteRef.current = true; setHeroConfig(d.heroConfig); }
       })
       .catch(() => {});
-    fetch("/api/banner-config")
+    adminFetch("/api/banner-config")
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         if (!d) return;
@@ -389,7 +426,7 @@ export default function AdminDashboard() {
     const timer = setTimeout(() => {
       if (payload === lastHeroSyncRef.current) return;
       lastHeroSyncRef.current = payload;
-      fetch("/api/sync-hero", {
+      adminFetch("/api/sync-hero", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ heroConfig, bannerConfig: {} }),
@@ -408,7 +445,7 @@ export default function AdminDashboard() {
     const syncReady = p.map(prod =>
       prod.image?.startsWith('blob:') ? { ...prod, image: undefined } : prod
     );
-    fetch("/api/sync-products", {
+    adminFetch("/api/sync-products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ products: syncReady }),
@@ -471,7 +508,7 @@ export default function AdminDashboard() {
       if (editId && imagePath?.startsWith("http")) {
         const path = autoPath(form.brand, form.name, form.color);
         try {
-          const res  = await fetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:imagePath, imagePath:path }) });
+          const res  = await adminFetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:imagePath, imagePath:path }) });
           const data = await res.json();
           if (res.ok) { imagePath = data.url; showToast("Image uploaded! Live instantly."); }
           else showToast("Image import failed: " + data.error, "warn");
@@ -497,7 +534,7 @@ export default function AdminDashboard() {
       } else {
         // Save to Supabase first to get a guaranteed unique ID
         showToast("Saving to database…");
-        const insertRes = await fetch("/api/sync-products", {
+        const insertRes = await adminFetch("/api/sync-products", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "insert", product: { ...finalForm, price: priceNum, originalPrice: origNum } }),
@@ -514,7 +551,7 @@ export default function AdminDashboard() {
           const slug = s => (s||"").toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");
           const idPath = `${slug(finalForm.brand)}/${slug(finalForm.name)}/${savedId}`;
           try {
-            const upRes = await fetch("/api/upload-image", {
+            const upRes = await adminFetch("/api/upload-image", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ imageUrl: imagePath, imagePath: idPath }),
@@ -522,10 +559,10 @@ export default function AdminDashboard() {
             const upData = await upRes.json();
             if (upRes.ok) {
               imagePath = upData.url;
-              await fetch("/api/update-product-images", {
+              await adminFetch("/api/sync-products", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ updates: [{ id: savedId, imagePath: upData.url }] }),
+                body: JSON.stringify({ action: "update_images", updates: [{ id: savedId, imagePath: upData.url }] }),
               });
             }
           } catch (_) {}
@@ -539,10 +576,10 @@ export default function AdminDashboard() {
       }
 
       if (editId && imagePath) {
-        fetch("/api/update-product-images", {
+        adminFetch("/api/sync-products", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ updates: [{ id: savedId, imagePath }] }),
+          body: JSON.stringify({ action: "update_images", updates: [{ id: savedId, imagePath }] }),
         }).catch(() => {});
       }
 
@@ -559,7 +596,7 @@ export default function AdminDashboard() {
     lastWriteRef.current = Date.now();
     setProducts(updated);
     saveProducts(updated);
-    fetch("/api/sync-products", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ action:"delete", id }) }).catch(()=>{});
+    adminFetch("/api/sync-products", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ action:"delete", id }) }).catch(()=>{});
     showToast("Deleted.", "warn");
   };
   const handleDeleteModel = (b, n) => {
@@ -568,7 +605,7 @@ export default function AdminDashboard() {
     lastWriteRef.current = Date.now();
     setProducts(updated);
     saveProducts(updated);
-    fetch("/api/sync-products", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ action:"delete_model", brand:b, name:n }) }).catch(()=>{});
+    adminFetch("/api/sync-products", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ action:"delete_model", brand:b, name:n }) }).catch(()=>{});
     showToast(`"${n}" deleted.`, "warn");
   };
   const handleToggleStock  = id         => persist(products.map(p => p.id===id ? { ...p, inStock:!p.inStock } : p));
@@ -596,15 +633,15 @@ export default function AdminDashboard() {
     const path = autoPath(form.brand, form.name, form.color);
     setImporting(true);
     try {
-      const res  = await fetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:url, imagePath:path }) });
+      const res  = await adminFetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:url, imagePath:path }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Unknown error");
       setForm(f => ({ ...f, image: data.url }));
       if (editId) {
-        fetch("/api/update-product-images", {
+        adminFetch("/api/sync-products", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ updates: [{ id: editId, imagePath: data.url }] }),
+          body: JSON.stringify({ action: "update_images", updates: [{ id: editId, imagePath: data.url }] }),
         }).catch(() => {});
       }
       showToast("Image uploaded! Live instantly.");
@@ -636,33 +673,42 @@ export default function AdminDashboard() {
         const id   = Number(row.id);
         const prod = products.find(p => p.id === id);
         if (prod) {
-          // newPrice takes priority; fall back to currentPrice column, then live value
-          const resolvedPrice = row.newPrice?.trim() !== "" && row.newPrice !== undefined
-            ? row.newPrice
-            : row.currentPrice?.trim() !== "" && row.currentPrice !== undefined
-              ? row.currentPrice
-              : row.price?.trim() !== "" && row.price !== undefined
-                ? row.price  // legacy CSVs that still have "price" column
-                : String(prod.price);
-          const newPrice = Number(resolvedPrice) || prod.price;
-          const mrpRaw      = row.mrp !== undefined && row.mrp !== "" ? row.mrp : (row.originalPrice !== "" && row.originalPrice !== undefined ? row.originalPrice : "");
-          const newOrig     = mrpRaw !== "" ? Number(mrpRaw) : (prod.mrp || prod.originalPrice);
-          const newStock    = row.inStock === "false" ? false : row.inStock === "true" ? true : prod.inStock;
-          const newColor    = row.color    !== "" ? row.color    : prod.color;
-          const newImage    = row.image    !== "" ? row.image    : prod.image;
-          const newDesc          = row.description   !== undefined ? row.description   : prod.description;
-          const newBadge         = row.badge         !== undefined ? row.badge         : prod.badge;
-          const newSoldLastMonth = row.soldLastMonth  !== undefined && row.soldLastMonth !== "" ? Number(row.soldLastMonth) : (prod.soldLastMonth || 0);
-          const newStorage  = row.storage  !== "" ? row.storage  : prod.storage;
-          const newRam      = row.ram      !== "" ? row.ram      : prod.ram;
-          const newName     = row.name     !== "" ? row.name     : prod.name;
-          const newBrand    = row.brand    !== "" ? row.brand    : prod.brand;
-          const newCategory = row.category !== "" ? row.category : prod.category;
+          const has = key => Object.prototype.hasOwnProperty.call(row, key);
+          const value = (key, fallback) => has(key) ? row[key] : fallback;
+          // `price` is now the canonical column. Keep old exports working by
+          // accepting currentPrice/newPrice as aliases when price is absent.
+          const priceRaw = has("price") ? row.price
+            : has("newprice") && row.newprice.trim() !== "" ? row.newprice
+              : has("currentprice") ? row.currentprice : String(prod.price);
+          const mrpRaw = has("mrp") ? row.mrp : value("originalprice", String(prod.mrp ?? prod.originalPrice ?? ""));
+          const numberOr = (raw, fallback) => {
+            if (raw === "") return 0;
+            const number = Number(raw);
+            return Number.isFinite(number) ? number : fallback;
+          };
+          const newPrice = numberOr(priceRaw, prod.price);
+          const newOrig = numberOr(mrpRaw, prod.mrp || prod.originalPrice || 0);
+          const stockRaw = value("instock", String(prod.inStock));
+          const newStock = stockRaw === "false" ? false : stockRaw === "true" ? true : prod.inStock;
+          const hiddenRaw = has("hidden") ? row.hidden.trim().toLowerCase() : "";
+          const newColor    = value("color", prod.color);
+          const newImage    = value("image", prod.image);
+          const newDesc          = value("description", prod.description);
+          const newBadge         = value("badge", prod.badge);
+          const soldRaw = value("soldlastmonth", String(prod.soldLastMonth || 0));
+          const newSoldLastMonth = soldRaw === "" ? 0 : (Number(soldRaw) || 0);
+          const newStorage  = value("storage", prod.storage);
+          const newRam      = value("ram", prod.ram);
+          const newName     = value("name", prod.name);
+          const newBrand    = value("brand", prod.brand);
+          const newCategory = value("category", prod.category);
           const isCurrentlyHidden = currentHiddenIds.includes(id);
-          const hiddenRaw   = row.hidden?.trim().toLowerCase();
           const newHidden   = hiddenRaw === "yes" ? true : hiddenRaw === "no" ? false : isCurrentlyHidden;
           matched.push({
             id, name: prod.name, color: prod.color, storage: prod.storage,
+            oldName: prod.name, newName,
+            oldBrand: prod.brand, newBrand,
+            oldCategory: prod.category, newCategory,
             oldPrice: prod.price, newPrice,
             oldOrig: prod.originalPrice, newOrig,
             oldStock: prod.inStock, newStock,
@@ -673,7 +719,6 @@ export default function AdminDashboard() {
             oldSoldLastMonth: prod.soldLastMonth || 0, newSoldLastMonth,
             oldStorage: prod.storage, newStorage,
             oldRam: prod.ram, newRam,
-            newName, newBrand, newCategory,
             oldHidden: isCurrentlyHidden, newHidden,
           });
         } else {
@@ -787,7 +832,7 @@ export default function AdminDashboard() {
     if (!bulkPreview?.valid?.length) return;
     setBulkAdding(true);
     try {
-      const res  = await fetch("/api/sync-products", {
+      const res  = await adminFetch("/api/sync-products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "bulk_insert", products: bulkPreview.valid }),
@@ -826,7 +871,7 @@ export default function AdminDashboard() {
       // Strip the data:image/...;base64, prefix
       const base64 = e.target.result.split(",")[1];
       try {
-        const res  = await fetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ base64, imagePath }) });
+        const res  = await adminFetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ base64, imagePath }) });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Upload failed");
         onSuccess(data.url, false); // false = stable CDN URL
@@ -856,15 +901,15 @@ export default function AdminDashboard() {
       reader.onload = async (ev) => {
         const base64 = ev.target.result.split(",")[1];
         try {
-          const res  = await fetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ base64, imagePath:path }) });
+          const res  = await adminFetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ base64, imagePath:path }) });
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || "Upload failed");
           setForm(f => ({ ...f, image: data.url }));
           if (editId) {
-            fetch("/api/update-product-images", {
+            adminFetch("/api/sync-products", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ updates: [{ id: editId, imagePath: data.url }] }),
+              body: JSON.stringify({ action: "update_images", updates: [{ id: editId, imagePath: data.url }] }),
             }).catch(() => {});
           }
           showToast("Image uploaded! Live instantly.");
@@ -943,7 +988,7 @@ export default function AdminDashboard() {
     reader.onload = async (ev) => {
       const base64 = ev.target.result.split(",")[1];
       try {
-        const res  = await fetch("/api/upload-image", {
+        const res  = await adminFetch("/api/upload-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ base64, filename: safeFilename, folder: 'store' }),
@@ -1010,7 +1055,7 @@ export default function AdminDashboard() {
           r.readAsDataURL(compressed);
         });
 
-        const resp = await fetch("/api/upload-image", {
+        const resp = await adminFetch("/api/upload-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ base64, filename, folder: 'store' }),
@@ -1062,7 +1107,7 @@ export default function AdminDashboard() {
   // ── Banner config ──────────────────────────────────────
   const handleSaveBanner = () => {
     saveBannerConfig(banner);
-    fetch("/api/banner-config", {
+    adminFetch("/api/banner-config", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ bannerConfig: banner }),
@@ -1079,7 +1124,7 @@ export default function AdminDashboard() {
     if (!banner.image?.startsWith("http")) { showToast("Paste a full https:// URL in the image field.", "warn"); return; }
     setBannerImporting(true);
     try {
-      const res  = await fetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:banner.image, imagePath:"hero/banner.webp" }) });
+      const res  = await adminFetch("/api/upload-image", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ imageUrl:banner.image, imagePath:"hero/banner.webp" }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Unknown error");
       setBanner(b => ({ ...b, image: data.url }));
@@ -1121,7 +1166,7 @@ export default function AdminDashboard() {
         <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", zIndex:1000, display:"flex", alignItems:"center", justifyContent:"center", padding:"24px" }}>
           <div style={{ background:"#111", border:"1px solid #2a2a2a", borderRadius:"16px", padding:"28px", maxWidth:"720px", width:"100%", maxHeight:"80vh", overflowY:"auto" }}>
             <h2 style={{ margin:"0 0 6px", fontSize:"18px", fontWeight:700 }}>📋 CSV Import Preview</h2>
-            <p style={{ color:"#666", fontSize:"13px", margin:"0 0 20px" }}>Price, stock, colour, variants, photo, badge, description and visibility will be updated.</p>
+            <p style={{ color:"#666", fontSize:"13px", margin:"0 0 20px" }}>Every edited CSV column, including price and MRP, will be updated on the website. New values are shown in green.</p>
             {csvPreview.matched.length > 0 && (
               <>
                 <p style={{ color:"#00c851", fontSize:"12px", fontWeight:600, margin:"0 0 10px" }}>{csvPreview.matched.length} products matched</p>
@@ -1133,6 +1178,9 @@ export default function AdminDashboard() {
                     <tbody>
                       {csvPreview.matched.map(r => {
                         const diffs = [];
+                        if (r.oldBrand   !== r.newBrand)   diffs.push(<span key="brand">Brand: <span style={{color:"#ff4444"}}>{r.oldBrand||"—"}</span> → <span style={{color:"#00c851"}}>{r.newBrand||"—"}</span></span>);
+                        if (r.oldName    !== r.newName)    diffs.push(<span key="name">Name: <span style={{color:"#ff4444"}}>{r.oldName||"—"}</span> → <span style={{color:"#00c851"}}>{r.newName||"—"}</span></span>);
+                        if (r.oldCategory !== r.newCategory) diffs.push(<span key="category">Category: <span style={{color:"#ff4444"}}>{r.oldCategory||"—"}</span> → <span style={{color:"#00c851"}}>{r.newCategory||"—"}</span></span>);
                         if (r.oldPrice   !== r.newPrice)   diffs.push(<span key="price">Price: <span style={{color:"#ff4444",textDecoration:"line-through"}}>₹{r.oldPrice?.toLocaleString("en-IN")}</span> → <span style={{color:"#00c851"}}>₹{r.newPrice?.toLocaleString("en-IN")}</span></span>);
                         if (r.oldOrig    !== r.newOrig)    diffs.push(<span key="orig">MRP: <span style={{color:"#ff4444",textDecoration:"line-through"}}>₹{r.oldOrig?.toLocaleString("en-IN")}</span> → <span style={{color:"#00c851"}}>₹{r.newOrig?.toLocaleString("en-IN")}</span></span>);
                         if (r.oldStock   !== r.newStock)   diffs.push(<span key="stock">Stock: <span style={{color:"#ff4444"}}>{r.oldStock?"In":"Out"}</span> → <span style={{color:"#00c851"}}>{r.newStock?"In":"Out"}</span></span>);
@@ -1230,7 +1278,7 @@ export default function AdminDashboard() {
         </div>
         <div style={{ display:"flex", gap:"8px", alignItems:"center" }}>
           <span style={{ color:"#555", fontSize:"12px" }}>{products.length} variants · {totalModels} models</span>
-          <Btn color="ghost" small onClick={() => { localStorage.removeItem(AUTH_KEY); navigate("/admin"); }}>Logout</Btn>
+          <Btn color="ghost" small onClick={() => { localStorage.removeItem(TOKEN_KEY); navigate("/admin"); }}>Logout</Btn>
         </div>
       </div>
 
@@ -1284,6 +1332,7 @@ export default function AdminDashboard() {
               <button onClick={expandAll}  style={{ background:"none", border:"1px solid #2a2a2a", borderRadius:"6px", color:"#555", cursor:"pointer", padding:"5px 12px", fontSize:"12px" }}>Expand All</button>
               <button onClick={collapseAll} style={{ background:"none", border:"1px solid #2a2a2a", borderRadius:"6px", color:"#555", cursor:"pointer", padding:"5px 12px", fontSize:"12px" }}>Collapse All</button>
               <span style={{ flex:1 }} />
+              <span style={{ color:"#78909c", fontSize:"11px", fontWeight:600 }}>ID is fixed — do not edit it in CSV</span>
               <Btn small color="#007aff" onClick={handleExportCSV}>⬇ Download CSV</Btn>
               <Btn small color="#007aff" onClick={() => csvInputRef.current?.click()}>⬆ Upload CSV</Btn>
               <input ref={csvInputRef} type="file" accept=".csv" style={{ display:"none" }} onChange={handleCSVFile} />
@@ -1357,14 +1406,14 @@ export default function AdminDashboard() {
                     <div style={{ borderTop:"1px solid #1a1a1a", overflowX:"auto" }}>
                       <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"13px" }}>
                         <thead><tr style={{ background:"#0d0d0d" }}>
-                          {["ID","Storage","RAM","Colour","Price (₹)","MRP (₹)","Badge","Sold/mo","Stock","Visible","Image","Actions"].map(h => (
-                            <th key={h} style={{ padding:"9px 14px", color:"#555", fontWeight:600, textAlign:"left", whiteSpace:"nowrap", borderBottom:"1px solid #1a1a1a" }}>{h}</th>
+                          {["ID (DO NOT EDIT)","Storage","RAM","Colour","Price (₹)","MRP (₹)","Badge","Sold/mo","Stock","Visible","Image","Actions"].map((h, i) => (
+                            <th key={h} style={{ padding:"9px 14px", color:i===0?"#b7cbd5":"#555", background:i===0?"#354752":"#0d0d0d", fontWeight:600, textAlign:"left", whiteSpace:"nowrap", borderBottom:"1px solid #1a1a1a", ...(i===0?{ position:"sticky", left:0, zIndex:2 }: {}) }}>{h}</th>
                           ))}
                         </tr></thead>
                         <tbody>
                           {variants.map(v => (
                             <tr key={v.id} style={{ borderBottom:"1px solid #141414" }}>
-                              <td style={{ padding:"10px 14px", color:"#444", fontSize:"11px", fontFamily:"monospace" }}>{v.id ?? <span style={{color:"#333"}}>—</span>}</td>
+                              <td style={{ padding:"10px 14px", color:"#b7cbd5", background:"#273842", fontSize:"11px", fontFamily:"monospace", fontWeight:700, position:"sticky", left:0, zIndex:1, borderRight:"1px solid #3b515c" }}>{v.id ?? <span style={{color:"#6d818a"}}>—</span>}</td>
                               <td style={{ padding:"10px 14px", color:"#e0e0e0", fontWeight:600 }}>{v.storage||<span style={{color:"#333"}}>—</span>}</td>
                               <td style={{ padding:"10px 14px", color:"#888" }}>{v.ram||<span style={{color:"#333"}}>—</span>}</td>
                               <td style={{ padding:"10px 14px" }}>
@@ -1773,7 +1822,7 @@ export default function AdminDashboard() {
                 {/* CTA Text */}
                 <div>
                   <label style={{ color:"#888", fontSize:"11px", fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", display:"block", marginBottom:"6px" }}>Button Text</label>
-                  <input value={banner.ctaText} onChange={e => Fb("ctaText")(e.target.value)} placeholder="e.g. Message to Order" style={{ ...iStyle, marginBottom:"14px" }} />
+                  <input value={banner.ctaText} onChange={e => Fb("ctaText")(e.target.value)} placeholder="e.g. Click to Order" style={{ ...iStyle, marginBottom:"14px" }} />
                 </div>
 
                 {/* CTA Link */}
@@ -1817,7 +1866,7 @@ export default function AdminDashboard() {
                     <div style={{ color:"#fff", fontWeight:700, fontSize:"16px", marginBottom:"4px" }}>{banner.title || "Product Name"}</div>
                     {banner.subtitle && <div style={{ color:"#888", fontSize:"11px", marginBottom:"6px", lineHeight:1.4 }}>{banner.subtitle}</div>}
                     {banner.price && <div style={{ color:"#fff", fontWeight:700, fontSize:"18px", marginBottom:"8px" }}>{isNaN(Number(banner.price)) ? banner.price : `₹${Number(banner.price).toLocaleString("en-IN")}`}</div>}
-                    <div style={{ background:"#222", color:"#aaa", borderRadius:"20px", padding:"5px 14px", fontSize:"11px", width:"fit-content" }}>{banner.ctaText || "Message to Order"} →</div>
+                    <div style={{ background:"#222", color:"#aaa", borderRadius:"20px", padding:"5px 14px", fontSize:"11px", width:"fit-content" }}>{banner.ctaText || "Click to Order"} →</div>
                   </div>
                 </div>
               )}
@@ -2253,7 +2302,7 @@ export default function AdminDashboard() {
                           const slug = s => (s||'').toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
                           const path = `categories/${slug(cat.label) || 'card-' + i}`;
                           try {
-                            const res = await fetch('/api/upload-image', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ imageUrl: url, imagePath: path, folder: 'store' }) });
+                            const res = await adminFetch('/api/upload-image', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ imageUrl: url, imagePath: path, folder: 'store' }) });
                             const data = await res.json();
                             const finalUrl = res.ok ? data.url : url;
                             setStoreCfg(c => {

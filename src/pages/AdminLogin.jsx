@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const DEFAULT_PASSWORD = "Apex@2024#Secret";
-const PW_KEY = "apex_admin_password";
+const TOKEN_KEY = "apex_admin_token";
 
 export default function AdminLogin() {
   const [password, setPassword] = useState("");
@@ -10,28 +9,28 @@ export default function AdminLogin() {
   const [loading,  setLoading]  = useState(false);
   const navigate = useNavigate();
 
-  // Fetch current password from repo so it works on every browser/device
-  useEffect(() => {
-    fetch("/admin-password.json?v=" + Date.now())
-      .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.password) localStorage.setItem(PW_KEY, d.password); })
-      .catch(() => {});
-  }, []);
-
-  const getPassword = () => localStorage.getItem(PW_KEY) || DEFAULT_PASSWORD;
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      if (password === getPassword()) {
-        localStorage.setItem("apex_admin_auth", "true");
+    setError("");
+    try {
+      const res = await fetch("/api/admin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      const data = await res.json();
+      if (res.ok && data.token) {
+        localStorage.setItem(TOKEN_KEY, data.token);
         navigate("/admin/dashboard");
       } else {
-        setError("Incorrect password. Try again.");
-        setLoading(false);
+        setError(data.error || "Incorrect password. Try again.");
       }
-    }, 800);
+    } catch (_) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

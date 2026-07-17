@@ -78,7 +78,7 @@ export default function Products() {
   const [searchParams] = useSearchParams();
   const navigate       = useNavigate();
   const location       = useLocation();
-  const [search,     setSearch]     = useState('');
+  const [search,     setSearch]     = useState(() => searchParams.get('q') || '');
   const [brands,     setBrands]     = useState(() => {
     const b = searchParams.get('brand');
     return b && BRANDS.includes(b) ? new Set([b]) : new Set();
@@ -118,9 +118,51 @@ export default function Products() {
     if (b && BRANDS.includes(b)) setBrands(new Set([b]));
     const c = searchParams.get('category');
     if (c && CATEGORIES.includes(c)) setCategory(c);
+    const q = searchParams.get('q');
+    if (q) setSearch(q);
   }, [searchParams]);
 
   const allGroups = useMemo(() => groupProducts(products), [products]);
+
+  // Inject Product schema for Google rich results
+  useEffect(() => {
+    if (!allGroups.length) return;
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Products at Apex The Mobile Shoppe, Indore',
+      url: 'https://apex-website.vercel.app/products',
+      itemListElement: allGroups.slice(0, 100).map((g, i) => {
+        const v = g.variants[0];
+        return {
+          '@type': 'ListItem',
+          position: i + 1,
+          item: {
+            '@type': 'Product',
+            name: `${g.name}${v?.storage ? ` ${v.storage}` : ''}`,
+            brand: { '@type': 'Brand', name: g.brand },
+            offers: {
+              '@type': 'Offer',
+              price: String(v?.price ?? 0),
+              priceCurrency: 'INR',
+              availability: g.variants.some(x => x.inStock)
+                ? 'https://schema.org/InStock'
+                : 'https://schema.org/OutOfStock',
+              seller: { '@type': 'Organization', name: 'Apex The Mobile Shoppe' },
+              url: `https://apex-website.vercel.app/products#${encodeURIComponent(g.key)}`,
+            },
+          },
+        };
+      }),
+    };
+    const el = document.createElement('script');
+    el.type = 'application/ld+json';
+    el.id = 'product-list-schema';
+    el.textContent = JSON.stringify(schema);
+    document.head.querySelector('#product-list-schema')?.remove();
+    document.head.appendChild(el);
+    return () => el.remove();
+  }, [allGroups]);
 
   // Sync modal open/close with the URL hash so back/forward navigation works
   useEffect(() => {
@@ -291,6 +333,37 @@ export default function Products() {
               })()}
             </button>
           </div>
+
+          {/* Active filter chips — always visible when any filter is set */}
+          {(brands.size > 0 || category !== 'All' || priceMin !== '' || priceMax !== '' || sort !== 'featured') && (
+            <div className="flex flex-wrap gap-1.5 items-center">
+              <span className="text-[11px] text-apple-gray font-medium flex-shrink-0">Filter applied:</span>
+              {[...brands].map(b => (
+                <span key={b} className="inline-flex items-center gap-1 text-[12px] font-medium bg-apple-black text-white px-2.5 py-1 rounded-full">
+                  {b}
+                  <button onClick={() => setBrands(prev => { const n = new Set(prev); n.delete(b); return n; })} className="hover:opacity-70 leading-none ml-0.5">×</button>
+                </span>
+              ))}
+              {category !== 'All' && (
+                <span className="inline-flex items-center gap-1 text-[12px] font-medium bg-apple-black text-white px-2.5 py-1 rounded-full">
+                  {category}
+                  <button onClick={() => setCategory('All')} className="hover:opacity-70 leading-none ml-0.5">×</button>
+                </span>
+              )}
+              {(priceMin !== '' || priceMax !== '') && (
+                <span className="inline-flex items-center gap-1 text-[12px] font-medium bg-apple-black text-white px-2.5 py-1 rounded-full">
+                  ₹{priceMin || '0'} – ₹{priceMax || '∞'}
+                  <button onClick={() => { setPriceMin(''); setPriceMax(''); }} className="hover:opacity-70 leading-none ml-0.5">×</button>
+                </span>
+              )}
+              {sort !== 'featured' && (
+                <span className="inline-flex items-center gap-1 text-[12px] font-medium bg-apple-black text-white px-2.5 py-1 rounded-full">
+                  {SORT_OPTIONS.find(o => o.value === sort)?.label}
+                  <button onClick={() => setSort('featured')} className="hover:opacity-70 leading-none ml-0.5">×</button>
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Filter rows — toggled on all screen sizes */}
           <div className={`${filtersOpen ? 'flex' : 'hidden'} flex-col gap-2.5`}>
@@ -472,7 +545,7 @@ export default function Products() {
       {openGroup && (
         <ProductModal
           group={openGroup}
-          onClose={() => navigate(-1)}
+          onClose={() => navigate(location.pathname + location.search, { replace: true })}
         />
       )}
     </main>

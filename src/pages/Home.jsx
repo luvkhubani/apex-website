@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import FadeUp from '../components/FadeUp';
 import { useProducts } from '../hooks/useProducts';
@@ -127,6 +127,141 @@ function useStorePhotos() {
   return photos;
 }
 
+// ── Fuzzy search helpers ──────────────────────────────────
+function levenshtein(a, b) {
+  if (Math.abs(a.length - b.length) > 2) return 99;
+  const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = i;
+    for (let j = 1; j <= b.length; j++) {
+      const val = a[i-1] === b[j-1] ? row[j-1] : 1 + Math.min(row[j-1], row[j], prev);
+      row[j-1] = prev;
+      prev = val;
+    }
+    row[b.length] = prev;
+  }
+  return row[b.length];
+}
+
+function tokenMatches(token, words) {
+  if (words.some(w => w.includes(token))) return true;
+  if (token.length <= 3) return false;
+  const maxDist = token.length <= 6 ? 1 : 2;
+  return words.some(w => Math.abs(w.length - token.length) <= maxDist && levenshtein(token, w) <= maxDist);
+}
+
+// ── Home search bar with live suggestions ────────────────
+function HomeSearchBar({ products }) {
+  const [query, setQuery]             = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [open, setOpen]               = useState(false);
+  const [focused, setFocused]         = useState(false);
+  const navigate  = useNavigate();
+  const wrapRef   = useRef(null);
+  const inputRef  = useRef(null);
+
+  useEffect(() => {
+    const close = (e) => { if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, []);
+
+  useEffect(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) { setSuggestions([]); setOpen(false); return; }
+    const tokens = q.split(/\s+/).filter(Boolean);
+    const seen = new Set();
+    const matches = [];
+    for (const p of products) {
+      if (!p.inStock) continue;
+      const key = `${p.brand}__${p.name}`;
+      if (seen.has(key)) continue;
+      const words = [p.name, p.brand, p.category, p.storage, p.badge, p.color]
+        .filter(Boolean).join(' ').toLowerCase().split(/\s+/);
+      if (tokens.every(t => tokenMatches(t, words))) {
+        seen.add(key);
+        const prices = products.filter(x => x.brand === p.brand && x.name === p.name).map(x => x.price).filter(Boolean);
+        matches.push({ ...p, minPrice: prices.length ? Math.min(...prices) : 0 });
+      }
+      if (matches.length >= 7) break;
+    }
+    setSuggestions(matches);
+    setOpen(matches.length > 0);
+  }, [query, products]);
+
+  const goSearch  = (q) => {
+    setOpen(false);
+    // replace:true removes the Home page from history so back never returns to Home
+    navigate(`/products?q=${encodeURIComponent(q.trim())}`, { replace: true });
+  };
+  const goProduct = (p) => { setOpen(false); setQuery(''); navigate(`/products#${encodeURIComponent(`${p.brand}__${p.name}`)}`, { replace: true }); };
+
+  return (
+    <div ref={wrapRef} className="relative max-w-[680px] mx-auto">
+      <form onSubmit={e => { e.preventDefault(); if (query.trim()) goSearch(query); }}>
+        <div className={`flex items-center bg-white border-2 rounded-full transition-all duration-200 ${focused ? 'border-[#0071e3] shadow-[0_0_0_4px_rgba(0,113,227,0.12)]' : 'border-apple-border shadow-sm'}`}>
+          <svg className="ml-4 shrink-0 text-apple-gray" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            onFocus={() => { setFocused(true); if (suggestions.length) setOpen(true); }}
+            onBlur={() => setFocused(false)}
+            onKeyDown={e => e.key === 'Escape' && setOpen(false)}
+            placeholder="Search for iPhone, Samsung, OnePlus..."
+            className="flex-1 bg-transparent text-[15px] sm:text-[16px] text-apple-black placeholder-apple-gray px-3 py-3.5 outline-none min-w-0"
+            autoComplete="off"
+            spellCheck={false}
+          />
+          {query && (
+            <button type="button" tabIndex={-1}
+              onClick={() => { setQuery(''); setSuggestions([]); setOpen(false); navigate('/products'); }}
+              className="shrink-0 mr-2 w-5 h-5 rounded-full bg-apple-gray/25 hover:bg-apple-gray/40 flex items-center justify-center text-apple-gray text-[14px] font-bold transition-colors"
+            >×</button>
+          )}
+          <button type="submit" className="shrink-0 m-1.5 px-5 py-2.5 bg-apple-black text-white text-[13px] font-semibold rounded-full hover:scale-[1.02] active:scale-[0.98] transition-transform">
+            Search
+          </button>
+        </div>
+      </form>
+
+      {open && suggestions.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-apple-border rounded-2xl shadow-2xl z-50 overflow-hidden">
+          {suggestions.map((p, i) => (
+            <button key={i} onMouseDown={e => { e.preventDefault(); goProduct(p); }}
+              className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-apple-light transition-colors text-left border-b border-apple-border/40 last:border-0"
+            >
+              <svg className="shrink-0 text-apple-gray" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <div className="flex-1 min-w-0">
+                <span className="text-[14px] font-medium text-apple-black">{p.name}</span>
+                {p.storage && <span className="text-[13px] text-apple-gray"> · {p.storage}</span>}
+                {p.color && <span className="text-[13px] text-apple-gray"> · {p.color}</span>}
+                <span className="text-[12px] text-apple-gray ml-1">— {p.brand}</span>
+              </div>
+              {p.minPrice > 0 && (
+                <span className="text-[13px] font-semibold text-apple-black shrink-0">
+                  {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(p.minPrice)}
+                </span>
+              )}
+            </button>
+          ))}
+          <button onMouseDown={e => { e.preventDefault(); goSearch(query); }}
+            className="w-full px-5 py-3.5 text-[13px] font-medium text-[#0071e3] hover:bg-apple-light transition-colors flex items-center gap-1.5"
+          >
+            See all results for <span className="font-semibold">"{query}"</span>
+            <span className="ml-auto text-[16px]">→</span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const BRAND_EMOJI = {
   Apple:'🍎',Samsung:'📱',OnePlus:'📲',Nothing:'⚪',Motorola:'📡',
   Xiaomi:'🔵',Realme:'🟡',Vivo:'🟣',OPPO:'🟢',Poco:'⚡',
@@ -213,7 +348,7 @@ function HeroProductSection({ item, products, index, waN }) {
         )}
       </div>
       <PillBlack href={waUrl(waN, waMsg)}>
-        Message to Order
+        Click to Order
       </PillBlack>
       <p className="text-[12px] font-semibold text-emerald-600 mt-4">
         ⚡ 2-Hour Delivery · All Indore
@@ -250,7 +385,7 @@ function HeroProductSection({ item, products, index, waN }) {
                 <p className="text-[18px] text-apple-gray">Contact us for pricing</p>
               )}
             </div>
-            <PillBlack href={waUrl(waN, waMsg)}>Message to Order</PillBlack>
+            <PillBlack href={waUrl(waN, waMsg)}>Click to Order</PillBlack>
           </div>
           <div className="bg-apple-light rounded-[32px] aspect-square sm:aspect-[4/3] md:aspect-[16/9] max-w-[860px] mx-auto overflow-hidden flex items-center justify-center">
             {imgSrc
@@ -351,10 +486,15 @@ export default function Home() {
 
             <Link
               to="/products"
-              className="inline-flex items-center gap-2 text-[20px] font-semibold text-[#0071e3] hover:underline underline-offset-2 transition-all mb-8"
+              className="inline-flex items-center gap-2 text-[20px] font-semibold text-[#0071e3] hover:underline underline-offset-2 transition-all mb-6"
             >
               Shop All Products <span className="text-[22px] leading-none">›</span>
             </Link>
+
+            {/* Search bar */}
+            <div className="w-full max-w-[640px] mb-6">
+              <HomeSearchBar products={products} />
+            </div>
 
             {/* Divider */}
             <div className="w-12 h-px bg-apple-border mb-8" />
@@ -403,7 +543,7 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 text-[15px] font-medium text-white bg-[#0071e3] px-7 py-3 rounded-full hover:bg-[#0077ed] active:scale-[0.98] transition-all shadow-sm"
               >
-                {banner.ctaText || 'Message to Order'}
+                {banner.ctaText || 'Click to Order'}
               </a>
               <Link
                 to="/products"
@@ -468,6 +608,9 @@ export default function Home() {
             <p className="text-[12px] font-semibold text-emerald-600 mt-6">
               ⚡ 2-Hour Delivery · All Indore
             </p>
+            <div className="w-full max-w-[640px] mt-8">
+              <HomeSearchBar products={products} />
+            </div>
           </FadeUp>
           <FadeUp delay={150} className="w-full max-w-[700px] mt-16">
             <div className="w-full bg-apple-light rounded-[32px] aspect-[16/9] flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-apple-border">

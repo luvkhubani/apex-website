@@ -9,17 +9,19 @@ const GH = (token) => ({
   "Content-Type":"application/json",
 });
 
+import { requireAdmin } from '../lib/adminAuth.js';
+
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-token");
   res.setHeader("Cache-Control", "no-store");
   if (req.method === "OPTIONS") return res.status(200).end();
 
   const TOKEN = process.env.GITHUB_TOKEN;
   if (!TOKEN) return res.status(500).json({ error: "GITHUB_TOKEN not configured" });
 
-  // GET — return current photo list
+  // GET — public, no auth needed
   if (req.method === "GET") {
     try {
       const r = await fetch(
@@ -35,8 +37,9 @@ export default async function handler(req, res) {
     }
   }
 
-  // POST — save photo list
+  // POST — save photo list (admin only)
   if (req.method === "POST") {
+    if (!requireAdmin(req, res)) return;
     const { photos } = req.body;
     if (!Array.isArray(photos)) return res.status(400).json({ error: "photos must be an array" });
 

@@ -1,11 +1,13 @@
 import { supabase, toRow } from '../lib/supabase.js';
+import { requireAdmin } from '../lib/adminAuth.js';
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-token");
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  if (!requireAdmin(req, res)) return;
 
   if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return res.status(500).json({ error: "Supabase credentials not configured" });
@@ -87,6 +89,23 @@ export default async function handler(req, res) {
       const { error } = await supabase.from('products').delete().eq('id', id);
       if (error) throw error;
       return res.status(200).json({ success: true });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  // ── action: 'update_images' — bulk-update image paths by product id ──
+  if (action === 'update_images') {
+    const { updates } = req.body; // [{ id, imagePath }]
+    if (!Array.isArray(updates) || updates.length === 0)
+      return res.status(400).json({ error: 'updates array is required' });
+    try {
+      await Promise.all(
+        updates
+          .filter(u => u.id != null && u.imagePath && !u.imagePath.startsWith('blob:'))
+          .map(u => supabase.from('products').update({ image: u.imagePath }).eq('id', u.id))
+      );
+      return res.status(200).json({ success: true, updated: updates.length });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
