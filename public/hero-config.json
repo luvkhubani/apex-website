@@ -7,6 +7,12 @@
       "layout": "center"
     },
     {
+      "brand": "Apple",
+      "name": "MacBook Air 13\" M5",
+      "description": "",
+      "layout": "left"
+    },
+    {
       "brand": "DYSON",
       "name": "DYSON AIRWRAP ID",
       "description": "",
@@ -14,5 +20,5 @@
     }
   ],
   "bannerConfig": {},
-  "_savedAt": "2026-07-17T09:54:18.579Z"
+  "_savedAt": "2026-07-17T09:54:25.945Z"
 }
